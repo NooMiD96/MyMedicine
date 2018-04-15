@@ -11,6 +11,7 @@ using MyMedicine.Context.Identity;
 using MyMedicine.Context.Medicine;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MyMedicine.Middleware;
 
 namespace MyMedicine
 {
@@ -60,6 +61,10 @@ namespace MyMedicine
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            app.UseWebSockets();
+
+            app.UseMiddleware<ChatMiddleware>();
 
             app.UseMvc(routes =>
             {

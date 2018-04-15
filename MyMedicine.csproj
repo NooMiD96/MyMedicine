@@ -52,6 +52,12 @@
     <None Remove="ClientApp\src\components\authorization\registration\index.tsx" />
     <None Remove="ClientApp\src\components\authorization\registration\registration.style.ts" />
     <None Remove="ClientApp\src\components\authorization\registration\registration.tsx" />
+    <None Remove="ClientApp\src\components\chat\chat.background.ts" />
+    <None Remove="ClientApp\src\components\chat\chat.style.ts" />
+    <None Remove="ClientApp\src\components\chat\chat.tsx" />
+    <None Remove="ClientApp\src\components\chat\counter.tsx" />
+    <None Remove="ClientApp\src\components\chat\index.tsx" />
+    <None Remove="ClientApp\src\components\chat\reducer.ts" />
     <None Remove="ClientApp\src\components\Comp2.tsx" />
     <None Remove="ClientApp\src\components\Comp2\Comp2.tsx" />
     <None Remove="ClientApp\src\components\Counter.tsx" />
@@ -92,6 +98,7 @@
     <None Remove="ClientApp\src\core\app\registration\login.tsx" />
     <None Remove="ClientApp\src\core\app\registration\registration.style.ts" />
     <None Remove="ClientApp\src\core\app\registration\registration.tsx" />
+    <None Remove="ClientApp\src\core\app\style\myFooter.style.ts" />
     <None Remove="ClientApp\src\core\app\style\MyHeader.style..ts" />
     <None Remove="ClientApp\src\core\app\style\MyHeader.style.ts" />
     <None Remove="ClientApp\src\core\app\style\MyLayout.style.1.ts" />
@@ -150,6 +157,12 @@
     <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\index.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\registration.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\chat\chat.background.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\chat\chat.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\chat\chat.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\chat\counter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\chat\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\chat\reducer.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\Comp2.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\Comp2\Comp2.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\Counter.tsx" />
@@ -190,6 +203,7 @@
     <TypeScriptCompile Include="ClientApp\src\core\app\registration\login.tsx" />
     <TypeScriptCompile Include="ClientApp\src\core\app\registration\registration.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\core\app\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\style\myFooter.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\core\app\style\MyHeader.style..ts" />
     <TypeScriptCompile Include="ClientApp\src\core\app\style\MyHeader.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\core\app\style\MyLayout.style.1.ts" />

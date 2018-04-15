@@ -23,7 +23,7 @@ class MyHeader extends React.Component<HeaderProps, {}> {
                 <NavLink exact to={'/Comp2'} activeClassName='active'>Comp2</NavLink>
             </Menu.Item>,
             <Menu.Item key="2">
-                <NavLink exact to={'/Counter'} activeClassName='active'>Counter</NavLink>
+                <NavLink exact to={'/Chat'} activeClassName='active'>Chat</NavLink>
             </Menu.Item>
         ];
 
