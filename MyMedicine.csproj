@@ -43,6 +43,11 @@
     <None Remove="ClientApp\src\components\authorization\login\login.style.ts" />
     <None Remove="ClientApp\src\components\authorization\login\login.tsx" />
     <None Remove="ClientApp\src\components\authorization\login\registration.tsx" />
+    <None Remove="ClientApp\src\components\authorization\logout\index.tsx" />
+    <None Remove="ClientApp\src\components\authorization\logout\login.style.ts" />
+    <None Remove="ClientApp\src\components\authorization\logout\login.tsx" />
+    <None Remove="ClientApp\src\components\authorization\logout\logout.style.ts" />
+    <None Remove="ClientApp\src\components\authorization\logout\logout.tsx" />
     <None Remove="ClientApp\src\components\authorization\reducer.ts" />
     <None Remove="ClientApp\src\components\authorization\registration\index.tsx" />
     <None Remove="ClientApp\src\components\authorization\registration\registration.style.ts" />
@@ -136,6 +141,11 @@
     <TypeScriptCompile Include="ClientApp\src\components\authorization\login\login.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\login\login.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\login\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\logout\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\logout\login.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\logout\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\logout\logout.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\logout\logout.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\reducer.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\index.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\registration.style.ts" />

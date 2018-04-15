@@ -38,30 +38,26 @@ namespace MyMedicine.Controllers
                 Email = model.Email,
                 UserName = model.UserName
             };
-            var identityResult = await _userManager.CreateAsync(user);
+            var identityResult = await _userManager.CreateAsync(user, model.Password);
 
             if(!identityResult.Succeeded)
-                return ErrorMessage("Can't create user\nPlease try again");
+                return ErrorMessage($"Can't create user\n{(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             identityResult = await _userManager.AddToRoleAsync(user, "User");
             if(!identityResult.Succeeded)
-                return ErrorMessage("Can't create user\nPlease try again");
+                return ErrorMessage($"Can't create user\n{(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
-            return UserInfo(user, "User");
+            var signResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
+
+            return signResult.Succeeded ? "true" : ErrorMessage("Cant't login\nPlease try again");
         }
 
         [HttpPost("[action]")]
         public async Task<string> SignIn([FromBody] SignInModel model)
         {
-            var user = new IdentityUser()
-            {
-                UserName = model.UserName,
-                Email = model.Email
-            };
+            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
-            return result.Succeeded ? "true" : "false";
+            return result.Succeeded ? "true" : ErrorMessage("Cant't login\nPlease try login again");
         }
 
         [HttpGet("[action]")]
@@ -73,7 +69,7 @@ namespace MyMedicine.Controllers
             return await UserInfo();
         }
 
-        [HttpPut("[action]")]
+        [HttpPatch("[action]")]
         public async Task SignOut()
         {
             await _signInManager.SignOutAsync();

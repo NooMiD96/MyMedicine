@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Route } from 'react-router-dom';
-import {MyLayout} from './src/MyLayout';
+import MyLayout from './src/MyLayout';
 import { AsyncComponent } from 'core/AsyncComponent';
 
 export const routes = <MyLayout>

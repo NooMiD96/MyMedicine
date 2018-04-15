@@ -1,9 +1,6 @@
 import styled from "styled-components";
 
 export default styled.div`
-    float: right;
-
-    &.mobile {
-        margin-right: -33px;
-    }
+    display: inline-block;
+    margin-left: 15px;
 `

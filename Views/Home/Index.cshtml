@@ -2,20 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div id="react-app-styles"
+<div id="react-app-container"
      asp-prerender-module="ClientApp/dist/main-server"
      asp-prerender-data="new {
         isMobile = @ViewData["Mobile"],
-        styleTags = true
-     }"
-></div>
-
-<div id="react-app"
-     asp-prerender-module="ClientApp/dist/main-server"
-     asp-prerender-data="new {
-        isMobile = @ViewData["Mobile"]
-     }"
->Loading...</div>
+        user = @ViewData["User"]
+}">
+    <div id="react-app-styles"></div>
+    <div id="react-app"></div>
+</div>
 
 @section scripts {
     <script src="~/dist/main-client.js" asp-append-version="true"></script>

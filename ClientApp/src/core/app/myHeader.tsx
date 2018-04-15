@@ -1,17 +1,18 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import * as AntdLayout from "antd/lib/layout/layout";
 import { Menu, Icon } from 'antd';
-
 import StyleWrapper from "./style/MyHeader.style";
 import Authorization from "components/authorization";
+import * as AppState from "./reducer";
+import { ApplicationState } from "../../reducer";
 
-type HeaderProps = {
-    Header: React.ComponentClass<AntdLayout.BasicProps>,
-    IsMobile: boolean
-}
+type HeaderProps = AppState.AppState & {
+    Header: React.ComponentClass<AntdLayout.BasicProps>
+};
 
-export class MyHeader extends React.Component<HeaderProps, {}> {
+class MyHeader extends React.Component<HeaderProps, {}> {
     public render() {
         const { IsMobile, Header } = this.props;
         const NavLinks = [
@@ -33,17 +34,26 @@ export class MyHeader extends React.Component<HeaderProps, {}> {
                     mode="horizontal"
                     className='header-menu'
                 >
-                {
-                    IsMobile ? <Menu.SubMenu title={<span><Icon type="down"/>MyMedicine</span>}>
+                    {
+                        IsMobile ? <Menu.SubMenu title={<span><Icon type="down" />MyMedicine</span>}>
                             {NavLinks}
                         </Menu.SubMenu>
-                    :
-                        NavLinks
-                }
+                            :
+                            NavLinks
+                    }
                 </Menu>
-
-                <Authorization isMobile={true} />
+                <Authorization isMobile={IsMobile} />
             </Header>
         </StyleWrapper>;
     }
 }
+
+function mapStateToProps(state: ApplicationState) {
+    return {
+        ...state.app,
+    } as AppState.AppState;
+}
+
+export default connect(
+    mapStateToProps
+)(MyHeader) as typeof MyHeader;

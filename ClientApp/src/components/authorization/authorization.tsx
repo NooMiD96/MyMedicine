@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Modal, Button } from 'antd';
 import AuthorizationWrapped from "./authorization.style";
 import Login from "./login";
-// import Logout from "./logout";
+import Logout from "./logout";
 import Registration from "./registration";
 import * as UserState from "./reducer";
 import { ApplicationState } from "src/reducer";
@@ -14,19 +14,41 @@ type AuthorizationProps =
     & { isMobile: boolean };
 
 class Authorization extends React.Component<AuthorizationProps, {}> {
+    componentDidMount() {
+        if(!this.props.UserName || !this.props.UserRole)
+            this.props.GetUserInfo();
+    }
+    componentDidUpdate() {
+        if(this.props.IsNeedGetData)
+            this.props.GetUserInfo();
+    }
+
     public render() {
         const props = this.props;
-        const isMobile = props.isMobile;
+        const { UserName, UserRole, isMobile } = props;
+        const { Pending, ErrorInner, CleanErrorInner } = props;
+        const { LogOut, RegistrationRequest, LoginRequest } = props;
         var content;
 
-        if (props.UserName && props.UserRole) {
-            content = <AuthorizationWrapped className={isMobile ? 'mobile' : null}>
-                <div />
+        if (UserName && UserRole) {
+            content = <AuthorizationWrapped className={isMobile ? 'mobile' : undefined}>
+                <Logout 
+                    isMobile={isMobile} 
+                    LogOut={LogOut} 
+                />
             </AuthorizationWrapped>;
         } else {
-            content = <AuthorizationWrapped className={isMobile ? 'mobile' : null}>
-                <Registration isMobile={isMobile}/>
-                <Login isMobile={isMobile}/>
+            content = <AuthorizationWrapped className={isMobile ? 'mobile' : undefined}>
+                <Registration 
+                    isMobile={isMobile} 
+                    RegistrationRequest={RegistrationRequest} 
+                    Pending={Pending} ErrorInner={ErrorInner} CleanErrorInner={CleanErrorInner}
+                />
+                <Login 
+                    isMobile={isMobile} 
+                    LoginRequest={LoginRequest} 
+                    Pending={Pending} ErrorInner={ErrorInner} CleanErrorInner={CleanErrorInner}
+                />
             </AuthorizationWrapped>;
         }
         return content;

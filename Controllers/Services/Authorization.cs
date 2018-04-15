@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyMedicine.Controllers
@@ -15,9 +16,8 @@ namespace MyMedicine.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var roles = await _userManager.GetRolesAsync(user);
-
             return UserInfo(user, roles.FirstOrDefault());
         }
-        private string UserInfo(IdentityUser IdentityUser, string Role) => JsonConvert.SerializeObject(new { IdentityUser.Email, IdentityUser.UserName, Role });
+        private string UserInfo(IdentityUser IdentityUser, string UserRole) => JsonConvert.SerializeObject(new { IdentityUser.UserName, UserRole });
     }
 }
