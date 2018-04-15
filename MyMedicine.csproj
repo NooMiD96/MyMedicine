@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -8,16 +8,206 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
     <Content Remove="ClientApp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\boot-client.tsx" />
+    <None Remove="ClientApp\boot-server.tsx" />
+    <None Remove="ClientApp\components\Comp2.tsx" />
+    <None Remove="ClientApp\components\Counter.tsx" />
+    <None Remove="ClientApp\components\Home.tsx" />
+    <None Remove="ClientApp\components\Layout.tsx" />
+    <None Remove="ClientApp\components\NavMenu.tsx" />
+    <None Remove="ClientApp\configureStore.ts" />
+    <None Remove="ClientApp\core\AsyncComponent.tsx" />
+    <None Remove="ClientApp\routes.tsx" />
+    <None Remove="ClientApp\src\components\authorization\authorization.style.ts" />
+    <None Remove="ClientApp\src\components\authorization\authorization.tsx" />
+    <None Remove="ClientApp\src\components\authorization\index.tsx" />
+    <None Remove="ClientApp\src\components\authorization\login.tsx" />
+    <None Remove="ClientApp\src\components\authorization\login\index.tsx" />
+    <None Remove="ClientApp\src\components\authorization\login\login.style.ts" />
+    <None Remove="ClientApp\src\components\authorization\login\login.tsx" />
+    <None Remove="ClientApp\src\components\authorization\login\registration.tsx" />
+    <None Remove="ClientApp\src\components\authorization\reducer.ts" />
+    <None Remove="ClientApp\src\components\authorization\registration\index.tsx" />
+    <None Remove="ClientApp\src\components\authorization\registration\registration.style.ts" />
+    <None Remove="ClientApp\src\components\authorization\registration\registration.tsx" />
+    <None Remove="ClientApp\src\components\Comp2.tsx" />
+    <None Remove="ClientApp\src\components\Comp2\Comp2.tsx" />
+    <None Remove="ClientApp\src\components\Counter.tsx" />
+    <None Remove="ClientApp\src\components\counter\counter.ts" />
+    <None Remove="ClientApp\src\components\counter\Counter.tsx" />
+    <None Remove="ClientApp\src\components\counter\reducer.ts" />
+    <None Remove="ClientApp\src\components\Home.tsx" />
+    <None Remove="ClientApp\src\components\home\Home.tsx" />
+    <None Remove="ClientApp\src\components\index.ts" />
+    <None Remove="ClientApp\src\components\Layout.tsx" />
+    <None Remove="ClientApp\src\components\login\index.tsx" />
+    <None Remove="ClientApp\src\components\login\login.style.ts" />
+    <None Remove="ClientApp\src\components\login\login.tsx" />
+    <None Remove="ClientApp\src\components\NavMenu.tsx" />
+    <None Remove="ClientApp\src\components\registration\index.tsx" />
+    <None Remove="ClientApp\src\components\registration\registration.style.ts" />
+    <None Remove="ClientApp\src\components\registration\registration.tsx" />
+    <None Remove="ClientApp\src\components\store\counter.ts" />
+    <None Remove="ClientApp\src\components\store\Counter.tsx" />
+    <None Remove="ClientApp\src\components\store\index.ts" />
+    <None Remove="ClientApp\src\Content.tsx" />
+    <None Remove="ClientApp\src\core\app\AsyncComponent.style.ts" />
+    <None Remove="ClientApp\src\core\app\authorization\login\index.tsx" />
+    <None Remove="ClientApp\src\core\app\authorization\login\login.style.ts" />
+    <None Remove="ClientApp\src\core\app\authorization\login\login.tsx" />
+    <None Remove="ClientApp\src\core\app\authorization\registration\index.tsx" />
+    <None Remove="ClientApp\src\core\app\authorization\registration\registration.style.ts" />
+    <None Remove="ClientApp\src\core\app\authorization\registration\registration.tsx" />
+    <None Remove="ClientApp\src\core\app\login\index.tsx" />
+    <None Remove="ClientApp\src\core\app\login\login.style.ts" />
+    <None Remove="ClientApp\src\core\app\login\login.tsx" />
+    <None Remove="ClientApp\src\core\app\MyContent.tsx" />
+    <None Remove="ClientApp\src\core\app\MyFooter.tsx" />
+    <None Remove="ClientApp\src\core\app\MyHeader.tsx" />
+    <None Remove="ClientApp\src\core\app\reducer.ts" />
+    <None Remove="ClientApp\src\core\app\reducer.tsx" />
+    <None Remove="ClientApp\src\core\app\registration\index.tsx" />
+    <None Remove="ClientApp\src\core\app\registration\login.tsx" />
+    <None Remove="ClientApp\src\core\app\registration\registration.style.ts" />
+    <None Remove="ClientApp\src\core\app\registration\registration.tsx" />
+    <None Remove="ClientApp\src\core\app\style\MyHeader.style..ts" />
+    <None Remove="ClientApp\src\core\app\style\MyHeader.style.ts" />
+    <None Remove="ClientApp\src\core\app\style\MyLayout.style.1.ts" />
+    <None Remove="ClientApp\src\core\app\style\MyLayout.style.ts" />
+    <None Remove="ClientApp\src\core\AsyncComponent.style.ts" />
+    <None Remove="ClientApp\src\core\AsyncComponent.tsx" />
+    <None Remove="ClientApp\src\core\components\MyContent.tsx" />
+    <None Remove="ClientApp\src\core\components\MyFooter.tsx" />
+    <None Remove="ClientApp\src\core\components\MyHeader.tsx" />
+    <None Remove="ClientApp\src\core\components\style\MyLayout.style.ts" />
+    <None Remove="ClientApp\src\core\MyContent.tsx" />
+    <None Remove="ClientApp\src\core\MyFooter.tsx" />
+    <None Remove="ClientApp\src\core\MyHeader.tsx" />
+    <None Remove="ClientApp\src\core\MyLayout.style.ts" />
+    <None Remove="ClientApp\src\index.ts" />
+    <None Remove="ClientApp\src\Layout.tsx" />
+    <None Remove="ClientApp\src\login\index.tsx" />
+    <None Remove="ClientApp\src\login\login.style.ts" />
+    <None Remove="ClientApp\src\login\login.tsx" />
+    <None Remove="ClientApp\src\MyContent.tsx" />
+    <None Remove="ClientApp\src\MyFooter.tsx" />
+    <None Remove="ClientApp\src\MyHeader.tsx" />
+    <None Remove="ClientApp\src\MyLayout.style.ts" />
+    <None Remove="ClientApp\src\MyLayout.tsx" />
+    <None Remove="ClientApp\src\NavMenu.tsx" />
+    <None Remove="ClientApp\src\reducer.ts" />
+    <None Remove="ClientApp\store\counter.ts" />
+    <None Remove="ClientApp\store\index.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\boot-client.tsx" />
+    <TypeScriptCompile Include="ClientApp\boot-server.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\Comp2.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\Counter.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\Home.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\Layout.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\NavMenu.tsx" />
+    <TypeScriptCompile Include="ClientApp\configureStore.ts" />
+    <TypeScriptCompile Include="ClientApp\core\AsyncComponent.tsx" />
+    <TypeScriptCompile Include="ClientApp\routes.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\authorization.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\authorization.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\login\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\login\login.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\login\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\login\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\reducer.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\registration.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\authorization\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\Comp2.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\Comp2\Comp2.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\Counter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\counter\counter.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\counter\Counter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\counter\reducer.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\Home.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\home\Home.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\Layout.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\login\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\login\login.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\login\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\NavMenu.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\registration\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\registration\registration.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\store\counter.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\store\Counter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\store\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\Content.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\AsyncComponent.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\authorization\login\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\authorization\login\login.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\authorization\login\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\authorization\registration\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\authorization\registration\registration.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\authorization\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\login\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\login\login.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\login\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\MyContent.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\MyFooter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\MyHeader.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\reducer.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\reducer.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\registration\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\registration\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\registration\registration.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\style\MyHeader.style..ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\style\MyHeader.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\style\MyLayout.style.1.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\style\MyLayout.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\AsyncComponent.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\AsyncComponent.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\components\MyContent.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\components\MyFooter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\components\MyHeader.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\components\style\MyLayout.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\core\MyContent.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\MyFooter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\MyHeader.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\MyLayout.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\Layout.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\login\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\login\login.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\login\login.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\MyContent.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\MyFooter.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\MyHeader.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\MyLayout.style.ts" />
+    <TypeScriptCompile Include="ClientApp\src\MyLayout.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\NavMenu.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\reducer.ts" />
+    <TypeScriptCompile Include="ClientApp\store\counter.ts" />
+    <TypeScriptCompile Include="ClientApp\store\index.ts" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

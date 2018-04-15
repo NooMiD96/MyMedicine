@@ -22,7 +22,12 @@ module.exports = (env) => {
         //https://webpack.js.org/configuration/resolve/#resolve-extensions
         //can import files without extansions
         resolve: {
-            extensions: ['.js', '.jsx', '.ts', '.tsx']
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            alias: {
+                core: path.resolve(__dirname, 'ClientApp','src','core'),
+                components: path.resolve(__dirname, 'ClientApp','src','components'),
+                src: path.resolve(__dirname, 'ClientApp','src')
+            }
         },
         //https://webpack.js.org/configuration/module/
         module: {
@@ -41,6 +46,7 @@ module.exports = (env) => {
                 async: true,
             }),
             new CheckerPlugin(),
+            new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, require.resolve('node-noop')),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': isDevBuild 
                     ? '"development"' 

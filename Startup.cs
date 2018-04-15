@@ -7,25 +7,44 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyMedicine.Context.Identity;
+using MyMedicine.Context.Medicine;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MyMedicine
 {
-    public class Startup
+    public partial class Startup
     {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddDbContext<MedicineContext>(options => {
+            //    options.UseSqlServer(Configuration.GetConnectionString("MyMedicineDataBase"));
+            //});
+            services.AddDbContext<IdentityContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("MyMedicineIdentityDataBase"));
+            });
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options => {
+                options.Password.RequiredLength = 1;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+            })
+                .AddEntityFrameworkStores<IdentityContext>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            MyServices.InitIdentityDataBase(serviceProvider, Configuration);
+
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())

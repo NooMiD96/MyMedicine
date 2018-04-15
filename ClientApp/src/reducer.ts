@@ -1,15 +1,18 @@
-import * as Counter from './Counter';
+import * as UserState from 'components/authorization/reducer';
+import * as AppState from "./core/app/reducer";
 
 // The top-level state object
 export interface ApplicationState {
-    counter: Counter.CounterState;
+    user: UserState.UserState,
+    app: AppState.AppState
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
 // the reducer with the matching name. It's important that the names match exactly, and that the reducer
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
-    counter: Counter.reducer,
+    user: UserState.reducer,
+    app: AppState.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

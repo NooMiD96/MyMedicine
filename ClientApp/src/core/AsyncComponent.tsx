@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from "react-router-dom";
+import { Spin } from 'antd';
+import AsyncWrapper from "./AsyncComponent.style";
 
 export function AsyncComponent(ComponentLoader: any){
     class AsyncComponent extends React.Component<RouteComponentProps<{}>, {Component: any}>{
@@ -20,11 +22,13 @@ export function AsyncComponent(ComponentLoader: any){
         render(){
             var Component = this.state.Component;
 
-            return <div>
-                {
-                    (Component && <Component routeProps />) || <p>Loading...</p>
-                }
-            </div>
+            return <AsyncWrapper>
+                <Spin className='spinner' spinning={Component ? false : true} tip="Loading...">
+                    {
+                        Component && <Component routeProps />
+                    }
+                </Spin>
+            </AsyncWrapper>
         }
     }
 

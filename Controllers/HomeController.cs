@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using MyMedicine.Controllers;
 
 namespace MyMedicine.Controllers
 {
@@ -11,6 +13,8 @@ namespace MyMedicine.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["Mobile"] = Utils.IsMobileBrowser(Request.Headers["User-Agent"].ToString());
+
             return View();
         }
 
