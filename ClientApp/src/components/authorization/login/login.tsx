@@ -1,23 +1,23 @@
 import * as React from 'react';
-import { Modal, Button, Alert, Icon, Input } from 'antd';
+import { Modal, Button, Alert, Icon, Input, Form } from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
 import StyleWrapper from "./login.style";
+const FormItem = Form.Item;
 
-type LoginProps = {
+interface LoginProps extends FormComponentProps {
     isMobile: boolean,
     Pending: boolean,
     ErrorInner: string,
     LoginRequest: (un: string, pw: string) => void,
     CleanErrorInner: () => void
-};
-
-type LoginState = {
-    visible: boolean,
-    UserName: string,
-    Password: string,
-    Warning: string
 }
 
-export class Login extends React.Component<LoginProps, LoginState> {
+interface LoginState {
+    visible: boolean,
+    loading: boolean
+}
+
+class LoginComponent extends React.Component<LoginProps, LoginState> {
     constructor(props: any) {
         super(props);
         this.showModal = this.showModal.bind(this);
@@ -26,90 +26,64 @@ export class Login extends React.Component<LoginProps, LoginState> {
 
         this.state = {
             visible: false,
-            UserName: '',
-            Password: '',
-            Warning: ''
+            loading: false
         }
     }
+
+    componentDidUpdate(prevProps: LoginProps) {
+        if (prevProps.Pending && !this.props.Pending) {
+            this.setState({
+                loading: false
+            })
+        }
+    }
+
+    hasErrors = (fieldsError: any): boolean => Object.keys(fieldsError).some(field => fieldsError[field])
 
     showModal = () => this.setState({
         visible: true,
     });
 
     handleOk = (e: any) => {
-        const UserName = this.state.UserName.trim();
-        const Password = this.state.Password.trim();
-
-        if (UserName && Password) {
-            this.props.LoginRequest(UserName, Password);
-
-            this.setState({
-                Password: ''
-            });
-        } else {
-            if (!UserName && !Password) {
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
                 this.setState({
-                    Password: '',
-                    Warning: 'Please enter user name and password'
+                    loading: true
                 });
-            } else if (!UserName) {
-                this.setState({
-                    Password: '',
-                    Warning: 'Please enter user'
-                });
-            } else {
-                this.setState({
-                    Password: '',
-                    Warning: 'Please enter password'
-                });
+                this.props.LoginRequest(values.userName, values.password);
             }
-        }
+        });
     }
 
     handleCancel = (e: any) => {
+        e.preventDefault();
         this.setState({
+            loading: false,
             visible: false,
-            UserName: '',
-            Password: '',
-            Warning: ''
         });
-
-        if(this.props.ErrorInner)
+        this.props.form.resetFields();
+        if (this.props.ErrorInner)
             this.props.CleanErrorInner();
     }
 
-    onChangeUserName = (e: any) => this.setState({
-        ...this.state,
-        UserName: e.target.value
-    });
-
-    onChangePassword = (e: any) => this.setState({
-        ...this.state,
-        Password: e.target.value
-    });
-
     public render() {
-        const { UserName, Password, Warning } = this.state;
+        const { isFieldTouched, getFieldError, getFieldDecorator, getFieldsError } = this.props.form;
         const { ErrorInner, CleanErrorInner } = this.props;
-        var alert;
+        
+        const userNameError = isFieldTouched('userName') && getFieldError('userName');
+        const passwordError = isFieldTouched('password') && getFieldError('password');
 
-        if (ErrorInner || Warning) {
-            if (ErrorInner) {
-                alert = <Alert
-                    message='Error'
-                    description={ErrorInner}
-                    type='error'
-                    showIcon
-                    onClose={CleanErrorInner.bind(this)}
-                />
-            } else {
-                alert = <Alert
-                    message='Warning'
-                    description={Warning}
-                    type='warning'
-                />
-            }
-        }
+        const formItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 6 },
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 18 },
+            },
+        };
 
         return <StyleWrapper>
             <Button onClick={this.showModal} icon="login" ghost>{this.props.isMobile ? null : 'Login'}</Button>
@@ -118,28 +92,58 @@ export class Login extends React.Component<LoginProps, LoginState> {
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
+                footer={[
+                    <Button key="back" onClick={this.handleCancel}>Return</Button>,
+                    <Button key="submit" type="primary" loading={this.state.loading} onClick={this.handleOk} disabled={this.hasErrors(getFieldsError())}>
+                        Log in
+                    </Button>
+                ]}
             >
-                {alert}
-                <Input
-                    placeholder="Enter your username"
-                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    value={UserName}
-                    onChange={this.onChangeUserName}
-                    className='input-user-name'
-                    onPressEnter={this.handleOk}
-                    style={{ marginTop: '10px' }}
-                />
-                <Input
-                    type='password'
-                    placeholder="Enter your password"
-                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    value={Password}
-                    onChange={this.onChangePassword}
-                    className='input-pass-word'
-                    onPressEnter={this.handleOk}
-                    style={{ marginTop: '20px' }}
-                />
+                {
+                    ErrorInner && <Alert
+                        message='Error'
+                        description={ErrorInner}
+                        type='error'
+                        showIcon
+                        closable
+                        onClose={CleanErrorInner.bind(this)}
+                        style={{ marginBottom: '10px' }}
+                    />
+                }
+                <FormItem
+                    {...formItemLayout}
+                    validateStatus={userNameError ? 'error' : undefined}
+                    label={'User Name'}
+                >
+                    {getFieldDecorator('userName', {
+                        rules: [{ required: true, message: 'Please input your username!' }],
+                    })(
+                        <Input
+                            placeholder="Enter your username"
+                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            onPressEnter={this.handleOk}
+                        />
+                    )}
+                </FormItem>
+                <FormItem
+                    {...formItemLayout}
+                    validateStatus={passwordError ? 'error' : undefined}
+                    label={'Password'}
+                >
+                    {getFieldDecorator('password', {
+                        rules: [{ required: true, message: 'Please input your Password!' }],
+                    })(
+                        <Input
+                            type='password'
+                            placeholder="Enter your password"
+                            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            onPressEnter={this.handleOk}
+                        />
+                    )}
+                </FormItem>
             </Modal>
         </StyleWrapper>;
     }
 }
+
+export const Login = Form.create({})(LoginComponent)

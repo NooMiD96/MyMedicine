@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { Modal, Button, Alert, Icon, Input } from 'antd';
+import { Modal, Button, Alert, Icon, Input, Form } from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
 import StyleWrapper from "./registration.style";
+const FormItem = Form.Item;
 
-type LoginProps = {
+interface LoginProps extends FormComponentProps {
     isMobile: boolean,
     Pending: boolean,
     ErrorInner: string,
@@ -10,15 +12,13 @@ type LoginProps = {
     CleanErrorInner: () => void
 };
 
-type LoginState = {
+interface LoginState {
     visible: boolean,
-    UserName: string,
-    Email: string,
-    Password: string,
-    Warning: string
+    loading: boolean,
+    confirmDirty: boolean
 }
 
-export class Registration extends React.Component<LoginProps, LoginState> {
+class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     constructor(props: any) {
         super(props);
         this.showModal = this.showModal.bind(this);
@@ -27,98 +27,91 @@ export class Registration extends React.Component<LoginProps, LoginState> {
 
         this.state = {
             visible: false,
-            UserName: '',
-            Email: '',
-            Password: '',
-            Warning: ''
+            loading: false,
+            confirmDirty: false
         }
     }
+
+    componentDidUpdate(prevProps: LoginProps) {
+        if (prevProps.Pending && !this.props.Pending) {
+            this.setState({
+                loading: false
+            })
+        }
+    }
+
+    hasErrors = (fieldsError: any): boolean => Object.keys(fieldsError).some(field => fieldsError[field])
 
     showModal = () => this.setState({
         visible: true,
     });
 
-    handleOk = (e: any) => {
-        const UserName = this.state.UserName.trim();
-        const Email = this.state.Email.trim();
-        const Password = this.state.Password.trim();
+    handleConfirmBlur = (e: any) => {
+        debugger
+        e.preventDefault();
+        const value = e.target.value;
+        this.setState({ confirmDirty: this.state.confirmDirty || !!value });
+    }
 
-        if (UserName && Email && Password) {
-            this.props.RegistrationRequest(UserName, Email, Password);
-
-            this.setState({
-                Password: ''
-            });
+    compareToFirstPassword = (rule: any, value: any, callback: any) => {
+        const form = this.props.form;
+        if (value && value !== form.getFieldValue('password')) {
+            callback('Two passwords that you enter is inconsistent!');
         } else {
-            if (!UserName && !Email && !Password) {
-                this.setState({
-                    Password: '',
-                    Warning: 'Please enter user name, email and password'
-                });
-            } else if (!UserName) {
-                this.setState({
-                    Password: '',
-                    Warning: 'Please enter user'
-                });
-            } else {
-                this.setState({
-                    Password: '',
-                    Warning: 'Please enter password'
-                });
-            }
+            callback();
         }
     }
 
-    handleCancel = (e: any) => {
-        this.setState({
-            visible: false,
-            UserName: '',
-            Email: '',
-            Password: '',
-            Warning: ''
-        });
+    validateToNextPassword = (rule: any, value: any, callback: any) => {
+        const form = this.props.form;
+        if (value && this.state.confirmDirty) {
+            form.validateFields(['confirm'], { force: true }, () => {});
+        }
+        callback();
+    }
 
+    handleOk = (e: any) => {
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                this.setState({
+                    loading: true
+                });
+                this.props.RegistrationRequest(values.userName, values.email, values.password);
+            }
+        });
+    }
+
+    handleCancel = (e: any) => {
+        e.preventDefault();
+        this.setState({
+            loading: false,
+            visible: false,
+        });
+        this.props.form.resetFields();
         if (this.props.ErrorInner)
             this.props.CleanErrorInner();
     }
 
-    onChangeUserName = (e: any) => this.setState({
-        ...this.state,
-        UserName: e.target.value
-    });
-
-    onChangeEmail = (e: any) => this.setState({
-        ...this.state,
-        Email: e.target.value
-    });
-
-    onChangePassword = (e: any) => this.setState({
-        ...this.state,
-        Password: e.target.value
-    });
-
     public render() {
-        const { UserName, Email, Password, Warning } = this.state;
+        const { isFieldTouched, getFieldError, getFieldDecorator, getFieldsError } = this.props.form;
         const { ErrorInner, CleanErrorInner } = this.props;
-        var alert;
 
-        if (ErrorInner || Warning) {
-            if (ErrorInner) {
-                alert = <Alert
-                    message='Error'
-                    description={ErrorInner}
-                    type='error'
-                    showIcon
-                    onClose={CleanErrorInner.bind(this)}
-                />
-            } else {
-                alert = <Alert
-                    message='Warning'
-                    description={Warning}
-                    type='warning'
-                />
-            }
-        }
+        const userNameError = isFieldTouched('userName') && getFieldError('userName');
+        const emailError = isFieldTouched('email') && getFieldError('email');
+        const passwordError = isFieldTouched('password') && getFieldError('password');
+        const confirmError = isFieldTouched('confirm') && getFieldError('confirm');
+
+        const formItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 8 },
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 16 },
+            },
+        };
 
         return <StyleWrapper>
             <Button onClick={this.showModal} icon="idcard" ghost>{this.props.isMobile ? null : 'Registration'}</Button>
@@ -127,37 +120,110 @@ export class Registration extends React.Component<LoginProps, LoginState> {
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
+                footer={[
+                    <Button key="back" onClick={this.handleCancel}>Return</Button>,
+                    <Button key="submit" type="primary" loading={this.state.loading} onClick={this.handleOk} disabled={this.hasErrors(getFieldsError())}>
+                        Log in
+                    </Button>
+                ]}
             >
-                {alert}
-                <Input
-                    placeholder="Enter your username"
-                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    value={UserName}
-                    onChange={this.onChangeUserName}
-                    className='input-user-name'
-                    onPressEnter={this.handleOk}
-                    style={{ marginTop: '10px' }}
-                />
-                <Input
-                    placeholder="Enter your email"
-                    prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    value={Email}
-                    onChange={this.onChangeEmail}
-                    className='input-e-mail'
-                    onPressEnter={this.handleOk}
-                    style={{ marginTop: '20px' }}
-                />
-                <Input
-                    type='password'
-                    placeholder="Enter your password"
-                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    value={Password}
-                    onChange={this.onChangePassword}
-                    className='input-pass-word'
-                    onPressEnter={this.handleOk}
-                    style={{ marginTop: '20px' }}
-                />
+                {
+                    ErrorInner && <Alert
+                        message='Error'
+                        description={ErrorInner}
+                        type='error'
+                        showIcon
+                        closable
+                        onClose={CleanErrorInner.bind(this)}
+                        style={{ marginBottom: '10px' }}
+                    />
+                }
+
+                <FormItem
+                    {...formItemLayout}
+                    validateStatus={userNameError ? 'error' : 'success'}
+                    label={'User Name'}
+                >
+                    {getFieldDecorator('userName', {
+                        rules: [{ required: true, message: 'Please input your username!' }],
+                    })(
+                        <Input
+                            placeholder="Enter your username"
+                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            onPressEnter={this.handleOk}
+                        />
+                    )}
+                </FormItem>
+
+                <FormItem
+                    {...formItemLayout}
+                    validateStatus={emailError ? 'error' : 'success'}
+                    label={'E-mail'}
+                >
+                    {getFieldDecorator('email', {
+                        rules: [{
+                            type: 'email', message: 'The input is not valid E-mail!',
+                        }, {
+                            required: true, message: 'Please input your Password!'
+                        }]
+                    })(
+                        <Input
+                            type='email'
+                            placeholder="Enter your e-mail"
+                            prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            onPressEnter={this.handleOk}
+                        />
+                    )}
+                </FormItem>
+
+                <FormItem
+                    {...formItemLayout}
+                    validateStatus={passwordError ? 'error' : 'success'}
+                    label={'Password'}
+                >
+                    {getFieldDecorator('password', {
+                        rules: [{
+                            required: true, message: 'Please input your Password!'
+                        },{
+                            min: 8, message: 'Password must have min 8 symbols!'
+                        },{
+                            validator: this.validateToNextPassword,
+                        }],
+                    })(
+                        <Input
+                            type='password'
+                            placeholder="Enter your password"
+                            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            onPressEnter={this.handleOk}
+                        />
+                    )}
+                </FormItem>
+
+                <FormItem
+                    {...formItemLayout}
+                    validateStatus={confirmError ? 'error' : 'success'}
+                    label="Confirm Password"
+                >
+                    {getFieldDecorator('confirm', {
+                        rules: [{
+                            required: true, message: 'Please confirm your password!',
+                        }, {
+                            validator: this.compareToFirstPassword,
+                        }],
+                    })(
+                        <Input 
+                            type="password"
+                            placeholder="Confirm your password"
+                            onBlur={this.handleConfirmBlur}
+                            prefix={<Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            onPressEnter={this.handleOk}
+                        />
+                    )}
+                </FormItem>
+
             </Modal>
         </StyleWrapper>;
     }
 }
+
+export const Registration = Form.create({})(RegistrationComponent)
