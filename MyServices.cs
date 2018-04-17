@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using MyMedicine.Context.Identity;
 using Microsoft.EntityFrameworkCore;
+using MyMedicine.Context.Medicine;
 
 namespace MyMedicine
 {
@@ -63,6 +64,24 @@ namespace MyMedicine
                     RoleManager.Dispose();
                 if(UserManager != null)
                     UserManager.Dispose();
+                if(identityContext != null)
+                    identityContext.Dispose();
+            }
+        }
+
+        public static void InitIMedicineDataBase(IServiceProvider serviceProvider, IConfiguration Configuration)
+        {
+            var medicineContext = serviceProvider.GetRequiredService<MedicineContext>();
+            try
+            {
+                medicineContext.Database.Migrate();
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"info: Trouble with first connection to identity database:\n{ex.Message}");
+            } finally
+            {
+                if(medicineContext != null)
+                    medicineContext.Dispose();
             }
         }
     }

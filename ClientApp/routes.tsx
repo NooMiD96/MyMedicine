@@ -4,7 +4,9 @@ import MyLayout from './src/MyLayout';
 import { AsyncComponent } from 'core/AsyncComponent';
 
 export const routes = <MyLayout>
-    <Route exact path='/' component={ AsyncComponent(() => import(/* webpackChunkName: "Home" */ './src/components/home/Home')) } />
-    <Route exact path='/Comp2' component={ AsyncComponent(() => import(/* webpackChunkName: "Comp2" */ './src/components/comp2/Comp2')) } />
-    <Route exact path='/Chat' component={ AsyncComponent(() => import(/* webpackChunkName: "Chat" */ './src/components/chat')) } />
+    <Route exact path='/' component={ AsyncComponent(() => import(/* webpackChunkName: "Home" */ 'components/home')) } />
+    <Route exact path='/Visitation' component={ AsyncComponent(() => import(/* webpackChunkName: "Visitation" */ 'components/visitation')) } />
+    <Route exact path='/SearchDisease' component={ AsyncComponent(() => import(/* webpackChunkName: "SearchDisease" */ 'components/searchDisease')) } />
+    <Route exact path='/DiseaseList' component={ AsyncComponent(() => import(/* webpackChunkName: "DiseaseList" */ 'components/diseaseList')) } />
+    <Route exact path='/Chat' component={ AsyncComponent(() => import(/* webpackChunkName: "Chat" */ 'components/chat')) } />
 </MyLayout>;

@@ -96,6 +96,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     public render() {
         const { isFieldTouched, getFieldError, getFieldDecorator, getFieldsError } = this.props.form;
         const { ErrorInner, CleanErrorInner } = this.props;
+        const minPasswordLength = 3;
 
         const userNameError = isFieldTouched('userName') && getFieldError('userName');
         const emailError = isFieldTouched('email') && getFieldError('email');
@@ -185,7 +186,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                         rules: [{
                             required: true, message: 'Please input your Password!'
                         },{
-                            min: 8, message: 'Password must have min 8 symbols!'
+                            min: minPasswordLength, message: `Password must have min ${minPasswordLength} symbols!`
                         },{
                             validator: this.validateToNextPassword,
                         }],

@@ -25,14 +25,17 @@ namespace MyMedicine
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<MedicineContext>(options => {
-            //    options.UseSqlServer(Configuration.GetConnectionString("MyMedicineDataBase"));
-            //});
-            services.AddDbContext<IdentityContext>(options => {
+            services.AddDbContext<MedicineContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("MyMedicineDataBase"));
+            });
+            services.AddDbContext<IdentityContext>(options =>
+            {
                 options.UseSqlServer(Configuration.GetConnectionString("MyMedicineIdentityDataBase"));
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options => {
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
                 options.Password.RequiredLength = 1;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireLowercase = false;
@@ -48,7 +51,7 @@ namespace MyMedicine
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            if(env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions

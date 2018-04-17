@@ -17,13 +17,19 @@ class MyHeader extends React.Component<HeaderProps, {}> {
         const { IsMobile, Header } = this.props;
         const NavLinks = [
             <Menu.Item key="0" className='logo'>
-                <NavLink exact to={'/'} activeClassName='active'>MyMedicine</NavLink>
+                <NavLink exact to={'/'}>MyMedicine</NavLink>
             </Menu.Item>,
             <Menu.Item key="1">
-                <NavLink exact to={'/Comp2'} activeClassName='active'>Comp2</NavLink>
+                <NavLink exact to={'/Visitation'}>Visitation</NavLink>
             </Menu.Item>,
             <Menu.Item key="2">
-                <NavLink exact to={'/Chat'} activeClassName='active'>Chat</NavLink>
+                <NavLink exact to={'/SearchDisease'}>Search Disease</NavLink>
+            </Menu.Item>,
+            <Menu.Item key="3">
+                <NavLink exact to={'/DiseaseList'}>Disease List</NavLink>
+            </Menu.Item>,
+            <Menu.Item key="4">
+                <NavLink exact to={'/Chat'}>Chat</NavLink>
             </Menu.Item>
         ];
 
