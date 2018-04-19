@@ -103,6 +103,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
         if (props.UserName) {
             inputContent = <Input
                 addonBefore={this.props.UserName}
+                addonAfter={`Online: ${props.countOfConnections}`}
                 placeholder="Enter your message"
                 onChange={this.onChangeMessage}
                 onPressEnter={this.onPressEnterHandler}

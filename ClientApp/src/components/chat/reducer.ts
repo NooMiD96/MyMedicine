@@ -5,7 +5,8 @@ import { AppThunkAction } from "src/reducer";
 // ----------------- STATE -----------------
 export interface ChatState {
     socket?: WebSocket,
-    messages: Message[]
+    messages: Message[],
+    countOfConnections: number
 }
 export interface Message {
     UserName: string,
@@ -28,14 +29,18 @@ interface SendMessageAction {
 }
 interface GetMessageAction {
     type: 'GET_MESSAGE',
-    message: Message,
+    message: Message
+}
+interface SetCountOfConnectionsAction {
+    type: 'SET_COUNT_OF_CONNECTIONS',
+    countOfConnections: number
 }
 
-type KnownAction = SubscribeToChatAction | UnsubscribeToChatAction | GetMessageAction;
+type KnownAction = SubscribeToChatAction | UnsubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction;
 
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
-    SubscribeToChat: (): AppThunkAction<SubscribeToChatAction | GetMessageAction> => (dispatch, getState) => {
+    SubscribeToChat: (): AppThunkAction<SubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction> => (dispatch, getState) => {
         var hostUri = "http://localhost:50000/";
         if (document.baseURI) {
             hostUri = document.baseURI;
@@ -45,20 +50,23 @@ export const actionCreators = {
 
         socket.onmessage = (event) => {
             try {
-                var message = JSON.parse(event.data) as Message;
-                message.Date = new Date(message.Date);
-                dispatch({ type: 'GET_MESSAGE', message });
+                var data = JSON.parse(event.data) as {message: Message, countOfConnections: number};
+                if(data.message){
+                    data.message.Date = new Date(data.message.Date);
+                    dispatch({ type: 'GET_MESSAGE', message: data.message });
+                }
+                if(data.countOfConnections){
+                    dispatch({ type: 'SET_COUNT_OF_CONNECTIONS', countOfConnections: data.countOfConnections });
+                }
             } catch (err) {
-                console.log('WebSocket Error :-S in Chat', err);
+                console.log('WebSocket Error Parse :-S in Chat', err);
             }
         };
         socket.onopen = (event) => {
             socket.send("GetMessages");
         };
         socket.onclose = function (event) {
-            if (event.wasClean) {
-                console.log('Соединение закрыто чисто');
-            } else {
+            if (!event.wasClean) {
                 console.log('Обрыв соединения');
             }
             console.log('Код: ' + event.code + ' причина: ' + event.reason);
@@ -80,7 +88,7 @@ export const actionCreators = {
 };
 
 // ---------------- REDUCER ----------------
-const unloadedState: ChatState = { messages: [] };
+const unloadedState: ChatState = { messages: [], countOfConnections: 0 };
 
 export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownAction) => {
     switch (action.type) {
@@ -104,10 +112,15 @@ export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownActio
             } else {
                 messages = [...state.messages, action.message]
             }
-
             return {
                 ...state,
                 messages
+            }
+
+        case 'SET_COUNT_OF_CONNECTIONS':
+            return {
+                ...state,
+                countOfConnections: action.countOfConnections
             }
 
         default:

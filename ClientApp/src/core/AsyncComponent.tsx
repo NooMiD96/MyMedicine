@@ -25,7 +25,7 @@ export function AsyncComponent(ComponentLoader: any){
             return <AsyncWrapper>
                 <Spin className='spinner' spinning={Component ? false : true} tip="Loading...">
                     {
-                        Component && <Component routeProps />
+                        Component && <Component {...this.props} />
                     }
                 </Spin>
             </AsyncWrapper>

@@ -35,9 +35,17 @@ namespace MyMedicine.Middleware
             }
         }
 
-        public static Task SendStringAsync(this WebSocket socket, MessageModel message, CancellationToken ct = default(CancellationToken))
+        public static Task SendStringAsync(this WebSocket socket, MessageModel message, int countOfConnections, CancellationToken ct = default(CancellationToken)) =>
+            SendStringAsync(socket, JsonConvert.SerializeObject(new { message, countOfConnections }), ct);
+
+        public static Task SendStringAsync(this WebSocket socket, int countOfConnections, CancellationToken ct = default(CancellationToken)) =>
+            SendStringAsync(socket, JsonConvert.SerializeObject(new { countOfConnections }), ct);
+
+        public static Task SendStringAsync(this WebSocket socket, MessageModel message, CancellationToken ct = default(CancellationToken)) =>
+            SendStringAsync(socket, JsonConvert.SerializeObject(new { message }), ct);
+
+        public static Task SendStringAsync(WebSocket socket, string jsonString, CancellationToken ct)
         {
-            var jsonString = JsonConvert.SerializeObject(message);
             var buffer = Encoding.UTF8.GetBytes(jsonString);
             var segment = new ArraySegment<byte>(buffer);
             return socket.SendAsync(segment, WebSocketMessageType.Text, true, ct);

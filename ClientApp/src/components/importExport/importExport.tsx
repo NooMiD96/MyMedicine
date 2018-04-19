@@ -72,7 +72,7 @@ export class ImportExport extends React.Component<ImportExportProps, LoginState>
         }
 
         return <ImportExportWrapper>
-            <Button onClick={this.showModal} icon="idcard" ghost>{this.props.isMobile ? null : 'Export/Import'}</Button>
+            <Button onClick={this.showModal} icon="save" ghost>{this.props.isMobile ? null : 'Export/Import'}</Button>
             <Modal
                 title="Export And Import"
                 visible={this.state.visible}

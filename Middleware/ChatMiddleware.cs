@@ -18,11 +18,13 @@ namespace MyMedicine.Middleware
     {
         private static ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>();
         private static ConcurrentQueue<MessageModel> messages = new ConcurrentQueue<MessageModel>();
+        private static DateTime DateLastUpdate = DateTime.UtcNow;
         private readonly RequestDelegate _next;
 
         public ChatMiddleware(RequestDelegate next)
         {
             _next = next;
+            Task.Factory.StartNew(CounterUpdater);
         }
 
         public async Task Invoke(HttpContext context)
@@ -71,11 +73,11 @@ namespace MyMedicine.Middleware
                         if(savedMessages.Length > 0)
                             foreach(var ms in savedMessages)
                                 await _sockets[socketId].SendStringAsync(ms, ct);
+                        await _sockets[socketId].SendStringAsync(_sockets.Count, ct);
                         continue;
                     } else
                     {
                         message = JsonConvert.DeserializeObject<MessageModel>(response);
-
                         messages.AddNewMessage(message);
                     }
                 } catch
@@ -87,7 +89,7 @@ namespace MyMedicine.Middleware
                 {
                     if(socket.Value.State != WebSocketState.Open)
                         continue;
-                    await socket.Value.SendStringAsync(message, ct);
+                    await socket.Value.SendStringAsync(message, _sockets.Count, ct);
                 }
             }
 
@@ -98,6 +100,25 @@ namespace MyMedicine.Middleware
 
             currentSocket.Dispose();
             Console.WriteLine($"WebSocket disconnect from chat: {socketId}");
+        }
+
+        private async void CounterUpdater()
+        {
+            while(true)
+            {
+                Thread.Sleep(60000);
+
+                if(!_sockets.IsEmpty)
+                {
+                    foreach(var socket in _sockets)
+                    {
+                        if(socket.Value.State != WebSocketState.Open)
+                            continue;
+                        await socket.Value.SendStringAsync(_sockets.Count);
+                    }
+                }
+            }
+
         }
     }
 }
