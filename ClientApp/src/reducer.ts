@@ -1,10 +1,12 @@
 import * as UserState from 'components/authorization/reducer';
 import * as ChatState from 'components/chat/reducer';
+import * as ImportExportState from 'components/importExport/reducer';
 import * as AppState from "./core/app/reducer";
 
 // The top-level state object
 export interface ApplicationState {
     user: UserState.UserState,
+    importExport: ImportExportState.ImportExportState,
     chat: ChatState.ChatState,
     app: AppState.AppState
 }
@@ -14,6 +16,7 @@ export interface ApplicationState {
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
     user: UserState.reducer,
+    importExport: ImportExportState.reducer,
     chat: ChatState.reducer,
     app: AppState.reducer
 };

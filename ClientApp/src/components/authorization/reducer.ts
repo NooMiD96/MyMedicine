@@ -54,9 +54,9 @@ interface CleanErrorInnerAction {
 }
 
 type KnownAction = GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction
-                    | LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction
-                    | RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction
-                    | LogOutAction | CleanErrorInnerAction;
+    | LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction
+    | RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction
+    | LogOutAction | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
 interface ResponseType { Error: string, UserName: string, UserRole: string };
@@ -75,13 +75,16 @@ export const actionCreators = {
                 throw new Error('');
             dispatch({ type: 'GET_USER_INFO_SUCCESS', UserName: data.UserName, UserRole: data.UserRole });
         }).catch((err: Error) => {
-            if (!err.message) return;
+            if (!err.message) {
+                dispatch({ type: 'GET_USER_INFO_SUCCESS', UserName: '', UserRole: '' });
+                return;
+            }
             console.log('Error :-S in user\n', err.message);
-            dispatch({ type: 'GET_USER_INFO_ERROR', ErrorInner: err.message })
+            dispatch({ type: 'GET_USER_INFO_ERROR', ErrorInner: err.message });
         });
 
         addTask(fetchTask);
-        dispatch({ type: 'GET_USER_INFO_REQUEST' })
+        dispatch({ type: 'GET_USER_INFO_REQUEST' });
     },
     LoginRequest: (un: string, pw: string): AppThunkAction<LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction> => (dispatch, getState) => {
         let fetchTask = fetch(`/api/authorization/signin`, {
@@ -125,7 +128,7 @@ export const actionCreators = {
         });
 
         addTask(fetchTask);
-        dispatch({ type: 'REGISTRATION_USER_REQUEST' })
+        dispatch({ type: 'REGISTRATION_USER_REQUEST' });
     },
     LogOut: (): AppThunkAction<LogOutAction> => (dispatch, getState) => {
         let fetchTask = fetch(`/api/authorization/signout`, {
@@ -140,7 +143,7 @@ export const actionCreators = {
         });
 
         addTask(fetchTask);
-        dispatch({ type: 'LOG_OUT' })
+        dispatch({ type: 'LOG_OUT' });
     },
     CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };

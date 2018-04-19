@@ -5,6 +5,7 @@ import * as AntdLayout from "antd/lib/layout/layout";
 import { Menu, Icon } from 'antd';
 import StyleWrapper from "./style/MyHeader.style";
 import Authorization from "components/authorization";
+import ImportExport from "components/importExport";
 import * as AppState from "./reducer";
 import { ApplicationState } from "../../reducer";
 
@@ -49,6 +50,7 @@ class MyHeader extends React.Component<HeaderProps, {}> {
                     }
                 </Menu>
                 <Authorization isMobile={IsMobile} />
+                <ImportExport isMobile={IsMobile} />
             </Header>
         </StyleWrapper>;
     }

@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MyMedicine</title>
     <base href="~/" />
-
+    <style>
+        /*hardcode*/
+        @@media (min-width: 768px) {
+            body {
+                min-width: 945px;
+            }
+        }
+    </style>
     <link rel="stylesheet" href="~/dist/site.css" asp-append-version="true" />
 </head>
 <body>
