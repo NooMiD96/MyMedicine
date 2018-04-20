@@ -163,6 +163,7 @@ function mapStateToProps(state: ApplicationState) {
 const mapDispatchToProps = {
     ...ChatState.actionCreators,
 }
+
 export default connect(
     mapStateToProps,
     mapDispatchToProps

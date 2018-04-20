@@ -9,6 +9,7 @@ export default styled.div`
 
     .ant-list-item {
         min-height: 50px;
+        word-wrap: break-word;
     }
 
     .div-avatar {

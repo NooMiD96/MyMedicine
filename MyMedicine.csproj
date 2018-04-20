@@ -76,6 +76,8 @@
     <None Remove="ClientApp\src\components\home\post\home.tsx" />
     <None Remove="ClientApp\src\components\home\post\index.tsx" />
     <None Remove="ClientApp\src\components\home\post\post.tsx" />
+    <None Remove="ClientApp\src\components\home\post\reducer.ts" />
+    <None Remove="ClientApp\src\components\home\reducer.ts" />
     <None Remove="ClientApp\src\components\importExport\authorization.style.ts" />
     <None Remove="ClientApp\src\components\importExport\home.tsx" />
     <None Remove="ClientApp\src\components\importExport\importExport.style.ts" />
@@ -206,6 +208,8 @@
     <TypeScriptCompile Include="ClientApp\src\components\home\post\home.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\post\index.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\post\post.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\home\post\reducer.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\home\reducer.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\importExport\authorization.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\importExport\home.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\importExport\importExport.style.ts" />

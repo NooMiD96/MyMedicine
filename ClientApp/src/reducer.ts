@@ -1,3 +1,4 @@
+import * as PostsState from 'components/home/reducer';
 import * as UserState from 'components/authorization/reducer';
 import * as ChatState from 'components/chat/reducer';
 import * as ImportExportState from 'components/importExport/reducer';
@@ -5,9 +6,10 @@ import * as AppState from "./core/app/reducer";
 
 // The top-level state object
 export interface ApplicationState {
+    posts: PostsState.PostsState,
     user: UserState.UserState,
-    importExport: ImportExportState.ImportExportState,
     chat: ChatState.ChatState,
+    importExport: ImportExportState.ImportExportState,
     app: AppState.AppState
 }
 
@@ -15,9 +17,10 @@ export interface ApplicationState {
 // the reducer with the matching name. It's important that the names match exactly, and that the reducer
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
+    posts: PostsState.reducer,
     user: UserState.reducer,
-    importExport: ImportExportState.reducer,
     chat: ChatState.reducer,
+    importExport: ImportExportState.reducer,
     app: AppState.reducer
 };
 

@@ -26,6 +26,46 @@ export default createServerRenderer(params => {
             store.getState().user.UserName = user.UserName;
             store.getState().user.UserRole = user.UserRole;
         }
+        store.getState().posts.Posts = [
+            {
+                Author: 'Admin',
+                PostId: 0,
+                Header: 'Head',
+                Context: 'Context',
+                Date: new Date(),
+                ImgUrl: 'ImgUrl',
+                LikesCount: 5,
+                CommentsCount: 15
+            }, {
+                Author: 'Admin',
+                PostId: 1,
+                Header: 'Head',
+                Context: 'Context',
+                Date: new Date(),
+                ImgUrl: 'ImgUrl',
+                LikesCount: 5,
+                CommentsCount: 15
+            }, {
+                Author: 'Admin',
+                PostId: 2,
+                Header: 'Head',
+                Context: 'Context',
+                Date: new Date(),
+                ImgUrl: 'ImgUrl',
+                LikesCount: 5,
+                CommentsCount: 15
+            }, {
+                Author: 'Admin',
+                PostId: 3,
+                Header: 'Head',
+                Context: 'Context',
+                Date: new Date(),
+                ImgUrl: 'ImgUrl',
+                LikesCount: 5,
+                CommentsCount: 15
+            },
+        ];
+        store.getState().posts.TotalCount = store.getState().posts.Posts.length;
         // Prepare an instance of the application and perform an inital render that will
         // cause any async tasks (e.g., data access) to begin
         const routerContext: any = {};

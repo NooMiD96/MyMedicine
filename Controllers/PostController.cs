@@ -11,7 +11,7 @@ namespace MyMedicine.Controllers
     public class PostController : Controller
     {
         [HttpGet("[action]")]
-        public string Registration()
+        public string Posts()
         {
             return "Hi!";
         }

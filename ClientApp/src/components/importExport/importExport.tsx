@@ -14,7 +14,6 @@ interface IDispatchProps {
 }
 
 type ImportExportProps =
-    { UserRole: string }
     & ImportExportState.ImportExportState
     & IDispatchProps
     & typeof ImportExportState.actionCreators
@@ -56,8 +55,6 @@ export class ImportExport extends React.Component<ImportExportProps, LoginState>
     }
 
     public render() {
-        if(this.props.UserRole != 'Admin') return <div/>
-
         const importButtonStyle = {
             height: '100%',
             width: '100%',
@@ -110,9 +107,8 @@ export class ImportExport extends React.Component<ImportExportProps, LoginState>
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        UserRole: state.user.UserRole,
         ...state.importExport
-    } as { UserRole: string } & ImportExportState.ImportExportState;
+    } as ImportExportState.ImportExportState;
 }
 
 const mapDispatchToProps = {
