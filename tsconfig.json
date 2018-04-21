@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "baseUrl": "./",
     "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
@@ -18,10 +20,16 @@
     "types": [
       "webpack-env"
     ],
-    "paths":{
-      "core/*": ["./ClientApp/src/core/*"],
-      "components/*": ["./ClientApp/src/components/*"],
-      "src/*": ["./ClientApp/src/*"]
+    "paths": {
+      "core/*": [
+        "ClientApp/src/core/*"
+      ],
+      "components/*": [
+        "ClientApp/src/components/*"
+      ],
+      "src/*": [
+        "ClientApp/src/*"
+      ]
     }
   },
   "awesomeTypescriptLoaderOptions": {

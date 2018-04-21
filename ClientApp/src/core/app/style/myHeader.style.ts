@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from 'styled-components';
 
 export default styled.div`
     .header-menu {
@@ -24,7 +24,7 @@ export default styled.div`
         height: calc(100% - 1px);
 
         &.ant-menu-item-selected {
-            background-color: transparent;   
+            background-color: transparent;
         }
     }
-`
+`;

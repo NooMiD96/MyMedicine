@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export default styled.div`
     .list-container {
@@ -18,7 +18,7 @@ export default styled.div`
 
     .author {
         .ant-list-item-meta-avatar{
-            margin-right: 0px; 
+            margin-right: 0px;
         }
         .ant-list-item-meta {
             flex: none;
@@ -32,4 +32,4 @@ export default styled.div`
             width: calc(100% - 50px);
         }
     }
-`
+`;

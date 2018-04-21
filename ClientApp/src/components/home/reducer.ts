@@ -1,68 +1,74 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
-import { AppThunkAction } from "src/reducer";
-import { message } from "antd";
+import { AppThunkAction } from 'src/reducer';
 // ----------------- STATE -----------------
 export interface PostsState {
-    Posts: Post[],
-    TotalCount: number,
-    Pending: boolean,
+    Posts: Post[];
+    TotalCount: number;
+    Pending: boolean;
 
 }
 export interface Post {
-    PostId: number,
-    Author: string,
-    Header: string,
-    Context: string,
-    Date: Date,
-    ImgUrl?: string
-    LikesCount: number,
-    CommentsCount: number
+    PostId: number;
+    Author: string;
+    Header: string;
+    Context: string;
+    Date: Date;
+    ImgUrl?: string;
+    LikesCount: number;
+    CommentsCount: number;
 }
 // ----------------- ACTIONS -----------------
 interface PostsRequestAction {
-    type: 'POSTS_REQUEST'
+    type: 'POSTS_REQUEST';
 }
 interface PostsRequestSuccessAction {
-    type: 'POSTS_REQUEST_SUCCESS',
-    Posts: Post[],
+    type: 'POSTS_REQUEST_SUCCESS';
+    Posts: Post[];
+    TotalCount: number;
 }
 interface PostsRequestErrorAction {
-    type: 'POSTS_REQUEST_ERROR',
-    ErrorInner: string
+    type: 'POSTS_REQUEST_ERROR';
+    ErrorInner: string;
 }
 
 interface CleanErrorInnerAction {
-    type: 'CLEAN_ERROR_INNER'
+    type: 'CLEAN_ERROR_INNER';
 }
 
 type KnownAction = PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction
     | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
-interface ResponseType { Error: string, Posts: Post[], };
+interface ResponseType { Error: string; Posts: Post[]; TotalCount: number; }
 
 export const actionCreators = {
-    ImportFile: (e: any): AppThunkAction<PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/importexport/posts`, {
+    getPosts: (page: number, pageSize: number): AppThunkAction<PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction> => (dispatch) => {
+        debugger;
+        const fetchTask = fetch(`/api/post/getposts?page=${page}&pageSize=${pageSize}`, {
             method: 'GET'
         }).then(response => {
-            if (response.status !== 200) throw new Error(response.statusText);
+            debugger;
+            if (response.status !== 200) {
+                throw new Error(response.statusText);
+            }
             return response.json();
         }).then((data: ResponseType) => {
-            if(data.Error) {
-                throw new Error('Some trouble when getting posts.' + data.Error);
+            debugger;
+            if (data.Error) {
+                throw new Error('Some trouble when getting posts.\n' + data.Error);
             }
-            dispatch({ type: 'POSTS_REQUEST_SUCCESS', Posts: data.Posts });
+            data.Posts.forEach(val => val.Date = new Date(val.Date));
+            dispatch({ type: 'POSTS_REQUEST_SUCCESS', Posts: data.Posts, TotalCount: data.TotalCount });
         }).catch((err: Error) => {
             console.log('Error :-S in user\n', err.message);
-            dispatch({ type: 'POSTS_REQUEST_ERROR', ErrorInner: err.message })
+            dispatch({ type: 'POSTS_REQUEST_ERROR', ErrorInner: err.message });
         });
 
         addTask(fetchTask);
         dispatch({ type: 'POSTS_REQUEST' });
     },
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
 };
 
 // ---------------- REDUCER ----------------
@@ -74,13 +80,14 @@ export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAct
             return {
                 ...state,
                 Pending: true
-            }
+            };
 
         case 'POSTS_REQUEST_SUCCESS':
             return {
                 ...state,
                 Pending: false,
-                Posts: action.Posts
+                Posts: action.Posts,
+                TotalCount: action.TotalCount
             };
 
         case 'POSTS_REQUEST_ERROR':
@@ -94,7 +101,7 @@ export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAct
             return {
                 ...state,
                 ErrorInner: ''
-            }
+            };
 
         default:
             const exhaustiveCheck: never = action;

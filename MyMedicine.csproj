@@ -73,10 +73,13 @@
     <None Remove="ClientApp\src\components\home\home.style.ts" />
     <None Remove="ClientApp\src\components\home\Home.tsx" />
     <None Remove="ClientApp\src\components\home\index.tsx" />
+    <None Remove="ClientApp\src\components\home\post\create.tsx" />
+    <None Remove="ClientApp\src\components\home\post\edit.tsx" />
     <None Remove="ClientApp\src\components\home\post\home.tsx" />
     <None Remove="ClientApp\src\components\home\post\index.tsx" />
     <None Remove="ClientApp\src\components\home\post\post.tsx" />
     <None Remove="ClientApp\src\components\home\post\reducer.ts" />
+    <None Remove="ClientApp\src\components\home\post\view.tsx" />
     <None Remove="ClientApp\src\components\home\reducer.ts" />
     <None Remove="ClientApp\src\components\importExport\authorization.style.ts" />
     <None Remove="ClientApp\src\components\importExport\home.tsx" />
@@ -113,6 +116,7 @@
     <None Remove="ClientApp\src\core\app\authorization\registration\index.tsx" />
     <None Remove="ClientApp\src\core\app\authorization\registration\registration.style.ts" />
     <None Remove="ClientApp\src\core\app\authorization\registration\registration.tsx" />
+    <None Remove="ClientApp\src\core\app\components\alertModule.tsx" />
     <None Remove="ClientApp\src\core\app\login\index.tsx" />
     <None Remove="ClientApp\src\core\app\login\login.style.ts" />
     <None Remove="ClientApp\src\core\app\login\login.tsx" />
@@ -205,10 +209,13 @@
     <TypeScriptCompile Include="ClientApp\src\components\home\home.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\home\Home.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\index.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\home\post\create.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\home\post\edit.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\post\home.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\post\index.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\post\post.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\post\reducer.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\home\post\view.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\home\reducer.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\importExport\authorization.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\importExport\home.tsx" />
@@ -245,6 +252,7 @@
     <TypeScriptCompile Include="ClientApp\src\core\app\authorization\registration\index.tsx" />
     <TypeScriptCompile Include="ClientApp\src\core\app\authorization\registration\registration.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\core\app\authorization\registration\registration.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\core\app\components\alertModule.tsx" />
     <TypeScriptCompile Include="ClientApp\src\core\app\login\index.tsx" />
     <TypeScriptCompile Include="ClientApp\src\core\app\login\login.style.ts" />
     <TypeScriptCompile Include="ClientApp\src\core\app\login\login.tsx" />

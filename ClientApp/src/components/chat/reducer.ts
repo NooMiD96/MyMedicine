@@ -1,39 +1,39 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
-import { AppThunkAction } from "src/reducer";
-
+import { AppThunkAction } from 'src/reducer';
+import { message } from 'antd';
 // ----------------- STATE -----------------
 export interface ChatState {
-    socket?: WebSocket,
-    messages: Message[],
-    countOfConnections: number
+    socket?: WebSocket;
+    messages: Message[];
+    countOfConnections: number;
 }
 export interface Message {
-    UserName: string,
-    MessageInner: string,
-    Date: Date
+    UserName: string;
+    MessageInner: string;
+    Date: Date;
 }
 
 // ----------------- ACTIONS -----------------
 interface SubscribeToChatAction {
-    type: 'SUBSCRIBE_TO_CHAT',
-    socket: WebSocket
+    type: 'SUBSCRIBE_TO_CHAT';
+    socket: WebSocket;
 }
 interface UnsubscribeToChatAction {
-    type: 'UNSUBSCRIBE_TO_CHAT'
+    type: 'UNSUBSCRIBE_TO_CHAT';
 }
 interface SendMessageAction {
-    steamId: string,
-    userName: string,
-    message: string,
+    steamId: string;
+    userName: string;
+    message: string;
 }
 interface GetMessageAction {
-    type: 'GET_MESSAGE',
-    message: Message
+    type: 'GET_MESSAGE';
+    message: Message;
 }
 interface SetCountOfConnectionsAction {
-    type: 'SET_COUNT_OF_CONNECTIONS',
-    countOfConnections: number
+    type: 'SET_COUNT_OF_CONNECTIONS';
+    countOfConnections: number;
 }
 
 type KnownAction = SubscribeToChatAction | UnsubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction;
@@ -41,21 +41,21 @@ type KnownAction = SubscribeToChatAction | UnsubscribeToChatAction | GetMessageA
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
     SubscribeToChat: (): AppThunkAction<SubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction> => (dispatch, getState) => {
-        var hostUri = "http://localhost:50000/";
+        let hostUri = 'http://localhost:50000/';
         if (document.baseURI) {
             hostUri = document.baseURI;
         }
-        var socketUri = hostUri.replace(/^http(s)?/, 'ws') + "wschat";
-        var socket = new WebSocket(socketUri);
+        let socketUri = hostUri.replace(/^http(s)?/, 'ws') + 'wschat';
+        let socket = new WebSocket(socketUri);
 
         socket.onmessage = (event) => {
             try {
-                var data = JSON.parse(event.data) as {message: Message, countOfConnections: number};
-                if(data.message){
+                let data = JSON.parse(event.data) as {message: Message, countOfConnections: number};
+                if (data.message) {
                     data.message.Date = new Date(data.message.Date);
                     dispatch({ type: 'GET_MESSAGE', message: data.message });
                 }
-                if(data.countOfConnections){
+                if (data.countOfConnections) {
                     dispatch({ type: 'SET_COUNT_OF_CONNECTIONS', countOfConnections: data.countOfConnections });
                 }
             } catch (err) {
@@ -63,17 +63,17 @@ export const actionCreators = {
             }
         };
         socket.onopen = (event) => {
-            socket.send("GetMessages");
+            socket.send('GetMessages');
         };
         socket.onclose = function (event) {
             if (!event.wasClean) {
                 console.log('Обрыв соединения');
+                console.log('Код: ' + event.code + ' причина: ' + event.reason);
             }
-            console.log('Код: ' + event.code + ' причина: ' + event.reason);
         };
         socket.onerror = function (error) {
-            console.log("Ошибка:");
-            console.log(error);
+            console.log('Ошибка:\n' + error);
+            message.error(error);
         };
 
         dispatch({ type: 'SUBSCRIBE_TO_CHAT', socket });
@@ -106,22 +106,22 @@ export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownActio
             return unloadedState;
 
         case 'GET_MESSAGE':
-            var messages: Message[] = [];
+            let messages: Message[] = [];
             if (state.messages.length > 50) {
-                messages = [...state.messages.slice(1), action.message]
+                messages = [...state.messages.slice(1), action.message];
             } else {
-                messages = [...state.messages, action.message]
+                messages = [...state.messages, action.message];
             }
             return {
                 ...state,
                 messages
-            }
+            };
 
         case 'SET_COUNT_OF_CONNECTIONS':
             return {
                 ...state,
                 countOfConnections: action.countOfConnections
-            }
+            };
 
         default:
             const exhaustiveCheck: never = action;

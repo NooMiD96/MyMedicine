@@ -1,3 +1,3 @@
-import { DiseaseList } from "./diseaseList";
+import { DiseaseList } from './diseaseList';
 
 export default DiseaseList;

@@ -1,21 +1,22 @@
 import * as React from 'react';
-import { Modal, Button, Alert, Icon, Input, Form } from 'antd';
+import { Modal, Button, Icon, Input, Form } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import StyleWrapper from "./registration.style";
+import { AlertModule } from 'core/app/components/alertModule';
+import StyleWrapper from './registration.style';
 const FormItem = Form.Item;
 
 interface LoginProps extends FormComponentProps {
-    isMobile: boolean,
-    Pending: boolean,
-    ErrorInner: string,
-    RegistrationRequest: (un: string, email: string, pw: string) => void,
-    CleanErrorInner: () => void
-};
+    isMobile: boolean;
+    Pending: boolean;
+    ErrorInner: string;
+    RegistrationRequest: (un: string, email: string, pw: string) => void;
+    CleanErrorInner: () => void;
+}
 
 interface LoginState {
-    visible: boolean,
-    loading: boolean,
-    confirmDirty: boolean
+    visible: boolean;
+    loading: boolean;
+    confirmDirty: boolean;
 }
 
 class RegistrationComponent extends React.Component<LoginProps, LoginState> {
@@ -29,25 +30,25 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
             visible: false,
             loading: false,
             confirmDirty: false
-        }
+        };
     }
 
     componentDidUpdate(prevProps: LoginProps) {
         if (prevProps.Pending && !this.props.Pending) {
             this.setState({
                 loading: false
-            })
+            });
         }
     }
 
-    hasErrors = (fieldsError: any): boolean => Object.keys(fieldsError).some(field => fieldsError[field])
+    hasErrors = (fieldsError: any): boolean => Object.keys(fieldsError).some(field => fieldsError[field]);
 
     showModal = () => this.setState({
-        visible: true,
-    });
+        visible: true
+    })
 
     handleConfirmBlur = (e: any) => {
-        debugger
+        debugger;
         e.preventDefault();
         const value = e.target.value;
         this.setState({ confirmDirty: this.state.confirmDirty || !!value });
@@ -65,7 +66,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     validateToNextPassword = (rule: any, value: any, callback: any) => {
         const form = this.props.form;
         if (value && this.state.confirmDirty) {
-            form.validateFields(['confirm'], { force: true }, () => {});
+            form.validateFields(['confirm'], { force: true }, () => { });
         }
         callback();
     }
@@ -86,11 +87,12 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         e.preventDefault();
         this.setState({
             loading: false,
-            visible: false,
+            visible: false
         });
         this.props.form.resetFields();
-        if (this.props.ErrorInner)
+        if (this.props.ErrorInner) {
             this.props.CleanErrorInner();
+        }
     }
 
     public render() {
@@ -106,39 +108,29 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 8 },
+                sm: { span: 8 }
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 16 },
-            },
+                sm: { span: 16 }
+            }
         };
 
         return <StyleWrapper>
-            <Button onClick={this.showModal} icon="idcard" ghost>{this.props.isMobile ? null : 'Registration'}</Button>
+            <Button onClick={this.showModal} icon='idcard' ghost>{this.props.isMobile ? null : 'Registration'}</Button>
             <Modal
-                title="Registration"
+                title='Registration'
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
                 footer={[
-                    <Button key="back" onClick={this.handleCancel}>Return</Button>,
-                    <Button key="submit" type="primary" loading={this.state.loading} onClick={this.handleOk} disabled={this.hasErrors(getFieldsError())}>
+                    <Button key='back' onClick={this.handleCancel}>Return</Button>,
+                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={this.hasErrors(getFieldsError())}>
                         Log in
                     </Button>
                 ]}
             >
-                {
-                    ErrorInner && <Alert
-                        message='Error'
-                        description={ErrorInner}
-                        type='error'
-                        showIcon
-                        closable
-                        onClose={CleanErrorInner.bind(this)}
-                        style={{ marginBottom: '10px' }}
-                    />
-                }
+                <AlertModule CleanErrorInner={CleanErrorInner} ErrorInner={ErrorInner}/>
 
                 <FormItem
                     {...formItemLayout}
@@ -146,11 +138,11 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                     label={'User Name'}
                 >
                     {getFieldDecorator('userName', {
-                        rules: [{ required: true, message: 'Please input your username!' }],
+                        rules: [{ required: true, message: 'Please input your username!' }]
                     })(
                         <Input
-                            placeholder="Enter your username"
-                            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder='Enter your username'
+                            prefix={<Icon type='user' style={{ color: 'rgba(0,0,0,.25)' }} />}
                             onPressEnter={this.handleOk}
                         />
                     )}
@@ -163,15 +155,15 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 >
                     {getFieldDecorator('email', {
                         rules: [{
-                            type: 'email', message: 'The input is not valid E-mail!',
+                            type: 'email', message: 'The input is not valid E-mail!'
                         }, {
                             required: true, message: 'Please input your Password!'
                         }]
                     })(
                         <Input
                             type='email'
-                            placeholder="Enter your e-mail"
-                            prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder='Enter your e-mail'
+                            prefix={<Icon type='mail' style={{ color: 'rgba(0,0,0,.25)' }} />}
                             onPressEnter={this.handleOk}
                         />
                     )}
@@ -185,16 +177,16 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                     {getFieldDecorator('password', {
                         rules: [{
                             required: true, message: 'Please input your Password!'
-                        },{
+                        }, {
                             min: minPasswordLength, message: `Password must have min ${minPasswordLength} symbols!`
-                        },{
-                            validator: this.validateToNextPassword,
-                        }],
+                        }, {
+                            validator: this.validateToNextPassword
+                        }]
                     })(
                         <Input
                             type='password'
-                            placeholder="Enter your password"
-                            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder='Enter your password'
+                            prefix={<Icon type='lock' style={{ color: 'rgba(0,0,0,.25)' }} />}
                             onPressEnter={this.handleOk}
                         />
                     )}
@@ -203,20 +195,20 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 <FormItem
                     {...formItemLayout}
                     validateStatus={confirmError ? 'error' : 'success'}
-                    label="Confirm Password"
+                    label='Confirm Password'
                 >
                     {getFieldDecorator('confirm', {
                         rules: [{
-                            required: true, message: 'Please confirm your password!',
+                            required: true, message: 'Please confirm your password!'
                         }, {
-                            validator: this.compareToFirstPassword,
-                        }],
+                            validator: this.compareToFirstPassword
+                        }]
                     })(
-                        <Input 
-                            type="password"
-                            placeholder="Confirm your password"
+                        <Input
+                            type='password'
+                            placeholder='Confirm your password'
                             onBlur={this.handleConfirmBlur}
-                            prefix={<Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            prefix={<Icon type='unlock' style={{ color: 'rgba(0,0,0,.25)' }} />}
                             onPressEnter={this.handleOk}
                         />
                     )}
@@ -227,4 +219,4 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     }
 }
 
-export const Registration = Form.create({})(RegistrationComponent)
+export const Registration = Form.create({})(RegistrationComponent);

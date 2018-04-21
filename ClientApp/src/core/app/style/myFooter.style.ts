@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from 'styled-components';
 
 export default styled.div`
     height: 69px;
@@ -6,4 +6,4 @@ export default styled.div`
     .ant-layout-footer {
         text-align: center;
     }
-`
+`;

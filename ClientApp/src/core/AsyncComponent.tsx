@@ -1,34 +1,34 @@
 import * as React from 'react';
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from 'react-router-dom';
 import { Spin } from 'antd';
-import AsyncWrapper from "./AsyncComponent.style";
+import AsyncWrapper from './AsyncComponent.style';
 
-export function AsyncComponent(ComponentLoader: any){
-    class AsyncComponent extends React.Component<RouteComponentProps<{}>, {Component: any}>{
-        constructor(props: any){
+export function AsyncComponent(ComponentLoader: any) {
+    class AsyncComponent extends React.Component<RouteComponentProps<{}>, { Component: any }> {
+        constructor(props: any) {
             super(props);
             this.state = {
                 Component: null
             };
         }
 
-        async componentDidMount(){
-            var Component = await ComponentLoader();
+        async componentDidMount() {
+            const Component = await ComponentLoader();
             this.setState({
                 Component: Component.default
             });
         }
 
-        render(){
-            var Component = this.state.Component;
+        render() {
+            const Component = this.state.Component;
 
             return <AsyncWrapper>
-                <Spin className='spinner' spinning={Component ? false : true} tip="Loading...">
+                <Spin className='spinner' spinning={Component ? false : true} tip='Loading...'>
                     {
                         Component && <Component {...this.props} />
                     }
                 </Spin>
-            </AsyncWrapper>
+            </AsyncWrapper>;
         }
     }
 

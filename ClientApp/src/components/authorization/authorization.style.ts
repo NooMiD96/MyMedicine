@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export default styled.div`
     float: right;
@@ -6,4 +6,4 @@ export default styled.div`
     &.mobile {
         margin-right: -33px;
     }
-`
+`;
