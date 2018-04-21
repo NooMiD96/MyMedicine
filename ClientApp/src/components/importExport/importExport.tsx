@@ -1,26 +1,25 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router-dom';
-import { Upload, Icon, message, Modal, Button, Alert, Form, Row, Col, Spin } from 'antd';
-import { DraggerProps } from "antd/lib/upload/Dragger";
-
-import ImportExportWrapper from "./importExport.style";
-import * as UserState from "../authorization/reducer";
-import * as ImportExportState from "./reducer";
-import { ApplicationState } from "src/reducer";
+import { Upload, Icon, message, Modal, Button, Spin, Radio } from 'antd';
+import ImportExportWrapper from './importExport.style';
+import { AlertModule } from 'core/app/components/alertModule';
+import * as UserState from '../authorization/reducer';
+import * as ImportExportState from './reducer';
+import { ApplicationState } from 'src/reducer';
 
 interface IDispatchProps {
-    CleanErrorInner: typeof UserState.actionCreators.CleanErrorInner
+    CleanErrorInner: typeof UserState.actionCreators.CleanErrorInner;
 }
 
 type ImportExportProps =
     & ImportExportState.ImportExportState
     & IDispatchProps
     & typeof ImportExportState.actionCreators
-    & { isMobile: boolean };
+    & { isMobile: boolean; };
 
 interface LoginState {
-    visible: boolean
+    visible: boolean;
+    importType: number;
 }
 
 export class ImportExport extends React.Component<ImportExportProps, LoginState> {
@@ -29,32 +28,45 @@ export class ImportExport extends React.Component<ImportExportProps, LoginState>
         this.showModal = this.showModal.bind(this);
         this.handleOk = this.handleOk.bind(this);
         this.checkFileExtension = this.checkFileExtension.bind(this);
+        this.ImportFile = this.ImportFile.bind(this);
+        this.onChangeImportType = this.onChangeImportType.bind(this);
 
         this.state = {
-            visible: false
-        }
+            visible: false,
+            importType: 2
+        };
     }
 
+    ImportFile = (file: any) => this.props.ImportFile(file, this.state.importType);
+
+    onChangeImportType = (e: any) => this.setState({
+        importType: e.target.value
+    })
+
     showModal = () => this.setState({
-        visible: true,
-    });
+        visible: true
+    })
 
     handleOk = (e: any) => {
         e.preventDefault();
         this.setState({
             visible: false
         });
-        if (this.props.ErrorInner)
+        if (this.props.ErrorInner) {
             this.props.CleanErrorInner();
+        }
     }
 
     checkFileExtension = (file: any) => {
-        if (file.name.includes('.json')) return true;
+        if (file.name.includes('.json')) {
+            return true;
+        }
         message.warning('Can load only json files');
         return false;
     }
 
     public render() {
+        const {ErrorInner, CleanErrorInner} = this.props;
         const importButtonStyle = {
             height: '100%',
             width: '100%',
@@ -66,38 +78,46 @@ export class ImportExport extends React.Component<ImportExportProps, LoginState>
             margin: '15px',
             fontSize: '18px',
             textAlign: 'center'
-        }
+        };
 
         return <ImportExportWrapper>
-            <Button onClick={this.showModal} icon="save" ghost>{this.props.isMobile ? null : 'Export/Import'}</Button>
+            <Button onClick={this.showModal} icon='save' ghost>{this.props.isMobile ? null : 'Export/Import'}</Button>
             <Modal
-                title="Export And Import"
+                title={[
+                    <span key='title'>Export And Import</span>,
+                    <Radio.Group key='radio_group' onChange={this.onChangeImportType} value={this.state.importType} style={{marginRight: '25px', float: 'right'}}>
+                        <Radio value={0}>Add</Radio>
+                        <Radio value={1}>Edit</Radio>
+                        <Radio value={2}>Skip</Radio>
+                    </Radio.Group>
+                ]}
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleOk}
                 footer={[
-                    <Button key="return" type="primary" onClick={this.handleOk}>
+                    <Button key='return' type='primary' onClick={this.handleOk}>
                         Return
                     </Button>
                 ]}
             >
                 <Spin spinning={this.props.Uploading}>
-                    <Upload.Dragger fileList={[]} beforeUpload={this.checkFileExtension} customRequest={this.props.ImportFile} action='192.168.1.189:50000/importexport/import' >
-                        <p className="ant-upload-drag-icon">
-                            <Icon type="inbox" />
+                    <AlertModule ErrorInner={ErrorInner} CleanErrorInner={CleanErrorInner}/>
+                    <Upload.Dragger fileList={[]} beforeUpload={this.checkFileExtension} customRequest={this.ImportFile} >
+                        <p className='ant-upload-drag-icon'>
+                            <Icon type='inbox' />
                         </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
+                        <p className='ant-upload-text'>Click or drag file to this area to upload.</p>
+                        <p className='ant-upload-hint'>Choose what need to do if post already exist.</p>
                     </Upload.Dragger>
 
-                    <p className='or-br'>or</p>
+                    <p className='or-br' style={orLabelStyle}>or</p>
 
-                    <Button type="dashed" style={importButtonStyle} onClick={this.props.ExportFiles}>
-                        <p className="ant-upload-drag-icon">
-                            <Icon type="download" style={{ fontSize: '48px' }} />
+                    <Button type='dashed' style={importButtonStyle} onClick={this.props.ExportFiles}>
+                        <p className='ant-upload-drag-icon'>
+                            <Icon type='download' style={{ fontSize: '48px' }} />
                         </p>
-                        <p className="ant-upload-text">Click to this area to load</p>
-                        <p className="ant-upload-hint">Load .zip archive with all data in json</p>
+                        <p className='ant-upload-text'>Click to this area to load</p>
+                        <p className='ant-upload-hint'>Load .zip archive with all data in json</p>
                     </Button>
                 </Spin >
             </Modal>
@@ -114,7 +134,7 @@ function mapStateToProps(state: ApplicationState) {
 const mapDispatchToProps = {
     ...ImportExportState.actionCreators,
     CleanErrorInner: UserState.actionCreators.CleanErrorInner
-}
+};
 
 export default connect(
     mapStateToProps,

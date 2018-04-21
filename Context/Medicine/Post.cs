@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyMedicine.Context.Medicine
 {
-    public class Post
+    public class Post: IEquatable<Post>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PostId { get; set; }
@@ -22,15 +22,24 @@ namespace MyMedicine.Context.Medicine
         public DateTime Date { get; set; }
         public string ImgUrl { get; set; }
         [Required]
-        public int LikesCount { get; set; }
-        [Required]
         public int CommentsCount { get; set; }
         //childrens
         public ICollection<Comment> CommentsList { get; set; } = new List<Comment>();
+
+        public bool Equals(Post item)
+        {
+            if(this.PostId == item.PostId)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
     }
     public class Comment
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CommentId { get; set; }
 
         [Required]

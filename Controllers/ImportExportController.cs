@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,31 +7,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyMedicine.Context.Medicine;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using MyMedicine.Controllers.Services;
+using System.IO.Compression;
+using System.IO;
 
 namespace MyMedicine.Controllers
 {
     [Route("api/[controller]")]
-    public class ImportExportController: Controller
+    public partial class ImportExportController: Controller
     {
         private MedicineContext _context;
-
         public ImportExportController([FromServices] MedicineContext context)
         {
             _context = context;
         }
-        //load FROM user TO server
-        [HttpPost("[action]")]
-        public async Task<string> Import()
-        {
-            var context = await GetJsonFromBodyRequest();
-            bool isParsed = false;
 
-            try
-            {
-                var postList = JsonConvert.DeserializeObject<List<Post>>(context);
-                isParsed = true;
-            } catch { };
+        // load FROM user TO server
+        // saveType:
+        // -- 0 - add new
+        // -- 1 - edit
+        // -- 2 - skip
+        [HttpPost("[action]")]
+        public async Task<string> Import([FromQuery] int type)
+        {
+            var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
+            bool isParsed = TryDeserialize(context, type);
 
             if(!isParsed)
             {
@@ -42,33 +41,25 @@ namespace MyMedicine.Controllers
             return "true";
         }
 
-        //load FROM server TO user
+        // load FROM server TO user
         [HttpGet("[action]")]
-        public IActionResult Export()
+        public async Task<IActionResult> Export()
         {
-            var post = new Post()
+            var postsJson = JsonConvert.SerializeObject(_context.GetAllPosts(), ControllersServices.JsonSettings);
+
+            using(var memoryStream = new MemoryStream())
             {
-                PostId = 1,
-                Context = "Sorry, but this is second =(",
-                Header = "Second post",
-                Date = DateTime.UtcNow
-            };
-            var postList = new List<Post>(){post};
+                using(var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create))
+                {
+                    var postsFileInZip = zip.CreateEntry("Posts.json", CompressionLevel.Optimal);
 
-            return File(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postList)), "application/json; charset=UTF-8", "Export File.json");
-        }
+                    using(var fileStream = postsFileInZip.Open())
+                        using(var writerStream = new StreamWriter(fileStream, Encoding.UTF8))
+                            await writerStream.WriteAsync(postsJson);
+                }
 
-        private async Task<string> GetJsonFromBodyRequest()
-        {
-            var bodyStream = Request.Body;
-            string content;
-
-            using(var reader = new StreamReader(bodyStream))
-            {
-                content = await reader.ReadToEndAsync();
+                return File(memoryStream.ToArray(), "application/json; charset=UTF-8", "Import.zip");
             }
-
-            return content;
         }
     }
 }

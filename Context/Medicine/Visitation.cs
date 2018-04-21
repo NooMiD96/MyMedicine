@@ -32,8 +32,6 @@ namespace MyMedicine.Context.Medicine
 
     public class Doctor
     {
-        //public Doctor() { VisitationList = new List<Visitation>(); DiseaseList = new List<Disease>(); }
-
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DoctorId { get; set; }
 
@@ -57,8 +55,6 @@ namespace MyMedicine.Context.Medicine
 
     public class Separation
     {
-        //public Separation() { DoctorList = new List<Doctor>(); }
-
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeparationId { get; set; }
 

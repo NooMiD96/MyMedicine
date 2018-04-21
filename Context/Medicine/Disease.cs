@@ -9,8 +9,6 @@ namespace MyMedicine.Context.Medicine
 {
     public class Disease
     {
-        //public Disease() { Symptoms = new List<Symptom>(); }
-
         ICollection<Symptom> _symptomList = new List<Symptom>();
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -33,36 +31,60 @@ namespace MyMedicine.Context.Medicine
 
                 if(symptoms.Symptom3Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom4Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom5Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom6Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom7Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom8Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom9Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
                 if(symptoms.Symptom10Id.HasValue)
                 {
-
-                } else return new List<Symptom>(_symptomList);
+                    _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
+                } else
+                {
+                    return new List<Symptom>(_symptomList);
+                }
             }
 
             return new List<Symptom>(_symptomList);
@@ -73,8 +95,6 @@ namespace MyMedicine.Context.Medicine
 
     public class SymptomList
     {
-        //public SymptomList() { Symptoms = new List<Symptom>(); }
-
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SymptomListId { get; set; }
 
