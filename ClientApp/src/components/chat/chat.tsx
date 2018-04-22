@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { List, Avatar, Input } from 'antd';
 import { ApplicationState } from 'src/reducer';
 import * as ChatState from './reducer';
-import * as UserState from '../authorization/reducer';
 import Colors from './chat.background';
 import ChatWrapped from './chat.style';
 
@@ -54,7 +53,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
         message: e.target.value
     })
 
-    onPressEnterHandler = (e: any) => {
+    onPressEnterHandler = (_e: any) => {
         const message = this.state.message.trim();
         if (message) {
             const { sendMessage, UserName } = this.props;

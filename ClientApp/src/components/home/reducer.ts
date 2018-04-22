@@ -6,16 +6,13 @@ export interface PostsState {
     Posts: Post[];
     TotalCount: number;
     Pending: boolean;
-
 }
 export interface Post {
     PostId: number;
     Author: string;
     Header: string;
-    Context: string;
     Date: Date;
     ImgUrl?: string;
-    LikesCount: number;
     CommentsCount: number;
 }
 // ----------------- ACTIONS -----------------
@@ -31,7 +28,6 @@ interface PostsRequestErrorAction {
     type: 'POSTS_REQUEST_ERROR';
     ErrorInner: string;
 }
-
 interface CleanErrorInnerAction {
     type: 'CLEAN_ERROR_INNER';
 }
@@ -44,21 +40,18 @@ interface ResponseType { Error: string; Posts: Post[]; TotalCount: number; }
 
 export const actionCreators = {
     getPosts: (page: number, pageSize: number): AppThunkAction<PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction> => (dispatch) => {
-        debugger;
         const fetchTask = fetch(`/api/post/getposts?page=${page}&pageSize=${pageSize}`, {
             method: 'GET'
         }).then(response => {
-            debugger;
             if (response.status !== 200) {
                 throw new Error(response.statusText);
             }
             return response.json();
         }).then((data: ResponseType) => {
-            debugger;
             if (data.Error) {
                 throw new Error('Some trouble when getting posts.\n' + data.Error);
             }
-            data.Posts.forEach(val => val.Date = new Date(val.Date));
+            data.Posts.forEach((item: Post) => item.Date = new Date(item.Date));
             dispatch({ type: 'POSTS_REQUEST_SUCCESS', Posts: data.Posts, TotalCount: data.TotalCount });
         }).catch((err: Error) => {
             console.log('Error :-S in user\n', err.message);
@@ -83,10 +76,12 @@ export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAct
             };
 
         case 'POSTS_REQUEST_SUCCESS':
+            let posts = Object.assign([], action.Posts);
+
             return {
                 ...state,
                 Pending: false,
-                Posts: action.Posts,
+                Posts: posts,
                 TotalCount: action.TotalCount
             };
 
@@ -105,6 +100,9 @@ export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAct
 
         default:
             const exhaustiveCheck: never = action;
+            if (state && state.Posts) {
+                state.Posts.forEach((item: Post) => item.Date = new Date(item.Date));
+            }
     }
 
     return state || unloadedState;

@@ -21,11 +21,33 @@ namespace MyMedicine.Controllers
         }
 
         [HttpGet("[action]")]
-        public string GetPosts([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<string> GetPosts([FromQuery] int page, [FromQuery] int pageSize)
         {
-            var (Posts, TotalCount) = _context.GetPostsAndCount(page, pageSize);
+            var (Posts, TotalCount) = await _context.GetPostsAndCount(page, pageSize);
 
-            return JsonConvert.SerializeObject(new { Posts, TotalCount}, ControllersServices.JsonSettings);
+            return JsonConvert.SerializeObject(new { Posts, TotalCount }, ControllersServices.JsonSettings);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<string> GetPost([FromQuery] int postid)
+        {
+            var Post = await _context.GetPost(postid);
+
+            return JsonConvert.SerializeObject(new { Post }, ControllersServices.JsonSettings);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<bool> AddComment([FromQuery] int postid)
+        {
+            if(!User.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+
+            var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
+            var result = await _context.AddNewComment(postid, User.Identity.Name, context);
+
+            return result;
         }
     }
 }

@@ -11,9 +11,10 @@ using System;
 namespace MyMedicine.Migrations.Medicine
 {
     [DbContext(typeof(MedicineContext))]
-    partial class MedicineContextModelSnapshot : ModelSnapshot
+    [Migration("20180421225205_AddUserNameFieldForComment")]
+    partial class AddUserNameFieldForComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

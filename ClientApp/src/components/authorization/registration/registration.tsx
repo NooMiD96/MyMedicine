@@ -54,7 +54,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         this.setState({ confirmDirty: this.state.confirmDirty || !!value });
     }
 
-    compareToFirstPassword = (rule: any, value: any, callback: any) => {
+    compareToFirstPassword = (_rule: any, value: any, callback: any) => {
         const form = this.props.form;
         if (value && value !== form.getFieldValue('password')) {
             callback('Two passwords that you enter is inconsistent!');
@@ -63,7 +63,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         }
     }
 
-    validateToNextPassword = (rule: any, value: any, callback: any) => {
+    validateToNextPassword = (_rule: any, value: any, callback: any) => {
         const form = this.props.form;
         if (value && this.state.confirmDirty) {
             form.validateFields(['confirm'], { force: true }, () => { });

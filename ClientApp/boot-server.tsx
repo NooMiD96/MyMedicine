@@ -51,7 +51,7 @@ export default createServerRenderer(params => {
         params.domainTasks.then(() => {
             resolve({
                 html: `<div id="react-app-styles">${sheet.getStyleTags()}</div><div id="react-app">${renderToString(app)}</div>`,
-                globals: { initialReduxState: store.getState(), user: params.data.user }
+                globals: { initialReduxState: store.getState() }
             });
         }, reject); // Also propagate any errors back into the host application
     });

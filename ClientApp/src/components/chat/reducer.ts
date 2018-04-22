@@ -1,5 +1,4 @@
 import { Reducer } from 'redux';
-import { fetch, addTask } from 'domain-task';
 import { AppThunkAction } from 'src/reducer';
 import { message } from 'antd';
 // ----------------- STATE -----------------
@@ -40,7 +39,7 @@ type KnownAction = SubscribeToChatAction | UnsubscribeToChatAction | GetMessageA
 
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
-    SubscribeToChat: (): AppThunkAction<SubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction> => (dispatch, getState) => {
+    SubscribeToChat: (): AppThunkAction<SubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction> => (dispatch, _getState) => {
         let hostUri = 'http://localhost:50000/';
         if (document.baseURI) {
             hostUri = document.baseURI;
@@ -62,7 +61,7 @@ export const actionCreators = {
                 console.log('WebSocket Error Parse :-S in Chat', err);
             }
         };
-        socket.onopen = (event) => {
+        socket.onopen = (_e) => {
             socket.send('GetMessages');
         };
         socket.onclose = function (event) {
@@ -79,7 +78,7 @@ export const actionCreators = {
         dispatch({ type: 'SUBSCRIBE_TO_CHAT', socket });
     },
     UnubscribeToChat: () => <UnsubscribeToChatAction>{ type: 'UNSUBSCRIBE_TO_CHAT' },
-    sendMessage: (userName: string, message: string, date: Date): AppThunkAction<SendMessageAction> => (dispatch, getState) => {
+    sendMessage: (userName: string, message: string, date: Date): AppThunkAction<SendMessageAction> => (_dispatch, getState) => {
         const socket = getState().chat.socket;
         if (socket) {
             socket.send(JSON.stringify({ UserName: userName, MessageInner: message, Date: date.toUTCString() }));

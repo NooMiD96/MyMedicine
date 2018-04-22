@@ -46,6 +46,8 @@ namespace MyMedicine.Context.Medicine
         public string CommentInner { get; set; }
         [Required]
         public DateTime Date { get; set; }
+        [Required]
+        public string UserName { get; set; }
 
         [Required, ForeignKey(nameof(Post))]
         public int PostId { get; set; }

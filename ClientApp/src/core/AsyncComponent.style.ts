@@ -6,6 +6,6 @@ export default styled.div`
     .ant-spin-spinning {
         width: 100%;
         height: 100%;
-        margin-top: 100px;
+        margin-top: 20px;
     }
 `;
