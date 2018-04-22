@@ -61,7 +61,7 @@ type KnownAction = GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUser
 interface ResponseType { Error: string; UserName: string; UserRole: string; }
 
 export const actionCreators = {
-    GetUserInfo: (): AppThunkAction<GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction> => (dispatch) => {
+    GetUserInfo: (): AppThunkAction<GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction> => (dispatch, _getState) => {
         let fetchTask = fetch(`/api/authorization/getuserinfo`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -86,7 +86,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_USER_INFO_REQUEST' });
     },
-    LoginRequest: (un: string, pw: string): AppThunkAction<LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction> => (dispatch) => {
+    LoginRequest: (un: string, pw: string): AppThunkAction<LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction> => (dispatch, _getState) => {
         let fetchTask = fetch(`/api/authorization/signin`, {
             method: 'POST',
             credentials: 'same-origin',
@@ -109,7 +109,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'LOGIN_USER_REQUEST' });
     },
-    RegistrationRequest: (un: string, email: string, pw: string): AppThunkAction<RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction> => (dispatch) => {
+    RegistrationRequest: (un: string, email: string, pw: string): AppThunkAction<RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction> => (dispatch, _getState) => {
         let fetchTask = fetch(`/api/authorization/registration`, {
             method: 'POST',
             credentials: 'same-origin',
@@ -132,7 +132,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'REGISTRATION_USER_REQUEST' });
     },
-    LogOut: (): AppThunkAction<LogOutAction> => (dispatch) => {
+    LogOut: (): AppThunkAction<LogOutAction> => (dispatch, _getState) => {
         let fetchTask = fetch(`/api/authorization/signout`, {
             method: 'PATCH',
             credentials: 'same-origin'

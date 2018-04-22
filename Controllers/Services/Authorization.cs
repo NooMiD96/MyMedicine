@@ -10,8 +10,6 @@ namespace MyMedicine.Controllers
 {
     public partial class AuthorizationController
     {
-        private string ErrorMessage(string Error) => JsonConvert.SerializeObject(new { Error });
-
         private async Task<string> UserInfo()
         {
             var user = await _userManager.GetUserAsync(User);

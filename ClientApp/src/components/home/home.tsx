@@ -2,12 +2,13 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { ApplicationState } from 'src/reducer';
 import { connect } from 'react-redux';
-import { List, Avatar, Icon } from 'antd';
+import { List, Avatar, Icon, Button } from 'antd';
 import HomeWrapped from './home.style';
 import { NavLink } from 'react-router-dom';
 import * as PostsState from './reducer';
 
 type PostsProps = PostsState.PostsState
+    & { UserRole: string }
     & typeof PostsState.actionCreators
     & RouteComponentProps<{}>;
 
@@ -30,6 +31,15 @@ export class Home extends React.Component<PostsProps, {}> {
 
     public render() {
         return <HomeWrapped>
+            {
+                this.props.UserRole === 'Admin' &&
+                <Button
+                    className='edit-button'
+                    onClick={() => this.props.history.push(`/edit/0`)}
+                >
+                    Create new record
+                </Button>
+            }
             <h1>News!</h1>
             <List
                 itemLayout='vertical'
@@ -50,7 +60,7 @@ export class Home extends React.Component<PostsProps, {}> {
                     >
                         <List.Item.Meta
                             avatar={<Avatar style={{ verticalAlign: 'middle' }} size='large' >{item.Author}</Avatar>}
-                            title={<NavLink to={`/Post/${item.PostId}`}>{item.Header}</NavLink>}
+                            title={<NavLink to={`/post/${item.PostId}`}>{item.Header}</NavLink>}
                             description={<div>Created by: {item.Author} at {item.Date.toLocaleString()}</div>}
                         />
                     </List.Item>
@@ -62,8 +72,9 @@ export class Home extends React.Component<PostsProps, {}> {
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        ...state.posts
-    } as PostsState.PostsState;
+        ...state.posts,
+        UserRole: state.user.UserRole
+    } as PostsState.PostsState & { UserRole: string };
 }
 
 const mapDispatchToProps = {

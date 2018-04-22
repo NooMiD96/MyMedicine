@@ -12,7 +12,7 @@ using MyMedicine.Controllers.Services;
 namespace MyMedicine.Controllers
 {
     [Route("api/[controller]")]
-    public class PostController: Controller
+    public class PostController : Controller
     {
         private MedicineContext _context;
         public PostController([FromServices] MedicineContext context)
@@ -37,17 +37,62 @@ namespace MyMedicine.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<bool> AddComment([FromQuery] int postid)
+        public async Task<string> AddComment([FromQuery] int postid)
         {
-            if(!User.Identity.IsAuthenticated)
+            if (!User.Identity.IsAuthenticated)
             {
-                return false;
+                return ControllersServices.ErrorMessage("auth");
             }
 
             var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
             var result = await _context.AddNewComment(postid, User.Identity.Name, context);
 
-            return result;
+            if (result != null)
+            {
+                return JsonConvert.SerializeObject(result);
+            }
+            else
+            {
+                return ControllersServices.ErrorMessage("Can't add new comment, sorry.");
+            }
+        }
+        [HttpGet("[action]")]
+        public async Task<string> GetComments([FromQuery] int postid)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return ControllersServices.ErrorMessage("Not auth.");
+            }
+
+            var result = await _context.GetComment(postid);
+
+            if (result != null)
+            {
+                return JsonConvert.SerializeObject(new { CommentsList = result });
+            }
+            else
+            {
+                return ControllersServices.ErrorMessage("Can't add new comment, sorry.");
+            }
+        }
+        [HttpPost("[action]")]
+        public async Task<bool> CreateOrEdit([FromQuery] int postid, [FromBody] Post post)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+
+            if (postid <= 0)
+            {
+                await _context.AddNewPost(post, User.Identity.Name);
+            }
+            else
+            {
+                await _context.EditPost(post, postid);
+            }
+
+            return true;
         }
     }
 }

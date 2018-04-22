@@ -24,5 +24,7 @@ namespace MyMedicine.Controllers.Services
             }
             return content;
         }
+
+        static public string ErrorMessage(string Error) => JsonConvert.SerializeObject(new { Error });
     }
 }

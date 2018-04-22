@@ -1,6 +1,8 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
 import { AppThunkAction } from 'src/reducer';
+import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
+import { message } from 'antd';
 // ----------------- STATE -----------------
 export interface PostState {
     PostId: number;
@@ -45,9 +47,21 @@ interface SendCommentRequestAction {
 }
 interface SendCommentRequestSuccessAction {
     type: 'SEND_COMMENT_REQUEST_SUCCESS';
+    comment: Comment;
 }
 interface SendCommentRequestErrorAction {
     type: 'SEND_COMMENT_REQUEST_ERROR';
+    ErrorInner: string;
+}
+interface GetCommentsRequestAction {
+    type: 'GET_COMMENTS_REQUEST';
+}
+interface GetCommentsRequestSuccessAction {
+    type: 'GET_COMMENTS_REQUEST_SUCCESS';
+    CommentsList: Comment[];
+}
+interface GetCommentsRequestErrorAction {
+    type: 'GET_COMMENTS_REQUEST_ERROR';
     ErrorInner: string;
 }
 interface CleanErrorInnerAction {
@@ -56,6 +70,7 @@ interface CleanErrorInnerAction {
 
 type KnownAction = PostRequestAction | PostRequestSuccessAction | PostRequestErrorAction
     | SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction
+    | GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction
     | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
@@ -68,9 +83,10 @@ export const actionCreators = {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
         }).then((data) => {
-            if (!data) {
-                throw new Error('Some trouble when importing.');
+            if (data.Error) {
+                throw new Error('Some trouble when getting post.\n' + data.Error);
             }
+            data.Post.CommentsList.forEach((comment: Comment) => comment.Date = new Date(comment.Date));
             dispatch({
                 type: 'POST_REQUEST_SUCCESS',
                 Author: data.Post.Author,
@@ -90,7 +106,7 @@ export const actionCreators = {
         dispatch({ type: 'POST_REQUEST', PostId });
     },
     SendComment: (comment: string, PostId: number): AppThunkAction<SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/api/post/AddComment?postid=${PostId}`, {
+        const fetchTask = fetch(`/api/post/addcomment?postid=${PostId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',
@@ -98,11 +114,18 @@ export const actionCreators = {
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
-        }).then((success) => {
-            if (!success) {
-                throw new Error('Some trouble when post comment.');
+        }).then((data) => {
+            if (data.Error === 'auth') {
+                AuthActions.LogOut()(dispatch as any, _getState);
+                message.error('Need auth again');
+                return;
             }
-            dispatch({ type: 'SEND_COMMENT_REQUEST_SUCCESS' });
+            if (data.Error) {
+                throw new Error('Some trouble when post comment.\n' + data.Error);
+            }
+            data.Date = 'now';
+            dispatch({ type: 'SEND_COMMENT_REQUEST_SUCCESS', comment: data });
+            actionCreators.GetComments()(dispatch as any, _getState);
         }).catch((err: Error) => {
             console.log('Error :-S in post\n', err.message);
             dispatch({ type: 'SEND_COMMENT_REQUEST_ERROR', ErrorInner: err.message });
@@ -110,6 +133,28 @@ export const actionCreators = {
 
         addTask(fetchTask);
         dispatch({ type: 'SEND_COMMENT_REQUEST' });
+    },
+    GetComments: (): AppThunkAction<GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction> => (dispatch, getState) => {
+        const { PostId } = getState().post;
+        const fetchTask = fetch(`/api/post/getcomments?postid=${PostId}`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        }).then(response => {
+            if (response.status !== 200) { throw new Error(response.statusText); }
+            return response.json();
+        }).then((data) => {
+            if (data.Error) {
+                throw new Error('Some trouble when post comment.\n' + data.Error);
+            }
+            data.CommentsList.forEach((comment: Comment) => comment.Date = new Date(comment.Date));
+            dispatch({ type: 'GET_COMMENTS_REQUEST_SUCCESS', CommentsList: data.CommentsList });
+        }).catch((err: Error) => {
+            console.log('Error :-S in post\n', err.message);
+            dispatch({ type: 'GET_COMMENTS_REQUEST_ERROR', ErrorInner: err.message });
+        });
+
+        addTask(fetchTask);
+        dispatch({ type: 'GET_COMMENTS_REQUEST' });
     },
     CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
 };
@@ -149,6 +194,8 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
             };
 
         case 'POST_REQUEST_ERROR':
+        case 'SEND_COMMENT_REQUEST_ERROR':
+        case 'GET_COMMENTS_REQUEST_ERROR':
             return {
                 ...state,
                 Pending: false,
@@ -156,6 +203,7 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
             };
 
         case 'SEND_COMMENT_REQUEST':
+        case 'GET_COMMENTS_REQUEST':
             return {
                 ...state,
                 Pending: true
@@ -164,14 +212,16 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
         case 'SEND_COMMENT_REQUEST_SUCCESS':
             return {
                 ...state,
-                Pending: false
+                Pending: false,
+                CommentsList: [...state.CommentsList, action.comment]
             };
 
-        case 'SEND_COMMENT_REQUEST_ERROR':
+        case 'GET_COMMENTS_REQUEST_SUCCESS':
             return {
                 ...state,
                 Pending: false,
-                ErrorInner: action.ErrorInner
+                CommentsList: action.CommentsList,
+                CommentsCount: action.CommentsList.length
             };
 
         case 'CLEAN_ERROR_INNER':

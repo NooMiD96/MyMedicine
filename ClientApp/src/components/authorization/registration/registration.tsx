@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Modal, Button, Icon, Input, Form } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { AlertModule } from 'core/app/components/alertModule';
+import hasErrors from 'core/app/components/formErrorHandler';
 import StyleWrapper from './registration.style';
 const FormItem = Form.Item;
 
@@ -40,8 +41,6 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
             });
         }
     }
-
-    hasErrors = (fieldsError: any): boolean => Object.keys(fieldsError).some(field => fieldsError[field]);
 
     showModal = () => this.setState({
         visible: true
@@ -125,7 +124,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 onCancel={this.handleCancel}
                 footer={[
                     <Button key='back' onClick={this.handleCancel}>Return</Button>,
-                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={this.hasErrors(getFieldsError())}>
+                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError())}>
                         Log in
                     </Button>
                 ]}

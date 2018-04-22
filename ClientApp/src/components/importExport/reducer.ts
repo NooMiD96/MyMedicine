@@ -2,6 +2,8 @@ import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as PostActions } from '../home/reducer';
+import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
+import { message } from 'antd';
 // ----------------- STATE -----------------
 export interface ImportExportState {
     Uploading: boolean;
@@ -39,12 +41,16 @@ export const actionCreators = {
                 throw new Error(response.statusText);
             }
             return response.json();
-        }).then((success) => {
-            if (!success) {
+        }).then((data) => {
+            if (!data) {
                 throw new Error('Some trouble when importing.');
             }
+            if (data.Error === 'auth') {
+                AuthActions.LogOut()(dispatch as any, getState);
+                message.error('Need auth again');
+                return;
+            }
             dispatch({ type: 'IMPORT_SUCCESS' });
-            debugger
             PostActions.getPosts(1, 5)(dispatch as any, getState);
         }).catch((err: Error) => {
             console.log('Error :-S in user\n', err.message);

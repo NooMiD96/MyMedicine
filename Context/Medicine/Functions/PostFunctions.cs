@@ -88,7 +88,7 @@ namespace MyMedicine.Context.Medicine
             return true;
         }
 
-        public async Task<bool> AddNewComment(int postId, string userName, string comment)
+        public async Task<Comment> AddNewComment(int postId, string userName, string commentInner)
         {
             var date = DateTime.UtcNow;
             var post = await Posts
@@ -97,19 +97,71 @@ namespace MyMedicine.Context.Medicine
 
             if(post == null)
             {
-                return false;
+                return null;
             }
 
-            post.CommentsList.Add(new Comment()
+            var comment = new Comment()
             {
-                CommentInner = comment,
+                CommentInner = commentInner,
                 Date = date,
                 UserName = userName
-            });
+            };
+
+            post.CommentsList.Add(comment);
+            post.CommentsCount++;
 
             await SaveChangesAsync();
 
-            return true;
+            return comment;
+        }
+
+        public async Task<ICollection<Comment>> GetComment(int postId)
+        {
+            var post = await Posts
+                .Where(p => p.PostId == postId)
+                .FirstOrDefaultAsync();
+
+            if(post == null)
+            {
+                return null;
+            }
+
+            await Entry(post)
+                .Collection(p => p.CommentsList)
+                .LoadAsync();
+
+            return post.CommentsList.ToList();
+        }
+
+        public async Task AddNewPost(Post post, string userName)
+        {
+            post.PostId = 0;
+            post.Author = userName;
+            post.Date = DateTime.UtcNow;
+            
+            Posts.Add(post);
+
+            await SaveChangesAsync();
+        }
+        public async Task EditPost(Post post, int postId)
+        {
+            var contextPost = await Posts
+                .Where(p => p.PostId == postId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if(contextPost == null)
+            {
+                return;
+            }
+
+            contextPost.Header = post.Header;
+            contextPost.Context = post.Context;
+            contextPost.ImgUrl = post.ImgUrl;
+
+            Posts.Update(contextPost);
+
+            await SaveChangesAsync();
         }
     }
 }

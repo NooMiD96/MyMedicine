@@ -1,3 +1,3 @@
-import { Edit } from './edit';
+import Edit from './edit';
 
 export default Edit;
