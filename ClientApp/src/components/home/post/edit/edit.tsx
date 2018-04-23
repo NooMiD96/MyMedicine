@@ -7,12 +7,14 @@ import { Layout, Input, Row, Col, Icon, Form, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import * as CreateEditPostState from './reducer';
 import * as PostState from '../view/reducer';
+import * as PostsState from '../../reducer';
 import hasErrors from 'core/app/components/formErrorHandler';
 const { Content } = Layout;
 const FormItem = Form.Item;
 
 interface GetPostFunc {
     GetPost: typeof PostState.actionCreators.GetPost;
+    GetPosts: typeof PostsState.actionCreators.GetPosts;
 }
 
 interface PostStateProps {
@@ -47,9 +49,18 @@ export class Edit extends React.Component<EditProps, {}> {
         }
     }
 
-    componentDidUpdate(prevProps: PostStateProps) {
+    componentDidUpdate(prevProps: CreateEditPostState.CreateEditPostState & PostStateProps) {
         if (prevProps.Context !== this.props.Context || prevProps.Header !== this.props.Header) {
             this.props.form.setFieldsValue({ header: this.props.Header, imgUrl: this.props.ImgUrl, context: this.props.Context });
+        }
+        if (prevProps.Pending && !this.props.Pending && !this.props.ErrorInner) {
+            if (this.props.match.params.id <= 0) {
+                this.props.GetPosts(1, 5);
+                this.props.history.push(`/`);
+            } else {
+                this.props.GetPost(this.props.match.params.id);
+                this.props.history.push(`/post/${this.props.PostId}`);
+            }
         }
     }
 
@@ -159,7 +170,8 @@ function mapStateToProps(state: ApplicationState) {
 
 const mapDispatchToProps = {
     ...CreateEditPostState.actionCreators,
-    GetPost: PostState.actionCreators.GetPost
+    GetPost: PostState.actionCreators.GetPost,
+    GetPosts: PostsState.actionCreators.GetPosts,
 } as typeof CreateEditPostState.actionCreators & GetPostFunc;
 
 export default connect(

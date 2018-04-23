@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Layout, Card, List, Avatar, Input, Row, Col, Icon, Form, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
@@ -26,6 +25,10 @@ export class View extends React.Component<ViewProps, {}> {
 
     componentDidMount() {
         this.props.GetPost(this.props.match.params.id);
+    }
+
+    componentWillUnmount() {
+        this.props.CleanePostData();
     }
 
     SumbitHandler = (e: any) => {
@@ -80,16 +83,33 @@ export class View extends React.Component<ViewProps, {}> {
 
         return <ViewWrapper>
             <Layout>
+                {
+                    UserRole === 'Admin' && <Row className='control-row'>
+                        <Col xs={24} sm={{ span: 2, offset: 1 }}>
+                            <Button
+                                key='edit'
+                                className='edit-button'
+                                onClick={() => this.props.history.push(`/edit/${PostId}`)}
+                            >
+                                Edit
+                            </Button>
+                        </Col>
+                        <Col xs={24} sm={{ span: 2 }}>
+                            <Button
+                                key='delete'
+                                className='delete-button'
+                                onClick={() => {
+                                    this.props.DeletePost(PostId);
+                                    this.props.history.push('/');
+                                }
+                                }
+                            >
+                                Delete
+                            </Button>
+                        </Col>
+                    </Row>
+                }
                 <Header>
-                    {
-                        UserRole === 'Admin' &&
-                        <Button
-                            className='edit-button'
-                            onClick={() => this.props.history.push(`/edit/${PostId}`) }
-                        >
-                            Edit
-                        </Button>
-                    }
                     <h1 className='comment-head'>{title}</h1>
                 </Header>
                 <Content>
@@ -105,8 +125,8 @@ export class View extends React.Component<ViewProps, {}> {
                         </Col>
                     </Row>
                     <Row className='post-inner'>
-                        <Col xs={24} sm={{ span: 20, offset: 2 }}>
-                            {Context.split('\n')[1]}
+                        <Col xs={24} sm={{ span: 20, offset: 2 }} style={{whiteSpace: 'pre-wrap'}}>
+                            {Context.substr(Context.indexOf('\n') + 1)}
                         </Col>
                     </Row>
                 </Content>

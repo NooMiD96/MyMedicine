@@ -2,6 +2,7 @@ import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
+import { actionCreators as PostsActions } from 'src/components/home/reducer';
 import { message } from 'antd';
 // ----------------- STATE -----------------
 export interface PostState {
@@ -64,6 +65,19 @@ interface GetCommentsRequestErrorAction {
     type: 'GET_COMMENTS_REQUEST_ERROR';
     ErrorInner: string;
 }
+interface DeletePostRequestAction {
+    type: 'DELETE_POST_REQUEST';
+}
+interface DeletePostRequestSuccessAction {
+    type: 'DELETE_POST_REQUEST_SUCCESS';
+}
+interface DeletePostRequestErrorAction {
+    type: 'DELETE_POST_REQUEST_ERROR';
+    ErrorInner: string;
+}
+interface CleanePostDataAction {
+    type: 'CLEANE_POST_DATA';
+}
 interface CleanErrorInnerAction {
     type: 'CLEAN_ERROR_INNER';
 }
@@ -71,7 +85,8 @@ interface CleanErrorInnerAction {
 type KnownAction = PostRequestAction | PostRequestSuccessAction | PostRequestErrorAction
     | SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction
     | GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction
-    | CleanErrorInnerAction;
+    | DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction
+    | CleanePostDataAction | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
@@ -156,6 +171,33 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_COMMENTS_REQUEST' });
     },
+    DeletePost: (PostId: number): AppThunkAction<DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction> => (dispatch, _getState) => {
+        const fetchTask = fetch(`/api/post/deletepost?postid=${PostId}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        }).then(response => {
+            if (response.status !== 200) { throw new Error(response.statusText); }
+            return response.json();
+        }).then((data) => {
+            if (data.Error === 'auth') {
+                AuthActions.LogOut()(dispatch as any, _getState);
+                message.error('Need auth again');
+                return;
+            }
+            if (data.Error) {
+                throw new Error('Some trouble when post comment.\n' + data.Error);
+            }
+            dispatch({ type: 'DELETE_POST_REQUEST_SUCCESS' });
+            PostsActions.GetPosts(1, 5)(dispatch as any, _getState);
+        }).catch((err: Error) => {
+            console.log('Error :-S in post\n', err.message);
+            dispatch({ type: 'DELETE_POST_REQUEST_ERROR', ErrorInner: err.message });
+        });
+
+        addTask(fetchTask);
+        dispatch({ type: 'DELETE_POST_REQUEST' });
+    },
+    CleanePostData: () => <CleanePostDataAction>{ type: 'CLEANE_POST_DATA' },
     CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
 };
 
@@ -223,6 +265,9 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
                 CommentsList: action.CommentsList,
                 CommentsCount: action.CommentsList.length
             };
+
+        case 'CLEANE_POST_DATA':
+            return unloadedState;
 
         case 'CLEAN_ERROR_INNER':
             return {

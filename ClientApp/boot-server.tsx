@@ -21,7 +21,7 @@ export default createServerRenderer(params => {
         // dispatch
         store.dispatch(replace(urlAfterBasename));
         store.dispatch(AppState.actionCreators.SetIsMobile(params.data.isMobile ? params.data.isMobile : false));
-        PostsState.actionCreators.getPosts(1, 5)(store.dispatch, store.getState);
+        PostsState.actionCreators.GetPosts(1, 5)(store.dispatch, store.getState);
 
         if (params.data.user) {
             const user = JSON.parse(params.data.user);

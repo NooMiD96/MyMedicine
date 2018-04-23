@@ -163,5 +163,21 @@ namespace MyMedicine.Context.Medicine
 
             await SaveChangesAsync();
         }
+        public async Task DeletePost(int postId)
+        {
+            var contextPost = await Posts
+                .Where(p => p.PostId == postId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (contextPost == null)
+            {
+                return;
+            }
+
+            Posts.Remove(contextPost);
+
+            await SaveChangesAsync();
+        }
     }
 }

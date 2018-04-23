@@ -5,12 +5,13 @@ using System;
 using MyMedicine.Context.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyMedicine.Context.Medicine;
+using System.Threading.Tasks;
 
 namespace MyMedicine
 {
     public class MyServices
     {
-        public static async void InitIdentityDataBase(IServiceProvider serviceProvider, IConfiguration Configuration)
+        public static async Task InitIdentityDataBase(IServiceProvider serviceProvider, IConfiguration Configuration)
         {
             var identityContext = serviceProvider.GetRequiredService<IdentityContext>();
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -69,12 +70,12 @@ namespace MyMedicine
             }
         }
 
-        public static void InitIMedicineDataBase(IServiceProvider serviceProvider, IConfiguration Configuration)
+        public static async Task InitIMedicineDataBase(IServiceProvider serviceProvider, IConfiguration Configuration)
         {
             var medicineContext = serviceProvider.GetRequiredService<MedicineContext>();
             try
             {
-                medicineContext.Database.Migrate();
+                await medicineContext.Database.MigrateAsync();
             } catch(Exception ex)
             {
                 Console.WriteLine($"info: Trouble with first connection to identity database:\n{ex.Message}");

@@ -21,12 +21,12 @@ export class Home extends React.Component<PostsProps, {}> {
 
     componentDidMount() {
         if (!this.props.Posts.length) {
-            this.props.getPosts(1, 5);
+            this.props.GetPosts(1, 5);
         }
     }
 
     PageChangeHandler = (page: any, pageSize: any) => {
-        this.props.getPosts(page, pageSize);
+        this.props.GetPosts(page, pageSize);
     }
 
     public render() {

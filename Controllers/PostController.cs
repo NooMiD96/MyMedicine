@@ -61,7 +61,7 @@ namespace MyMedicine.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return ControllersServices.ErrorMessage("Not auth.");
+                return ControllersServices.ErrorMessage("auth");
             }
 
             var result = await _context.GetComment(postid);
@@ -76,11 +76,11 @@ namespace MyMedicine.Controllers
             }
         }
         [HttpPost("[action]")]
-        public async Task<bool> CreateOrEdit([FromQuery] int postid, [FromBody] Post post)
+        public async Task<string> CreateOrEdit([FromQuery] int postid, [FromBody] Post post)
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return false;
+                return ControllersServices.ErrorMessage("auth");
             }
 
             if (postid <= 0)
@@ -89,10 +89,31 @@ namespace MyMedicine.Controllers
             }
             else
             {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return ControllersServices.ErrorMessage("Not allowed");
+                }
+
                 await _context.EditPost(post, postid);
             }
 
-            return true;
+            return "true";
+        }
+        [HttpDelete("[action]")]
+        public async Task<string> DeletePost([FromQuery] int postid)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return ControllersServices.ErrorMessage("auth");
+            }
+            if (!User.Identity.IsAuthenticated)
+            {
+                return ControllersServices.ErrorMessage("Not allowed");
+            }
+
+            await _context.DeletePost(postid);
+
+            return "true";
         }
     }
 }

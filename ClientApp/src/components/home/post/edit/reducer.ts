@@ -36,6 +36,7 @@ export const actionCreators = {
         const fetchTask = fetch(`/api/post/createoredit?postid=${PostId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            credentials: 'same-origin',
             body: JSON.stringify({ header, context, imgUrl })
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }

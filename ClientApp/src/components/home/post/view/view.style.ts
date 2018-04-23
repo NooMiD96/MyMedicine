@@ -1,6 +1,12 @@
 import styled from 'styled-components';
 
 export default styled.div`
+    @media (max-width: 768px) {
+        .ant-layout-header, .ant-layout-footer {
+            padding: 0;
+        }
+    }
+
     h1 {
         display: inline-block;
     }
@@ -39,13 +45,7 @@ export default styled.div`
         display: inline-block;
     }
 
-    .edit-button {
-        margin-right: 15px;
-    }
-
-    @media (max-width: 768px) {
-        .ant-layout-header, .ant-layout-footer {
-            padding: 0;
-        }
+    .control-row {
+        margin-top: 10px;
     }
 `;

@@ -30,6 +30,14 @@ namespace MyMedicine.Controllers
         [HttpPost("[action]")]
         public async Task<string> Import([FromQuery] int type)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return ControllersServices.ErrorMessage("auth");
+            }
+            if (!User.IsInRole("Admin"))
+            {
+                return ControllersServices.ErrorMessage("Not allowed");
+            }
             var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
             bool isParsed = TryDeserialize(context, type);
 
@@ -45,6 +53,14 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Export()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Content(ControllersServices.ErrorMessage("auth"));
+            }
+            if (!User.IsInRole("Admin"))
+            {
+                return Content(ControllersServices.ErrorMessage("Not allowed "));
+            }
             var postsJson = JsonConvert.SerializeObject(_context.GetAllPosts(), ControllersServices.JsonSettings);
 
             using(var memoryStream = new MemoryStream())

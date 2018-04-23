@@ -35,6 +35,7 @@ export const actionCreators = {
         const fetchTask = fetch(`/api/importexport/import?type=${type}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            credentials: 'same-origin',
             body: file.file
         }).then(response => {
             if (response.status !== 200) {
@@ -51,7 +52,7 @@ export const actionCreators = {
                 return;
             }
             dispatch({ type: 'IMPORT_SUCCESS' });
-            PostActions.getPosts(1, 5)(dispatch as any, getState);
+            PostActions.GetPosts(1, 5)(dispatch as any, getState);
         }).catch((err: Error) => {
             console.log('Error :-S in user\n', err.message);
             dispatch({ type: 'IMPORT_ERROR', ErrorInner: err.message });

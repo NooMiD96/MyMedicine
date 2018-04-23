@@ -44,7 +44,8 @@ namespace MyMedicine
                 .AddEntityFrameworkStores<IdentityContext>();
 
             var serviceProvider = services.BuildServiceProvider();
-            MyServices.InitIdentityDataBase(serviceProvider, Configuration);
+            MyServices.InitIdentityDataBase(serviceProvider, Configuration).GetAwaiter().GetResult();
+            MyServices.InitIMedicineDataBase(serviceProvider, Configuration).GetAwaiter().GetResult();
 
             services.AddMvc();
         }
