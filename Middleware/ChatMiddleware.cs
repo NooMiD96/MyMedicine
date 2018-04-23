@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MyMedicine.Models.Chat;

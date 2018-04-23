@@ -1,12 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyMedicine.Context.Medicine
 {
@@ -23,15 +15,5 @@ namespace MyMedicine.Context.Medicine
         public DbSet<Symptom> Symptoms { get; set; }
 
         public MedicineContext(DbContextOptions<MedicineContext> options) : base(options) { }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer(ConnectingString);
-        //}
-
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //}
-
     }
 }

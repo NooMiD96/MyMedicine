@@ -170,6 +170,9 @@
     <None Remove="ClientApp\store\counter.ts" />
     <None Remove="ClientApp\store\index.ts" />
     <None Remove="Properties\PublishProfiles\AdvancedSettings.pubxml" />
+    <None Remove="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Remove="Properties\PublishProfiles\mymedicine - FTP.pubxml" />
+    <None Remove="Properties\PublishProfiles\mymedicine - Web Deploy.pubxml" />
   </ItemGroup>
 
   <ItemGroup>
