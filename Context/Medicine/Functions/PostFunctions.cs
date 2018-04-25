@@ -179,5 +179,28 @@ namespace MyMedicine.Context.Medicine
 
             await SaveChangesAsync();
         }
+        public async Task DeleteCommentsList(int postid, List<int> commentsListId)
+        {
+            var post = await Posts
+                .Where(p => p.PostId == postid)
+                .FirstOrDefaultAsync();
+
+            if(post == null)
+            {
+                return;
+            }
+
+            await Entry(post)
+                .Collection(p => p.CommentsList)
+                .LoadAsync();
+
+            post.CommentsCount -= commentsListId.Count;
+            var commentsToDelete = post.CommentsList
+                .Where(c => commentsListId.IndexOf(c.CommentId) != -1);
+
+            Comments.RemoveRange(commentsToDelete);
+
+            await SaveChangesAsync();
+        }
     }
 }

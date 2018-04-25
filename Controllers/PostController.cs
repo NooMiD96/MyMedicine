@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyMedicine.Context.Medicine;
 using Newtonsoft.Json;
 using MyMedicine.Controllers.Services;
+using System.Collections.Generic;
 
 namespace MyMedicine.Controllers
 {
@@ -77,6 +78,10 @@ namespace MyMedicine.Controllers
             {
                 return ControllersServices.ErrorMessage("auth");
             }
+            if (!User.IsInRole("Admin"))
+            {
+                return ControllersServices.ErrorMessage("Not allowed");
+            }
 
             if (postid <= 0)
             {
@@ -84,16 +89,28 @@ namespace MyMedicine.Controllers
             }
             else
             {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return ControllersServices.ErrorMessage("Not allowed");
-                }
-
                 await _context.EditPost(post, postid);
             }
 
             return "true";
         }
+        [HttpDelete("[action]")]
+        public async Task<string> DeleteCommentsList([FromQuery] int postid, [FromBody] List<int> commentsListId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return ControllersServices.ErrorMessage("auth");
+            }
+            if (!User.IsInRole("Admin"))
+            {
+                return ControllersServices.ErrorMessage("Not allowed");
+            }
+
+            await _context.DeleteCommentsList(postid, commentsListId);
+
+            return "true";
+        }
+
         [HttpDelete("[action]")]
         public async Task<string> DeletePost([FromQuery] int postid)
         {
@@ -101,7 +118,7 @@ namespace MyMedicine.Controllers
             {
                 return ControllersServices.ErrorMessage("auth");
             }
-            if (!User.Identity.IsAuthenticated)
+            if (!User.IsInRole("Admin"))
             {
                 return ControllersServices.ErrorMessage("Not allowed");
             }

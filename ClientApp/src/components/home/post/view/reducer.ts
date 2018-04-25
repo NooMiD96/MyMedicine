@@ -75,6 +75,16 @@ interface DeletePostRequestErrorAction {
     type: 'DELETE_POST_REQUEST_ERROR';
     ErrorInner: string;
 }
+interface DeleteCommentListRequestAction {
+    type: 'DELETE_COMMENT_LIST_REQUEST';
+}
+interface DeleteCommentListRequestSuccessAction {
+    type: 'DELETE_COMMENT_LIST_REQUEST_SUCCESS';
+}
+interface DeleteCommentListRequestErrorAction {
+    type: 'DELETE_COMMENT_LIST_REQUEST_ERROR';
+    ErrorInner: string;
+}
 interface CleanePostDataAction {
     type: 'CLEANE_POST_DATA';
 }
@@ -86,6 +96,7 @@ type KnownAction = PostRequestAction | PostRequestSuccessAction | PostRequestErr
     | SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction
     | GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction
     | DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction
+    | DeleteCommentListRequestAction | DeleteCommentListRequestSuccessAction | DeleteCommentListRequestErrorAction
     | CleanePostDataAction | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
@@ -197,6 +208,34 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'DELETE_POST_REQUEST' });
     },
+    DeleteCommentsList: (PostId: number, commentList: [any]): AppThunkAction<DeleteCommentListRequestAction | DeleteCommentListRequestSuccessAction | DeleteCommentListRequestErrorAction> => (dispatch, _getState) => {
+        const fetchTask = fetch(`/api/post/deletecommentslist?postid=${PostId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            credentials: 'same-origin',
+            body: JSON.stringify(commentList)
+        }).then(response => {
+            if (response.status !== 200) { throw new Error(response.statusText); }
+            return response.json();
+        }).then((data) => {
+            if (data.Error === 'auth') {
+                AuthActions.LogOut()(dispatch as any, _getState);
+                message.error('Need auth again');
+                return;
+            }
+            if (data.Error) {
+                throw new Error('Some trouble when delete comments.\n' + data.Error);
+            }
+            dispatch({ type: 'DELETE_COMMENT_LIST_REQUEST_SUCCESS' });
+            actionCreators.GetComments()(dispatch as any, _getState);
+        }).catch((err: Error) => {
+            console.log('Error :-S in post\n', err.message);
+            dispatch({ type: 'DELETE_COMMENT_LIST_REQUEST_ERROR', ErrorInner: err.message });
+        });
+
+        addTask(fetchTask);
+        dispatch({ type: 'DELETE_COMMENT_LIST_REQUEST' });
+    },
     CleanePostData: () => <CleanePostDataAction>{ type: 'CLEANE_POST_DATA' },
     CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
 };
@@ -235,6 +274,8 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
                 CommentsList: action.CommentsList
             };
 
+        case 'DELETE_COMMENT_LIST_REQUEST_ERROR':
+        case 'DELETE_POST_REQUEST_ERROR':
         case 'POST_REQUEST_ERROR':
         case 'SEND_COMMENT_REQUEST_ERROR':
         case 'GET_COMMENTS_REQUEST_ERROR':
@@ -244,6 +285,8 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
                 ErrorInner: action.ErrorInner
             };
 
+        case 'DELETE_COMMENT_LIST_REQUEST':
+        case 'DELETE_POST_REQUEST':
         case 'SEND_COMMENT_REQUEST':
         case 'GET_COMMENTS_REQUEST':
             return {
@@ -268,6 +311,13 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
 
         case 'CLEANE_POST_DATA':
             return unloadedState;
+
+        case 'DELETE_POST_REQUEST_SUCCESS':
+        case 'DELETE_COMMENT_LIST_REQUEST_SUCCESS':
+            return {
+                ...state,
+                Pending: false
+            };
 
         case 'CLEAN_ERROR_INNER':
             return {

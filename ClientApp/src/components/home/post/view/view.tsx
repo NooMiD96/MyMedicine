@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Layout, Card, List, Avatar, Input, Row, Col, Icon, Form, Button } from 'antd';
+import { Layout, Card, List, Avatar, Input, Row, Col, Icon, Form, Button, Checkbox } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import ViewWrapper from './view.style';
 import { ApplicationState } from 'src/reducer';
@@ -16,11 +16,18 @@ type ViewProps = PostState.PostState
     & typeof PostState.actionCreators
     & RouteComponentProps<{ id: number }>;
 
-export class View extends React.Component<ViewProps, {}> {
+type ViewState = { checkedList: any };
+
+export class View extends React.Component<ViewProps, ViewState> {
     constructor(props: any) {
         super(props);
 
         this.SumbitHandler = this.SumbitHandler.bind(this);
+        this.onChangeChecker = this.onChangeChecker.bind(this);
+
+        this.state = {
+            checkedList: {}
+        };
     }
 
     componentDidMount() {
@@ -35,13 +42,55 @@ export class View extends React.Component<ViewProps, {}> {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                this.setState({
-                    loading: true
-                });
                 this.props.SendComment(values.comment, this.props.PostId);
                 this.props.form.resetFields();
             }
         });
+    }
+
+    AdminCommentListRender = (item: PostState.Comment) => (
+        <List.Item
+            actions={[<Checkbox value={item.CommentId} key={item.CommentId} onChange={this.onChangeChecker} />]}
+        >
+            <List.Item.Meta
+                avatar={<Avatar style={{ verticalAlign: 'middle' }} size='large'>{item.UserName}</Avatar>}
+                title={<p>{item.UserName}</p>}
+                description={item.Date.toLocaleString()}
+            />
+            <div className='comment-inner'>{item.CommentInner}</div>
+        </List.Item>
+    )
+
+    UserCommentListRender = (item: PostState.Comment) => (
+        <List.Item>
+            <List.Item.Meta
+                avatar={<Avatar style={{ verticalAlign: 'middle' }} size='large'>{item.UserName}</Avatar>}
+                title={<p>{item.UserName}</p>}
+                description={item.Date.toLocaleString()}
+            />
+            <div className='comment-inner'>{item.CommentInner}</div>
+        </List.Item>
+    )
+
+    onChangeChecker = (item: any) => {
+        this.setState({
+            checkedList: {
+                ...this.state.checkedList,
+                [item.target.value]: item.target.checked
+            }
+        });
+    }
+
+    deleteCommentsHandler = () => {
+        const { checkedList } = this.state;
+        let listToSend = [];
+        let prop;
+        for (prop in checkedList) {
+            if (checkedList[prop]) {
+                listToSend.push(prop);
+            }
+        }
+        this.props.DeleteCommentsList(this.props.PostId, listToSend as any);
     }
 
     public render() {
@@ -60,7 +109,17 @@ export class View extends React.Component<ViewProps, {}> {
             Send
         </Button>;
 
-        const form = <Form
+        const deleteCheckedComments = <Button
+            key='delete-comments-button'
+            type='primary'
+            loading={Pending}
+            onClick={this.deleteCommentsHandler}
+        >
+            Delete checked comments
+        </Button>;
+
+        const formCommentInput = <Form
+            key='input-comment'
             onSubmit={this.SumbitHandler}
         >
             <FormItem
@@ -80,6 +139,23 @@ export class View extends React.Component<ViewProps, {}> {
                 )}
             </FormItem>
         </Form>;
+
+        const listOfComments = <List
+            className='comment-list'
+            loading={Pending}
+            itemLayout='horizontal'
+            // loadMore={'loadMore'}
+            footer={UserName && [
+                deleteCheckedComments,
+                formCommentInput
+            ]}
+            dataSource={CommentsList}
+            renderItem={
+                UserRole === 'Admin'
+                    ? this.AdminCommentListRender
+                    : this.UserCommentListRender
+            }
+        />;
 
         return <ViewWrapper>
             <Layout>
@@ -101,10 +177,9 @@ export class View extends React.Component<ViewProps, {}> {
                                 onClick={() => {
                                     this.props.DeletePost(PostId);
                                     this.props.history.push('/');
-                                }
-                                }
+                                }}
                             >
-                                Delete
+                                Delete post
                             </Button>
                         </Col>
                     </Row>
@@ -125,30 +200,13 @@ export class View extends React.Component<ViewProps, {}> {
                         </Col>
                     </Row>
                     <Row className='post-inner'>
-                        <Col xs={24} sm={{ span: 20, offset: 2 }} style={{whiteSpace: 'pre-wrap'}}>
+                        <Col xs={24} sm={{ span: 20, offset: 2 }} style={{ whiteSpace: 'pre-wrap' }}>
                             {Context.substr(Context.indexOf('\n') + 1)}
                         </Col>
                     </Row>
                 </Content>
                 <Footer>
-                    <List
-                        className='demo-loadmore-list'
-                        loading={Pending}
-                        itemLayout='horizontal'
-                        // loadMore={'loadMore'}
-                        footer={UserName && form}
-                        dataSource={CommentsList}
-                        renderItem={(item: PostState.Comment) => (
-                            <List.Item>
-                                <List.Item.Meta
-                                    avatar={<Avatar style={{ verticalAlign: 'middle' }} size='large'>{item.UserName}</Avatar>}
-                                    title={<p>{item.UserName}</p>}
-                                    description={item.Date.toLocaleString()}
-                                />
-                                <div className='comment-inner'>{item.CommentInner}</div>
-                            </List.Item>
-                        )}
-                    />
+                    {listOfComments}
                 </Footer>
             </Layout>
         </ViewWrapper>;

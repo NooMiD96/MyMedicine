@@ -7,6 +7,7 @@ namespace MyMedicine.Context.Medicine
         static private object lockObj = new object();
 
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
         public DbSet<Visitation> Visitations { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Separation> Separations { get; set; }

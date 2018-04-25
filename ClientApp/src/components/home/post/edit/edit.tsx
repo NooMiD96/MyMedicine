@@ -171,7 +171,7 @@ function mapStateToProps(state: ApplicationState) {
 const mapDispatchToProps = {
     ...CreateEditPostState.actionCreators,
     GetPost: PostState.actionCreators.GetPost,
-    GetPosts: PostsState.actionCreators.GetPosts,
+    GetPosts: PostsState.actionCreators.GetPosts
 } as typeof CreateEditPostState.actionCreators & GetPostFunc;
 
 export default connect(
