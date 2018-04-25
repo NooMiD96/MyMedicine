@@ -31,7 +31,7 @@ class MyHeader extends React.Component<HeaderProps, {}> {
                 <NavLink exact to={'/SearchDisease'}>Search Disease</NavLink>
             </Menu.Item>,
             <Menu.Item key='3'>
-                <NavLink exact to={'/DiseaseList'}>Disease List</NavLink>
+                <NavLink exact to={'/DiseaseSymptomList'}>Disease Symptom List</NavLink>
             </Menu.Item>,
             <Menu.Item key='4'>
                 <NavLink exact to={'/Chat'}>Chat</NavLink>

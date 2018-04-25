@@ -9,6 +9,6 @@ export const routes = <MyLayout>
     <Route path='/Edit/:id' component={ AsyncComponent(() => import(/* webpackChunkName: "Edit" */ 'components/home/post/edit')) } />
     <Route exact path='/Visitation' component={ AsyncComponent(() => import(/* webpackChunkName: "Visitation" */ 'components/visitation')) } />
     <Route exact path='/SearchDisease' component={ AsyncComponent(() => import(/* webpackChunkName: "SearchDisease" */ 'components/searchDisease')) } />
-    <Route exact path='/DiseaseList' component={ AsyncComponent(() => import(/* webpackChunkName: "DiseaseList" */ 'components/diseaseList')) } />
+    <Route exact path='/DiseaseSymptomList' component={ AsyncComponent(() => import(/* webpackChunkName: "DiseaseSymptomList" */ 'components/diseaseSymptomList')) } />
     <Route exact path='/Chat' component={ AsyncComponent(() => import(/* webpackChunkName: "Chat" */ 'components/chat')) } />
 </MyLayout>;

@@ -15,7 +15,7 @@
     "lib": [
       "dom",
       "es2015",
-      "es6"
+      "es7"
     ],
     "types": [
       "webpack-env"

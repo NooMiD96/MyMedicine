@@ -1,3 +1,4 @@
+import * as DiseaseSymptomListState from 'components/diseaseSymptomList/reducer';
 import * as PostsState from 'components/home/reducer';
 import * as CreateEditPostState from 'components/home/post/edit/reducer';
 import * as PostState from 'components/home/post/view/reducer';
@@ -7,6 +8,7 @@ import * as ImportExportState from 'components/importExport/reducer';
 import * as AppState from './core/app/reducer';
 
 export interface ApplicationState {
+    diseaseSymptomList: DiseaseSymptomListState.DiseaseSymptomListState;
     posts: PostsState.PostsState;
     createEditPost: CreateEditPostState.CreateEditPostState;
     post: PostState.PostState;
@@ -17,6 +19,7 @@ export interface ApplicationState {
 }
 
 export const reducers = {
+    diseaseSymptomList: DiseaseSymptomListState.reducer,
     posts: PostsState.reducer,
     createEditPost: CreateEditPostState.reducer,
     post: PostState.reducer,

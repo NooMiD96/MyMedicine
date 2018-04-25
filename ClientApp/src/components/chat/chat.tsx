@@ -7,8 +7,7 @@ import * as ChatState from './reducer';
 import Colors from './chat.background';
 import ChatWrapped from './chat.style';
 
-type ChatProps =
-    ChatState.ChatState
+type ChatProps = ChatState.ChatState
     & { UserName: string }
     & typeof ChatState.actionCreators
     & RouteComponentProps<{}>;
