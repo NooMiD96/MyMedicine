@@ -12,7 +12,7 @@ namespace MyMedicine.Controllers.Services
             NullValueHandling = NullValueHandling.Ignore,
         };
 
-        static public async Task<string> GetJsonFromBodyRequest(Stream body)
+        static public async Task<string> GetJsonFromBodyRequestAsync(Stream body)
         {
             string content;
             using (var reader = new StreamReader(body))

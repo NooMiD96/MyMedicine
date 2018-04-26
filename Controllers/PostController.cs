@@ -40,7 +40,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("auth");
             }
 
-            var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
+            var context = await ControllersServices.GetJsonFromBodyRequestAsync(Request.Body);
             var result = await _context.AddNewCommentAsync(postid, User.Identity.Name, context);
 
             if (result != null)

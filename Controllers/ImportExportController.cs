@@ -34,7 +34,7 @@ namespace MyMedicine.Controllers
             {
                 return ControllersServices.ErrorMessage("Not allowed");
             }
-            var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
+            var context = await ControllersServices.GetJsonFromBodyRequestAsync(Request.Body);
             bool isParsed = TryDeserialize(context, type);
 
             if(!isParsed)
@@ -57,17 +57,13 @@ namespace MyMedicine.Controllers
             {
                 return Content(ControllersServices.ErrorMessage("Not allowed "));
             }
-            var postsJson = JsonConvert.SerializeObject(_context.GetAllPosts(), ControllersServices.JsonSettings);
 
             using(var memoryStream = new MemoryStream())
             {
                 using(var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create))
                 {
-                    var postsFileInZip = zip.CreateEntry("Posts.json", CompressionLevel.Optimal);
-
-                    using(var fileStream = postsFileInZip.Open())
-                        using(var writerStream = new StreamWriter(fileStream, Encoding.UTF8))
-                            await writerStream.WriteAsync(postsJson);
+                    await WriteInFile(zip, "Posts.json", _context.GetAllPosts());
+                    await WriteInFile(zip, "Symptoms.json", _context.GetAllSymptoms());
                 }
 
                 return File(memoryStream.ToArray(), "application/json; charset=UTF-8", "Import.zip");
