@@ -24,7 +24,7 @@ namespace MyMedicine.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            if(!context.WebSockets.IsWebSocketRequest || context.Request.Path != "/wschat")
+            if (!context.WebSockets.IsWebSocketRequest || context.Request.Path != "/wschat")
             {
                 await _next.Invoke(context);
                 return;
@@ -39,50 +39,53 @@ namespace MyMedicine.Middleware
 
             string response;
             MessageModel message;
-            while(true)
+            while (true)
             {
-                if(ct.IsCancellationRequested)
+                if (ct.IsCancellationRequested)
                     break;
 
                 try
                 {
                     response = await currentSocket.ReceiveStringAsync(ct);
-                } catch(Exception exp)
+                }
+                catch (Exception exp)
                 {
                     Console.WriteLine($"info: socket aborted.\nMore info: {exp.Message}");
                     break;
                 }
 
-                if(string.IsNullOrEmpty(response))
+                if (string.IsNullOrEmpty(response))
                 {
-                    if(currentSocket.State != WebSocketState.Open)
+                    if (currentSocket.State != WebSocketState.Open)
                         break;
                     continue;
                 }
 
                 try
                 {
-                    if(response == "GetMessages")
+                    if (response == "GetMessages")
                     {
                         var savedMessages = messages.ToArray();
-                        if(savedMessages.Length > 0)
-                            foreach(var ms in savedMessages)
+                        if (savedMessages.Length > 0)
+                            foreach (var ms in savedMessages)
                                 await _sockets[socketId].SendStringAsync(ms, ct);
                         await _sockets[socketId].SendStringAsync(_sockets.Count, ct);
                         continue;
-                    } else
+                    }
+                    else
                     {
                         message = JsonConvert.DeserializeObject<MessageModel>(response);
                         messages.AddNewMessage(message);
                     }
-                } catch
+                }
+                catch
                 {
                     continue;
                 }
 
-                foreach(var socket in _sockets)
+                foreach (var socket in _sockets)
                 {
-                    if(socket.Value.State != WebSocketState.Open)
+                    if (socket.Value.State != WebSocketState.Open)
                         continue;
                     await socket.Value.SendStringAsync(message, _sockets.Count, ct);
                 }
@@ -90,7 +93,7 @@ namespace MyMedicine.Middleware
 
             _sockets.TryRemove(socketId, out _);
 
-            if(currentSocket.State != WebSocketState.Aborted)
+            if (currentSocket.State != WebSocketState.Aborted)
                 await currentSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
 
             currentSocket.Dispose();
@@ -99,19 +102,14 @@ namespace MyMedicine.Middleware
 
         private async void CounterUpdater()
         {
-            while(true)
+            while (true)
             {
                 Thread.Sleep(60000);
 
-                if(!_sockets.IsEmpty)
-                {
-                    foreach(var socket in _sockets)
-                    {
-                        if(socket.Value.State != WebSocketState.Open)
-                            continue;
-                        await socket.Value.SendStringAsync(_sockets.Count);
-                    }
-                }
+                if (!_sockets.IsEmpty)
+                    foreach (var socket in _sockets)
+                        if (socket.Value.State == WebSocketState.Open)
+                            await socket.Value.SendStringAsync(_sockets.Count);
             }
 
         }

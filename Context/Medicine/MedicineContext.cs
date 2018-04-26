@@ -2,7 +2,7 @@
 
 namespace MyMedicine.Context.Medicine
 {
-    public partial class MedicineContext: DbContext
+    public partial class MedicineContext : DbContext
     {
         static private object lockObj = new object();
 

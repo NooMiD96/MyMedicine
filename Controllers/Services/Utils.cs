@@ -10,10 +10,10 @@ namespace MyMedicine.Controllers
 
         public static bool IsMobileBrowser(string UserAgent)
         {
-            if(UserAgent.Length < 4)
+            if (UserAgent.Length < 4)
                 return false;
 
-            if(MobileCheck.IsMatch(UserAgent) || MobileVersionCheck.IsMatch(UserAgent.Substring(0, 4)))
+            if (MobileCheck.IsMatch(UserAgent) || MobileVersionCheck.IsMatch(UserAgent.Substring(0, 4)))
                 return true;
 
             return false;

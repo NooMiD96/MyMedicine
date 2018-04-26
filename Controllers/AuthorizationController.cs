@@ -8,7 +8,7 @@ using MyMedicine.Controllers.Services;
 namespace MyMedicine.Controllers
 {
     [Route("api/[controller]")]
-    public partial class AuthorizationController: Controller
+    public partial class AuthorizationController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -23,11 +23,11 @@ namespace MyMedicine.Controllers
         public async Task<string> Registration([FromBody] RegistrationModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user != null)
+            if (user != null)
                 return ControllersServices.ErrorMessage("User with this email exist\nPlease try again");
 
             user = await _userManager.FindByNameAsync(model.Email);
-            if(user != null)
+            if (user != null)
                 return ControllersServices.ErrorMessage("User with this user name exist\nPlease try again");
 
             user = new IdentityUser()
@@ -37,11 +37,11 @@ namespace MyMedicine.Controllers
             };
             var identityResult = await _userManager.CreateAsync(user, model.Password);
 
-            if(!identityResult.Succeeded)
+            if (!identityResult.Succeeded)
                 return ControllersServices.ErrorMessage($"Can't create user\n{(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             identityResult = await _userManager.AddToRoleAsync(user, "User");
-            if(!identityResult.Succeeded)
+            if (!identityResult.Succeeded)
                 return ControllersServices.ErrorMessage($"Can't create user\n{(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             var signResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
@@ -60,7 +60,7 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetUserInfo()
         {
-            if(!User.Identity.IsAuthenticated)
+            if (!User.Identity.IsAuthenticated)
                 return ControllersServices.ErrorMessage("User is not authorization");
 
             return await UserInfo();

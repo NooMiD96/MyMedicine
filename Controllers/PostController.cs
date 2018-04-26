@@ -19,7 +19,7 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetPosts([FromQuery] int page, [FromQuery] int pageSize)
         {
-            var (Posts, TotalCount) = await _context.GetPostsAndCount(page, pageSize);
+            var (Posts, TotalCount) = await _context.GetPostsAndCountAsync(page, pageSize);
 
             return JsonConvert.SerializeObject(new { Posts, TotalCount }, ControllersServices.JsonSettings);
         }
@@ -27,7 +27,7 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetPost([FromQuery] int postid)
         {
-            var Post = await _context.GetPost(postid);
+            var Post = await _context.GetPostAsync(postid);
 
             return JsonConvert.SerializeObject(new { Post }, ControllersServices.JsonSettings);
         }
@@ -41,7 +41,7 @@ namespace MyMedicine.Controllers
             }
 
             var context = await ControllersServices.GetJsonFromBodyRequest(Request.Body);
-            var result = await _context.AddNewComment(postid, User.Identity.Name, context);
+            var result = await _context.AddNewCommentAsync(postid, User.Identity.Name, context);
 
             if (result != null)
             {
@@ -60,7 +60,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("auth");
             }
 
-            var result = await _context.GetComment(postid);
+            var result = await _context.GetCommentAsync(postid);
 
             if (result != null)
             {
@@ -85,11 +85,11 @@ namespace MyMedicine.Controllers
 
             if (postid <= 0)
             {
-                await _context.AddNewPost(post, User.Identity.Name);
+                await _context.AddNewPostAsync(post, User.Identity.Name);
             }
             else
             {
-                await _context.EditPost(post, postid);
+                await _context.EditPostAsync(post, postid);
             }
 
             return "true";
@@ -106,7 +106,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
 
-            await _context.DeleteCommentsList(postid, commentsListId);
+            await _context.DeleteCommentsListAsync(postid, commentsListId);
 
             return "true";
         }
@@ -123,7 +123,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
 
-            await _context.DeletePost(postid);
+            await _context.DeletePostAsync(postid);
 
             return "true";
         }

@@ -15,7 +15,7 @@ namespace MyMedicine.Controllers.Services
         static public async Task<string> GetJsonFromBodyRequest(Stream body)
         {
             string content;
-            using(var reader = new StreamReader(body))
+            using (var reader = new StreamReader(body))
             {
                 content = await reader.ReadToEndAsync();
             }

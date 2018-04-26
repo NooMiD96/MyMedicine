@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyMedicine.Context.Medicine
 {
-    public class Post: IEquatable<Post>
+    public class Post : IEquatable<Post>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PostId { get; set; }
@@ -26,10 +26,11 @@ namespace MyMedicine.Context.Medicine
 
         public bool Equals(Post item)
         {
-            if(this.PostId == item.PostId)
+            if (this.PostId == item.PostId)
             {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }

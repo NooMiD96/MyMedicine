@@ -11,10 +11,10 @@ namespace MyMedicine.Middleware
 {
     public static class ChatHelper
     {
-        public static async Task<string> ReceiveStringAsync(this WebSocket socket, CancellationToken ct = default(CancellationToken))
+        public static async Task<string> ReceiveStringAsync(this WebSocket socket, CancellationToken ct = default)
         {
             var buffer = new ArraySegment<byte>(new byte[8192]);
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 WebSocketReceiveResult result;
                 do
@@ -24,24 +24,24 @@ namespace MyMedicine.Middleware
                     result = await socket.ReceiveAsync(buffer, ct);
                     ms.Write(buffer.Array, buffer.Offset, result.Count);
                 }
-                while(!result.EndOfMessage);
+                while (!result.EndOfMessage);
 
                 ms.Seek(0, SeekOrigin.Begin);
-                if(result.MessageType != WebSocketMessageType.Text)
+                if (result.MessageType != WebSocketMessageType.Text)
                     return null;
 
-                using(var reader = new StreamReader(ms, Encoding.UTF8))
+                using (var reader = new StreamReader(ms, Encoding.UTF8))
                     return await reader.ReadToEndAsync();
             }
         }
 
-        public static Task SendStringAsync(this WebSocket socket, MessageModel message, int countOfConnections, CancellationToken ct = default(CancellationToken)) =>
+        public static Task SendStringAsync(this WebSocket socket, MessageModel message, int countOfConnections, CancellationToken ct = default) =>
             SendStringAsync(socket, JsonConvert.SerializeObject(new { message, countOfConnections }), ct);
 
-        public static Task SendStringAsync(this WebSocket socket, int countOfConnections, CancellationToken ct = default(CancellationToken)) =>
+        public static Task SendStringAsync(this WebSocket socket, int countOfConnections, CancellationToken ct = default) =>
             SendStringAsync(socket, JsonConvert.SerializeObject(new { countOfConnections }), ct);
 
-        public static Task SendStringAsync(this WebSocket socket, MessageModel message, CancellationToken ct = default(CancellationToken)) =>
+        public static Task SendStringAsync(this WebSocket socket, MessageModel message, CancellationToken ct = default) =>
             SendStringAsync(socket, JsonConvert.SerializeObject(new { message }), ct);
 
         public static Task SendStringAsync(WebSocket socket, string jsonString, CancellationToken ct)

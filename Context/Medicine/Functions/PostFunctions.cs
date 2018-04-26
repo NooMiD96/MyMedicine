@@ -9,7 +9,7 @@ namespace MyMedicine.Context.Medicine
 {
     public partial class MedicineContext
     {
-        public async Task<(ICollection<PreviewPost> Posts, int TotalCount)> GetPostsAndCount(int page, int pageSize) => (
+        public async Task<(ICollection<PreviewPost> Posts, int TotalCount)> GetPostsAndCountAsync(int page, int pageSize) => (
             page <= 0 || pageSize <= 0 ?
                 (null, Posts.Count())
             :
@@ -17,7 +17,8 @@ namespace MyMedicine.Context.Medicine
                     .OrderBy(p => p.PostId)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
-                    .Select(item => new PreviewPost() {
+                    .Select(item => new PreviewPost()
+                    {
                         Author = item.Author,
                         CommentsCount = item.CommentsCount,
                         Date = item.Date,
@@ -26,22 +27,42 @@ namespace MyMedicine.Context.Medicine
                         ImgUrl = item.ImgUrl
                     })
                     .ToListAsync(),
-                Posts.Count())
+                await Posts.CountAsync())
         );
-
-        public async Task<Post> GetPost(int postId) => await Posts
+        public async Task<Post> GetPostAsync(int postId) => await Posts
             .Include(post => post.CommentsList)
             .FirstOrDefaultAsync(post => post.PostId == postId);
-
-        public ICollection<Post> GetAllPosts() => Posts
+        public IEnumerable<Post> GetAllPosts() => Posts
             .Include(p => p.CommentsList)
-            .ToList();
-
-        public bool AddPostListAsync(List<Post> posts, int type)
+            .AsEnumerable();
+        public async Task<ICollection<Comment>> GetCommentAsync(int postId)
         {
-            var contextPosts = Posts.AsNoTracking().ToList();
+            var post = await Posts
+                .Where(p => p.PostId == postId)
+                .FirstOrDefaultAsync();
 
-            switch(type)
+            if (post == null)
+            {
+                return null;
+            }
+
+            await Entry(post)
+                .Collection(p => p.CommentsList)
+                .LoadAsync();
+
+            return post.CommentsList.ToList();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <param name="type">0 - add new, 1 - edit, 2 - skip</param>
+        /// <returns></returns>
+        public async ValueTask<bool> ChangePostListAsync(List<Post> posts, int type)
+        {
+            var contextPosts = await Posts.AsNoTracking().ToListAsync();
+
+            switch (type)
             {
                 case 0:
                     posts.ForEach(post => post.PostId = 0);
@@ -52,15 +73,16 @@ namespace MyMedicine.Context.Medicine
 
                 case 1:
                     int index = -1;
-                    foreach(var post in posts)
+                    foreach (var post in posts)
                     {
                         index = contextPosts.IndexOf(post);
 
-                        if(index != -1)
+                        if (index != -1)
                         {
                             contextPosts[index] = post;
                             Posts.Update(contextPosts[index]);
-                        } else
+                        }
+                        else
                         {
                             post.PostId = 0;
                             Posts.Add(post);
@@ -70,8 +92,8 @@ namespace MyMedicine.Context.Medicine
                     break;
 
                 case 2:
-                    foreach(var post in posts)
-                        if(!contextPosts.Contains(post))
+                    foreach (var post in posts)
+                        if (!contextPosts.Contains(post))
                         {
                             post.PostId = 0;
                             Posts.Add(post);
@@ -83,19 +105,19 @@ namespace MyMedicine.Context.Medicine
                     break;
             }
 
-            SaveChanges();
+            await SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<Comment> AddNewComment(int postId, string userName, string commentInner)
+        public async Task<Comment> AddNewCommentAsync(int postId, string userName, string commentInner)
         {
             var date = DateTime.UtcNow;
             var post = await Posts
                 .Where(p => p.PostId == postId)
                 .FirstOrDefaultAsync();
 
-            if(post == null)
+            if (post == null)
             {
                 return null;
             }
@@ -114,43 +136,25 @@ namespace MyMedicine.Context.Medicine
 
             return comment;
         }
-
-        public async Task<ICollection<Comment>> GetComment(int postId)
-        {
-            var post = await Posts
-                .Where(p => p.PostId == postId)
-                .FirstOrDefaultAsync();
-
-            if(post == null)
-            {
-                return null;
-            }
-
-            await Entry(post)
-                .Collection(p => p.CommentsList)
-                .LoadAsync();
-
-            return post.CommentsList.ToList();
-        }
-
-        public async Task AddNewPost(Post post, string userName)
+        public async Task AddNewPostAsync(Post post, string userName)
         {
             post.PostId = 0;
             post.Author = userName;
             post.Date = DateTime.UtcNow;
-            
+
             Posts.Add(post);
 
             await SaveChangesAsync();
         }
-        public async Task EditPost(Post post, int postId)
+
+        public async Task EditPostAsync(Post post, int postId)
         {
             var contextPost = await Posts
                 .Where(p => p.PostId == postId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if(contextPost == null)
+            if (contextPost == null)
             {
                 return;
             }
@@ -163,7 +167,8 @@ namespace MyMedicine.Context.Medicine
 
             await SaveChangesAsync();
         }
-        public async Task DeletePost(int postId)
+
+        public async Task DeletePostAsync(int postId)
         {
             var contextPost = await Posts
                 .Where(p => p.PostId == postId)
@@ -179,13 +184,13 @@ namespace MyMedicine.Context.Medicine
 
             await SaveChangesAsync();
         }
-        public async Task DeleteCommentsList(int postid, List<int> commentsListId)
+        public async Task DeleteCommentsListAsync(int postid, List<int> commentsListId)
         {
             var post = await Posts
                 .Where(p => p.PostId == postid)
                 .FirstOrDefaultAsync();
 
-            if(post == null)
+            if (post == null)
             {
                 return;
             }

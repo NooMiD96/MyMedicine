@@ -22,64 +22,72 @@ namespace MyMedicine.Context.Medicine
 
         public ICollection<Symptom> GetSymptomList(SymptomList symptoms)
         {
-            if(_symptomList.Count == 0)
+            if (_symptomList.Count == 0)
             {
                 _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
                 _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom2Id));
 
-                if(symptoms.Symptom3Id.HasValue)
+                if (symptoms.Symptom3Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom4Id.HasValue)
+                if (symptoms.Symptom4Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom5Id.HasValue)
+                if (symptoms.Symptom5Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom6Id.HasValue)
+                if (symptoms.Symptom6Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom7Id.HasValue)
+                if (symptoms.Symptom7Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom8Id.HasValue)
+                if (symptoms.Symptom8Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom9Id.HasValue)
+                if (symptoms.Symptom9Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }
-                if(symptoms.Symptom10Id.HasValue)
+                if (symptoms.Symptom10Id.HasValue)
                 {
                     _symptomList.Add(symptoms.Symptoms.FirstOrDefault(item => item.SymptomId == symptoms.Symptom1Id));
-                } else
+                }
+                else
                 {
                     return new List<Symptom>(_symptomList);
                 }

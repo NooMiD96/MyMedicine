@@ -5,14 +5,14 @@ namespace MyMedicine.Middleware
 {
     public static class ChatHalper
     {
-        static int CountOfMessageCashed = 10;
+        static readonly int CountOfMessageCashed = 10;
 
         public static void AddNewMessage(this ConcurrentQueue<MessageModel> messages, MessageModel message)
         {
-            if(messages.Count >= CountOfMessageCashed)
+            if (messages.Count >= CountOfMessageCashed)
             {
                 var isDequeueue = false;
-                while(!isDequeueue)
+                while (!isDequeueue)
                     isDequeueue = messages.TryDequeue(out _);
             }
 
