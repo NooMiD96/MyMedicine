@@ -6,6 +6,7 @@ export interface PostsState {
     Posts: Post[];
     TotalCount: number;
     Pending: boolean;
+    ErrorInner: string;
 }
 export interface Post {
     PostId: number;
@@ -66,7 +67,12 @@ export const actionCreators = {
 };
 
 // ---------------- REDUCER ----------------
-const unloadedState: PostsState = { Posts: [], TotalCount: 0, Pending: false };
+const unloadedState: PostsState = {
+    Posts: [],
+    TotalCount: 0,
+    Pending: false,
+    ErrorInner: ''
+};
 
 export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAction) => {
     switch (action.type) {

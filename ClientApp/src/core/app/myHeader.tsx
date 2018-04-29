@@ -22,16 +22,18 @@ class MyHeader extends React.Component<HeaderProps, {}> {
             </Menu.Item>
         ];
         if (Role === 'Admin') {
-            NavLinks.push(<Menu.Item key='1'>
-                <NavLink exact to={'/Visitation'}>Visitation</NavLink>
-            </Menu.Item>);
+            NavLinks = NavLinks.concat([
+                <Menu.Item key='1'>
+                    <NavLink exact to={'/Visitation'}>Visitation</NavLink>
+                </Menu.Item>,
+                <Menu.Item key='2'>
+                    <NavLink exact to={'/Symptoms'}>Symptom List</NavLink>
+                </Menu.Item>
+            ]);
         }
         NavLinks = NavLinks.concat([
-            <Menu.Item key='2'>
-                <NavLink exact to={'/SearchDisease'}>Search Disease</NavLink>
-            </Menu.Item>,
             <Menu.Item key='3'>
-                <NavLink exact to={'/DiseaseSymptomList'}>Disease Symptom List</NavLink>
+                <NavLink exact to={'/SearchDisease'}>Search Disease</NavLink>
             </Menu.Item>,
             <Menu.Item key='4'>
                 <NavLink exact to={'/Chat'}>Chat</NavLink>

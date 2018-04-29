@@ -11,16 +11,16 @@ using Newtonsoft.Json;
 namespace MyMedicine.Controllers
 {
     [Route("api/[controller]")]
-    public class DiseaseSymptomsController : Controller
+    public class SymptomsController : Controller
     {
         private MedicineContext _context;
-        public DiseaseSymptomsController([FromServices] MedicineContext context)
+        public SymptomsController([FromServices] MedicineContext context)
         {
             _context = context;
         }
 
         [HttpGet("[action]")]
-        public string GetSymptoms()
+        public async Task<string> GetSymptoms()
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -31,13 +31,13 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
 
-            var Symptoms = _context.GetAllSymptoms();
+            var Symptoms = await _context.GetListSymptomsAsync();
 
             return JsonConvert.SerializeObject(new { Symptoms }, ControllersServices.JsonSettings);
         }
 
-        [HttpPost("[action]")]
-        public async Task<string> ChangeSymptoms([FromBody] List<Symptom> symptoms)
+        [HttpPatch("[action]")]
+        public async Task<string> ChangeSymptoms([FromBody] List<Symptom> editList)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -48,13 +48,12 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
 
-            await _context.ChangeSymptomsListAsync(symptoms, 1);
+            await _context.ChangeSymptomsListAsync(editList, 1);
 
             return "true";
         }
-
         [HttpDelete("[action]")]
-        public async Task<string> DeleteSymptoms([FromBody] List<Symptom> symptoms)
+        public async Task<string> DeleteSymptoms([FromBody] List<int> deleteList)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -65,7 +64,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
 
-            var Symptoms = await _context.DeletesymptomsAsync(symptoms);
+            var Symptoms = await _context.DeletesymptomsAsync(deleteList);
 
             return "true";
         }

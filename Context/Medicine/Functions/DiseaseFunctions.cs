@@ -10,7 +10,8 @@ namespace MyMedicine.Context.Medicine
     {
         public IEnumerable<Symptom> GetAllSymptoms() => Symptoms
             .AsEnumerable();
-
+        public async Task<List<Symptom>> GetListSymptomsAsync() => await Symptoms
+            .ToListAsync();
         /// <summary>
         /// </summary>
         /// <param name="symptoms">List of symptoms</param>
@@ -67,10 +68,10 @@ namespace MyMedicine.Context.Medicine
             return true;
         }
 
-        public async ValueTask<bool> DeletesymptomsAsync(List<Symptom> symptoms)
+        public async ValueTask<bool> DeletesymptomsAsync(List<int> symptoms)
         {
             var contextSymptoms = Symptoms
-                .Where(s => symptoms.Contains(s))
+                .Where(s => symptoms.Contains(s.SymptomId))
                 .AsNoTracking()
                 .AsEnumerable();
 

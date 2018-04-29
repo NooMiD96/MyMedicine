@@ -15,6 +15,7 @@ export interface PostState {
     CommentsCount: number;
     CommentsList: Comment[];
     Pending: boolean;
+    ErrorInner: string;
 }
 
 export interface Comment {
@@ -249,7 +250,8 @@ const unloadedState: PostState = {
     Date: new Date(),
     CommentsCount: 0,
     CommentsList: [],
-    Pending: false
+    Pending: false,
+    ErrorInner: ''
 };
 
 export const reducer: Reducer<PostState> = (state: PostState, action: KnownAction) => {

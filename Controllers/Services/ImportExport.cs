@@ -68,7 +68,7 @@ namespace MyMedicine.Controllers
             }
 
             var json = JsonConvert.SerializeObject(list, ControllersServices.JsonSettings);
-            var archiveEntry = zip.CreateEntry("Posts.json", CompressionLevel.Optimal);
+            var archiveEntry = zip.CreateEntry(fileName, CompressionLevel.Optimal);
 
             using (var fileStream = archiveEntry.Open())
             using (var writerStream = new StreamWriter(fileStream, Encoding.UTF8))
