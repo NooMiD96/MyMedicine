@@ -2,10 +2,9 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { ApplicationState } from 'src/reducer';
 import { connect } from 'react-redux';
-import { Table, Input, Button, Spin } from 'antd';
+import { Table, Input, Button, Spin, Icon } from 'antd';
 import * as SymptomsState from './reducer';
 import { AlertModule } from 'core/app/components/alertModule';
-// import DiseaseSymptomListWrapped from './diseaseSymptomList.style';
 
 type SymptomsProps = SymptomsState.SymptomsState
     & { UserRole: string }
@@ -18,7 +17,11 @@ type SymptomsState = {
     lastCreateIndex: number,
     EditList: SymptomsState.Symptom[],
     DeleteList: { SymptomId: number }[],
-    SendedList: string
+    SendedList: string,
+    filterData: SymptomsState.Symptom[],
+    searchText: string,
+    filtered: boolean,
+    filterDropdownVisible: boolean
 };
 
 export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
@@ -36,9 +39,15 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
             lastCreateIndex: -1,
             EditList: [],
             DeleteList: [],
-            SendedList: ''
+            SendedList: '',
+            filterData: [],
+            searchText: '',
+            filtered: false,
+            filterDropdownVisible: false
         };
     }
+
+    searchInput: any;
 
     componentDidMount() {
         if (this.props.UserRole === 'Admin') {
@@ -47,7 +56,7 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
     }
 
     componentDidUpdate(prevProp: SymptomsProps) {
-        const { UserRole, Pending, ErrorInner, GetSymptoms } = this.props;
+        const { UserRole, Pending, ErrorInner, GetSymptoms, Symptoms } = this.props;
         if (prevProp.UserRole !== UserRole && UserRole === 'Admin') {
             GetSymptoms();
         }
@@ -68,6 +77,9 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
                     SendedList: ''
                 });
             }
+        }
+        if (prevProp.Symptoms !== Symptoms && this.state.filtered) {
+            this.onSearch();
         }
     }
 
@@ -162,35 +174,67 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
         });
     }
 
-    columns: any = [{
-        title: 'Symptom name',
-        dataIndex: 'Name',
-        render: (text: any, record: SymptomsState.Symptom) => record.SymptomId === this.state.EditId
-            ? <Input
-                data-id={record.SymptomId}
-                defaultValue={text}
-                onChange={this.onChangeInput}
-                onPressEnter={this.onPressEnter}
-            />
-            : text
-    }, {
-        title: 'Action',
-        width: '12%',
-        render: (_text: any, record: SymptomsState.Symptom) => (
-            <span>
-                <Button onClick={() => this.onEditClick(record)}>Edit/Apply</Button>
-            </span>
-        )
-    }];
-    rowSelection = {
-        onChange: (selectedRowKeys: any) => this.setState({ DeleteList: selectedRowKeys })
-    };
+    onInputChange = (e: any) => {
+        this.setState({ searchText: e.target.value });
+    }
+    onSearch = () => {
+        const { searchText } = this.state;
+        const reg = new RegExp(searchText, 'gi');
+        this.setState({
+            filterDropdownVisible: false,
+            filtered: !!searchText,
+            filterData: this.props.Symptoms.filter((record: SymptomsState.Symptom) => !record.Name.match(reg) ? false : true)
+        });
+    }
 
     public render() {
         if (this.props.UserRole !== 'Admin') {
             return <div />;
         }
+
         const { ErrorInner, CleanErrorInner, Symptoms, Pending } = this.props;
+        const { filterData, EditList, DeleteList, filtered, filterDropdownVisible, searchText } = this.state;
+
+        const columns = [{
+            title: 'Symptom name',
+            dataIndex: 'Name',
+            render: (text: any, record: SymptomsState.Symptom) => record.SymptomId === this.state.EditId
+                ? <Input
+                    data-id={record.SymptomId}
+                    defaultValue={text}
+                    onChange={this.onChangeInput}
+                    onPressEnter={this.onPressEnter}
+                />
+                : text,
+            filterDropdown: (
+                <div className='custom-filter-dropdown'>
+                    <Input
+                        ref={ele => this.searchInput = ele}
+                        placeholder='Search name'
+                        value={searchText}
+                        onChange={this.onInputChange}
+                        onPressEnter={this.onSearch}
+                    />
+                    <Button type='primary' onClick={this.onSearch}>Search</Button>
+                </div>
+            ),
+            filterIcon: <Icon type='filter' style={{ color: filtered ? '#108ee9' : '#aaa'}} />,
+            filterDropdownVisible: filterDropdownVisible,
+            onFilterDropdownVisibleChange: (visible: any) => this.setState({
+                filterDropdownVisible: visible
+            }, () => this.searchInput ? this.searchInput.focus() : '')
+        }, {
+            title: 'Action',
+            width: '12%',
+            render: (_text: any, record: SymptomsState.Symptom) => (
+                <span>
+                    <Button onClick={() => this.onEditClick(record)}>Edit/Apply</Button>
+                </span>
+            )
+        }];
+        const rowSelection = {
+            onChange: (selectedRowKeys: any) => this.setState({ DeleteList: selectedRowKeys })
+        };
 
         return <div>
             <AlertModule
@@ -201,9 +245,9 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
                 spinning={Pending}
             >
                 <Table
-                    dataSource={Symptoms}
-                    columns={this.columns}
-                    rowSelection={this.rowSelection}
+                    dataSource={filtered ? filterData : Symptoms}
+                    columns={columns}
+                    rowSelection={rowSelection}
                     rowKey={(record: SymptomsState.Symptom) => record.SymptomId.toString()}
                     title={() => <div>
                         <Button
@@ -213,13 +257,13 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
                         </Button>
                         <Button
                             onClick={this.onChangeSymptoms}
-                            disabled={!this.state.EditList.length}
+                            disabled={!EditList.length}
                         >
                             Save edits columns
                         </Button>
                         <Button
                             onClick={this.onDeleteSymptoms}
-                            disabled={!this.state.DeleteList.length}
+                            disabled={!DeleteList.length}
                         >
                             Delete selected elements
                         </Button>
