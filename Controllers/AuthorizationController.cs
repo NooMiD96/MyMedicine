@@ -24,11 +24,11 @@ namespace MyMedicine.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
-                return ControllersServices.ErrorMessage("User with this email exist\nPlease try again");
+                return ControllersServices.ErrorMessage("User with this email exist: please try again");
 
             user = await _userManager.FindByNameAsync(model.Email);
             if (user != null)
-                return ControllersServices.ErrorMessage("User with this user name exist\nPlease try again");
+                return ControllersServices.ErrorMessage("User with this user name exist: please try again");
 
             user = new IdentityUser()
             {
@@ -38,15 +38,15 @@ namespace MyMedicine.Controllers
             var identityResult = await _userManager.CreateAsync(user, model.Password);
 
             if (!identityResult.Succeeded)
-                return ControllersServices.ErrorMessage($"Can't create user\n{(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
+                return ControllersServices.ErrorMessage($"Can't create user: {(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             identityResult = await _userManager.AddToRoleAsync(user, "User");
             if (!identityResult.Succeeded)
-                return ControllersServices.ErrorMessage($"Can't create user\n{(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
+                return ControllersServices.ErrorMessage($"Can't create user: {(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             var signResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
-            return signResult.Succeeded ? "true" : ControllersServices.ErrorMessage("Cant't login\nPlease try again");
+            return signResult.Succeeded ? "true" : ControllersServices.ErrorMessage("Cant't login: please try again");
         }
 
         [HttpPost("[action]")]
@@ -54,7 +54,7 @@ namespace MyMedicine.Controllers
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
-            return result.Succeeded ? "true" : ControllersServices.ErrorMessage("Cant't login\nPlease try login again");
+            return result.Succeeded ? "true" : ControllersServices.ErrorMessage("Cant't login: please try login again");
         }
 
         [HttpGet("[action]")]

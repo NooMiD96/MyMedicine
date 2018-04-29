@@ -47,7 +47,6 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     })
 
     handleConfirmBlur = (e: any) => {
-        debugger;
         e.preventDefault();
         const value = e.target.value;
         this.setState({ confirmDirty: this.state.confirmDirty || !!value });

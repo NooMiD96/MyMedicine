@@ -50,16 +50,16 @@ export class Symptoms extends React.Component<SymptomsProps, SymptomsState> {
     searchInput: any;
 
     componentDidMount() {
-        if (this.props.UserRole === 'Admin') {
-            this.props.GetSymptoms();
+        const {UserRole, history, GetSymptoms} = this.props;
+        if (UserRole !== 'Admin') {
+            history.push('/');
+        } else {
+            GetSymptoms();
         }
     }
 
     componentDidUpdate(prevProp: SymptomsProps) {
-        const { UserRole, Pending, ErrorInner, GetSymptoms, Symptoms } = this.props;
-        if (prevProp.UserRole !== UserRole && UserRole === 'Admin') {
-            GetSymptoms();
-        }
+        const { Pending, ErrorInner, Symptoms } = this.props;
         if (prevProp.Pending && !Pending && !ErrorInner) {
             const { SendedList } = this.state;
             if (SendedList === 'EditList') {

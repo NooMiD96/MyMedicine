@@ -145,10 +145,10 @@ export class View extends React.Component<ViewProps, ViewState> {
             loading={Pending}
             itemLayout='horizontal'
             // loadMore={'loadMore'}
-            footer={UserName && [
-                deleteCheckedComments,
-                formCommentInput
-            ]}
+            footer={UserRole === 'Admin'
+                ? [deleteCheckedComments, formCommentInput]
+                : UserName && formCommentInput
+            }
             dataSource={CommentsList}
             renderItem={
                 UserRole === 'Admin'

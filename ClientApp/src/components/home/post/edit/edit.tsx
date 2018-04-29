@@ -40,11 +40,16 @@ export class Edit extends React.Component<EditProps, {}> {
     }
 
     componentDidMount() {
-        if (this.props.match.params.id > 0) {
-            if (this.props.PostId !== this.props.match.params.id) {
-                this.props.GetPost(this.props.match.params.id);
+        const { UserRole, history, match, PostId, GetPost, form, Header, ImgUrl, Context } = this.props;
+        const { id } = match.params;
+        if (UserRole !== 'Admin') {
+            history.push('/');
+        }
+        if (id > 0) {
+            if (PostId !== id) {
+                GetPost(id);
             } else {
-                this.props.form.setFieldsValue({ header: this.props.Header, imgUrl: this.props.ImgUrl, context: this.props.Context });
+                form.setFieldsValue({ header: Header, imgUrl: ImgUrl, context: Context });
             }
         }
     }
