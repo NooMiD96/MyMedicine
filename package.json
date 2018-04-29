@@ -1,7 +1,7 @@
 {
-  "name": "core_react_redux_type_script",
-  "version": "0.0.1",
-  "description": "rail_asp_react",
+  "name": "my_medicine",
+  "version": "1.0.0",
+  "description": "My Medicine",
   "scripts": {
     "clean": "IF EXIST %CD%\\wwwroot\\dist rd /s /q %CD%\\wwwroot\\dist && IF EXIST %CD%\\ClientApp\\dist rd /s /q %CD%\\ClientApp\\dist",
     "buildDev": "npm run clean && node node_modules/webpack/bin/webpack.js",
