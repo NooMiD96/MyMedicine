@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { Modal, Button, Icon, Input, Form } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import ReCaptcha from 'core/app/components/reCaptcha';
 import { AlertModule } from 'core/app/components/alertModule';
 import hasErrors from 'core/app/components/formErrorHandler';
 import StyleWrapper from './registration.style';
+
 const FormItem = Form.Item;
 
 interface LoginProps extends FormComponentProps {
@@ -18,26 +20,55 @@ interface LoginState {
     visible: boolean;
     loading: boolean;
     confirmDirty: boolean;
+    enableReCaptcha: boolean;
+    isCanRegistr: boolean;
 }
 
 class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     constructor(props: any) {
         super(props);
+
         this.showModal = this.showModal.bind(this);
         this.handleOk = this.handleOk.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
+        this.onCaptchaChange = this.onCaptchaChange.bind(this);
 
         this.state = {
             visible: false,
             loading: false,
-            confirmDirty: false
+            confirmDirty: false,
+            enableReCaptcha: false,
+            isCanRegistr: true
         };
     }
+    recaptcha: any;
 
     componentDidUpdate(prevProps: LoginProps) {
         if (prevProps.Pending && !this.props.Pending) {
+            let enableReCaptcha = false,
+                isCanRegistr = true;
+
+            if (this.props.ErrorInner) {
+                try {
+                    this.recaptcha.reloadCaptch();
+                } catch (e) {}
+
+                const registrTryCount = +(sessionStorage.getItem('registrTry') as any) + 1;
+                if (registrTryCount >= 3) {
+                    enableReCaptcha = true;
+                    isCanRegistr = false;
+                }
+                sessionStorage.setItem('registrTry', `${registrTryCount}`);
+            } else {
+                enableReCaptcha = false;
+                isCanRegistr = true;
+                sessionStorage.setItem('registrTry', `0`);
+            }
+
             this.setState({
-                loading: false
+                loading: false,
+                enableReCaptcha,
+                isCanRegistr
             });
         }
     }
@@ -72,7 +103,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     handleOk = (e: any) => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
-            if (!err) {
+            if (!err && this.state.isCanRegistr) {
                 this.setState({
                     loading: true
                 });
@@ -90,6 +121,14 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         this.props.form.resetFields();
         if (this.props.ErrorInner) {
             this.props.CleanErrorInner();
+        }
+    }
+
+    onCaptchaChange = (value: any) => {
+        if (value) {
+            this.setState({
+                isCanRegistr: true
+            });
         }
     }
 
@@ -123,8 +162,8 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 onCancel={this.handleCancel}
                 footer={[
                     <Button key='back' onClick={this.handleCancel}>Return</Button>,
-                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError())}>
-                        Log in
+                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError()) && this.state.isCanRegistr}>
+                        Registration
                     </Button>
                 ]}
             >
@@ -212,6 +251,11 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                     )}
                 </FormItem>
 
+                <ReCaptcha
+                    ref={(el: any) => this.recaptcha = el}
+                    enableReCaptcha={this.state.enableReCaptcha}
+                    onCaptchaChange={this.onCaptchaChange}
+                />
             </Modal>
         </StyleWrapper>;
     }

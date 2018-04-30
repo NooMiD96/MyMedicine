@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Modal, Button, Icon, Input, Form } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import ReCaptcha from 'core/app/components/reCaptcha';
 import { AlertModule } from 'core/app/components/alertModule';
 import hasErrors from 'core/app/components/formErrorHandler';
 import StyleWrapper from './login.style';
@@ -17,25 +18,53 @@ interface LoginProps extends FormComponentProps {
 interface LoginState {
     visible: boolean;
     loading: boolean;
+    enableReCaptcha: boolean;
+    isCanAuth: boolean;
 }
 
 class LoginComponent extends React.Component<LoginProps, LoginState> {
     constructor(props: any) {
         super(props);
+
         this.showModal = this.showModal.bind(this);
         this.handleOk = this.handleOk.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
 
         this.state = {
             visible: false,
-            loading: false
+            loading: false,
+            enableReCaptcha: false,
+            isCanAuth: true
         };
     }
+    recaptcha: any;
 
     componentDidUpdate(prevProps: LoginProps) {
         if (prevProps.Pending && !this.props.Pending) {
+            let enableReCaptcha = false,
+                isCanAuth = true;
+
+            if (this.props.ErrorInner) {
+                try {
+                    this.recaptcha.reloadCaptch();
+                } catch (e) {}
+
+                const authTryCount = +(sessionStorage.getItem('authTry') as any) + 1;
+                if (authTryCount >= 3) {
+                    enableReCaptcha = true;
+                    isCanAuth = false;
+                }
+                sessionStorage.setItem('authTry', `${authTryCount}`);
+            } else {
+                enableReCaptcha = false;
+                isCanAuth = true;
+                sessionStorage.setItem('authTry', `0`);
+            }
+
             this.setState({
-                loading: false
+                loading: false,
+                enableReCaptcha,
+                isCanAuth
             });
         }
     }
@@ -47,7 +76,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
     handleOk = (e: any) => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
-            if (!err) {
+            if (!err && this.state.isCanAuth) {
                 this.setState({
                     loading: true
                 });
@@ -65,6 +94,14 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         this.props.form.resetFields();
         if (this.props.ErrorInner) {
             this.props.CleanErrorInner();
+        }
+    }
+
+    onCaptchaChange = (value: any) => {
+        if (value) {
+            this.setState({
+                isCanAuth: true
+            });
         }
     }
 
@@ -95,7 +132,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
                 onCancel={this.handleCancel}
                 footer={[
                     <Button key='back' onClick={this.handleCancel}>Return</Button>,
-                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError())}>
+                    <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError()) && this.state.isCanAuth}>
                         Log in
                     </Button>
                 ]}
@@ -132,6 +169,12 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
                         />
                     )}
                 </FormItem>
+
+                <ReCaptcha
+                    ref={(el: any) => this.recaptcha = el}
+                    enableReCaptcha={this.state.enableReCaptcha}
+                    onCaptchaChange={this.onCaptchaChange}
+                />
             </Modal>
         </StyleWrapper>;
     }

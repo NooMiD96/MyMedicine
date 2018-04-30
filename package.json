@@ -8,12 +8,14 @@
     "buildProd": "npm run clean && node node_modules/webpack/bin/webpack.js --env.prod"
   },
   "dependencies": {
+    "domain-task": "^3.0.3",
     "react": "15.6.2",
+    "react-async-script": "^0.9.1",
     "react-dom": "15.6.2",
+    "react-google-recaptcha": "^0.11.0",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.1",
     "react-router-redux": "5.0.0-alpha.6",
-    "domain-task": "^3.0.3",
     "redux": "3.7.1",
     "redux-thunk": "2.2.0"
   },
@@ -28,6 +30,7 @@
     "@types/react-router-redux": "5.0.3",
     "@types/webpack": "2.2.15",
     "@types/webpack-env": "1.13.0",
+    "@types/react-google-recaptcha": "0.9.1",
     "aspnet-prerendering": "^3.0.1",
     "aspnet-webpack": "^2.0.1",
     "aspnet-webpack-react": "^3.0.0",
