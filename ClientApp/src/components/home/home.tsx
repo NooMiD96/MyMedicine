@@ -20,9 +20,7 @@ export class Home extends React.Component<PostsProps, {}> {
     }
 
     componentDidMount() {
-        if (!this.props.Posts.length) {
-            this.props.GetPosts(1, 5);
-        }
+        this.props.GetPosts(1, 5);
     }
 
     PageChangeHandler = (page: any, pageSize: any) => {
