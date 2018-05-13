@@ -5,6 +5,7 @@ import * as PostState from 'components/home/post/view/reducer';
 import * as UserState from 'components/authorization/reducer';
 import * as ChatState from 'components/chat/reducer';
 import * as ImportExportState from 'components/importExport/reducer';
+import * as VisitationState from 'components/visitation/reducer';
 import * as AppState from './core/app/reducer';
 
 export interface ApplicationState {
@@ -15,6 +16,7 @@ export interface ApplicationState {
     user: UserState.UserState;
     chat: ChatState.ChatState;
     importExport: ImportExportState.ImportExportState;
+    visitation: VisitationState.VisitationState;
     app: AppState.AppState;
 }
 
@@ -26,6 +28,7 @@ export const reducers = {
     user: UserState.reducer,
     chat: ChatState.reducer,
     importExport: ImportExportState.reducer,
+    visitation: VisitationState.reducer,
     app: AppState.reducer
 };
 

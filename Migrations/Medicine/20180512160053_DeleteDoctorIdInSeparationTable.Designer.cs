@@ -11,9 +11,10 @@ using System;
 namespace MyMedicine.Migrations.Medicine
 {
     [DbContext(typeof(MedicineContext))]
-    partial class MedicineContextModelSnapshot : ModelSnapshot
+    [Migration("20180512160053_DeleteDoctorIdInSeparationTable")]
+    partial class DeleteDoctorIdInSeparationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,12 +48,16 @@ namespace MyMedicine.Migrations.Medicine
                     b.Property<int>("DiseaseId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("DoctorId");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<int>("SymptomListId");
 
                     b.HasKey("DiseaseId");
+
+                    b.HasIndex("DoctorId");
 
                     b.HasIndex("SymptomListId")
                         .IsUnique();
@@ -64,6 +69,8 @@ namespace MyMedicine.Migrations.Medicine
                 {
                     b.Property<int>("DoctorId")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int>("DiseaseId");
 
                     b.Property<string>("FirstName")
                         .IsRequired();
@@ -201,6 +208,10 @@ namespace MyMedicine.Migrations.Medicine
 
             modelBuilder.Entity("MyMedicine.Context.Medicine.Disease", b =>
                 {
+                    b.HasOne("MyMedicine.Context.Medicine.Doctor")
+                        .WithMany("DiseaseList")
+                        .HasForeignKey("DoctorId");
+
                     b.HasOne("MyMedicine.Context.Medicine.SymptomList", "Symptoms")
                         .WithOne("Disease")
                         .HasForeignKey("MyMedicine.Context.Medicine.Disease", "SymptomListId")

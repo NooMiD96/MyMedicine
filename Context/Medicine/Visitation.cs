@@ -40,15 +40,15 @@ namespace MyMedicine.Context.Medicine
 
         [Required, ForeignKey(nameof(Separation))]
         public int SeparationId { get; set; }
-        [Required, ForeignKey(nameof(Disease))]
-        public int DiseaseId { get; set; }
+        //[Required, ForeignKey(nameof(Disease))]
+        //public int DiseaseId { get; set; }
 
         //Parent(s)
         public ICollection<Visitation> VisitationList { get; set; } = new List<Visitation>();
         public Separation Separation { get; set; }
 
         //Childrens
-        public ICollection<Disease> DiseaseList { get; set; } = new List<Disease>();
+        //public ICollection<Disease> DiseaseList { get; set; } = new List<Disease>();
     }
 
     public class Separation
@@ -58,9 +58,6 @@ namespace MyMedicine.Context.Medicine
 
         [Required]
         public string Address { get; set; }
-
-        [Required, ForeignKey(nameof(Disease))]
-        public int DoctorId { get; set; }
 
         //Childrens
         public ICollection<Doctor> DoctorList { get; set; } = new List<Doctor>();
