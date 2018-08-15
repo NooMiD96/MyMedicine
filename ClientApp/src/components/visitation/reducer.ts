@@ -1,11 +1,12 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
+import { message } from 'antd';
+
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
-import { message } from 'antd';
 // ----------------- STATE -----------------
 export interface VisitationState {
-    Data: Separation[] | Doctor[];
+    Data: Separation[] | Doctor[] | Visitor[];
     Pending: boolean;
     ErrorInner: string;
 }
@@ -37,6 +38,8 @@ interface GetSeparationsRequestErrorAction {
     type: 'GET_SEPARATIONS_REQUEST_ERROR';
     ErrorInner: string;
 }
+type GetSeparationsAction = GetSeparationsRequestAction | GetSeparationsRequestSuccessAction | GetSeparationsRequestErrorAction;
+
 interface GetDoctorsRequestAction {
     type: 'GET_DOCTORS_REQUEST';
 }
@@ -48,6 +51,8 @@ interface GetDoctorsRequestErrorAction {
     type: 'GET_DOCTORS_REQUEST_ERROR';
     ErrorInner: string;
 }
+type GetDoctorsAction = GetDoctorsRequestAction | GetDoctorsRequestSuccessAction | GetDoctorsRequestErrorAction;
+
 interface GetVisitorsRequestAction {
     type: 'GET_VISITORS_REQUEST';
 }
@@ -59,6 +64,8 @@ interface GetVisitorsRequestErrorAction {
     type: 'GET_VISITORS_REQUEST_ERROR';
     ErrorInner: string;
 }
+type GetVisitorsAction = GetVisitorsRequestAction | GetVisitorsRequestSuccessAction | GetVisitorsRequestErrorAction;
+
 interface AddNewSeparationRequestAction {
     type: 'ADD_NEW_SEPARATION_REQUEST';
 }
@@ -69,6 +76,8 @@ interface AddNewSeparationRequestErrorAction {
     type: 'ADD_NEW_SEPARATION_REQUEST_ERROR';
     ErrorInner: string;
 }
+type AddNewSeparationAction = AddNewSeparationRequestAction | AddNewSeparationRequestSuccessAction | AddNewSeparationRequestErrorAction;
+
 interface AddNewDoctorRequestAction {
     type: 'ADD_NEW_DOCTOR_REQUEST';
 }
@@ -79,6 +88,8 @@ interface AddNewDoctorRequestErrorAction {
     type: 'ADD_NEW_DOCTOR_REQUEST_ERROR';
     ErrorInner: string;
 }
+type AddNewDoctorAction = AddNewDoctorRequestAction | AddNewDoctorRequestSuccessAction | AddNewDoctorRequestErrorAction;
+
 interface AddNewVisitorRequestAction {
     type: 'ADD_NEW_VISITOR_REQUEST';
 }
@@ -89,16 +100,14 @@ interface AddNewVisitorRequestErrorAction {
     type: 'ADD_NEW_VISITOR_REQUEST_ERROR';
     ErrorInner: string;
 }
+type AddNewVisitorAction = AddNewVisitorRequestAction | AddNewVisitorRequestSuccessAction | AddNewVisitorRequestErrorAction;
+
 interface CleanErrorInnerAction {
     type: 'CLEAN_ERROR_INNER';
 }
 
-type KnownAction = GetSeparationsRequestAction | GetSeparationsRequestSuccessAction | GetSeparationsRequestErrorAction
-    | GetDoctorsRequestAction | GetDoctorsRequestSuccessAction | GetDoctorsRequestErrorAction
-    | GetVisitorsRequestAction | GetVisitorsRequestSuccessAction | GetVisitorsRequestErrorAction
-    | AddNewSeparationRequestAction | AddNewSeparationRequestSuccessAction | AddNewSeparationRequestErrorAction
-    | AddNewDoctorRequestAction | AddNewDoctorRequestSuccessAction | AddNewDoctorRequestErrorAction
-    | AddNewVisitorRequestAction | AddNewVisitorRequestSuccessAction | AddNewVisitorRequestErrorAction
+type KnownAction = GetSeparationsAction | GetDoctorsAction | GetVisitorsAction
+    | AddNewSeparationAction | AddNewDoctorAction | AddNewVisitorAction
     | CleanErrorInnerAction;
 // ---------------- ACTION CREATORS ----------------
 interface ResponseType { Error: string; }
@@ -107,7 +116,7 @@ interface DoctorResponseType { Error: string; Doctors: any[]; }
 interface VisitorResponseType { Error: string; Visitors: any[]; }
 
 export const actionCreators = {
-    GetSeparations: (): AppThunkAction<GetSeparationsRequestAction | GetSeparationsRequestSuccessAction | GetSeparationsRequestErrorAction> => (dispatch, getState) => {
+    GetSeparations: (): AppThunkAction<GetSeparationsAction> => (dispatch, getState) => {
         const fetchTask = fetch(`/api/visitation/getseparations`, {
             credentials: 'same-origin',
             method: 'GET',
@@ -140,7 +149,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_SEPARATIONS_REQUEST' });
     },
-    GetDoctors: (separation: Separation): AppThunkAction<GetDoctorsRequestAction | GetDoctorsRequestSuccessAction | GetDoctorsRequestErrorAction> => (dispatch, getState) => {
+    GetDoctors: (separation: Separation): AppThunkAction<GetDoctorsAction> => (dispatch, getState) => {
         const fetchTask = fetch(`/api/visitation/getdoctors?sep=${separation.Id}`, {
             credentials: 'same-origin',
             method: 'GET',
@@ -161,7 +170,7 @@ export const actionCreators = {
                 throw new Error('Some trouble when getting posts.\n' + data.Error);
             }
             const Doctors = data.Doctors.map((value: any) => ({
-                Id: value.SeparationId,
+                Id: value.DoctorId,
                 FirstName: value.FirstName,
                 SecondName: value.SecondName
             }));
@@ -174,7 +183,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_DOCTORS_REQUEST' });
     },
-    GetVisitors: (doctor: Doctor): AppThunkAction<GetVisitorsRequestAction | GetVisitorsRequestSuccessAction | GetVisitorsRequestErrorAction> => (dispatch, getState) => {
+    GetVisitors: (doctor: Doctor): AppThunkAction<GetVisitorsAction> => (dispatch, getState) => {
         const fetchTask = fetch(`/api/visitation/getvisitors?doc=${doctor.Id}`, {
             credentials: 'same-origin',
             method: 'GET',
@@ -210,7 +219,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_VISITORS_REQUEST' });
     },
-    AddNewSeparations: (separation: string): AppThunkAction<AddNewSeparationRequestAction | AddNewSeparationRequestSuccessAction | AddNewSeparationRequestErrorAction> => (dispatch, getState) => {
+    AddNewSeparations: (separation: string): AppThunkAction<AddNewSeparationAction> => (dispatch, getState) => {
         const fetchTask = fetch(`/api/visitation/addnewseparation`, {
             credentials: 'same-origin',
             method: 'POST',
@@ -241,7 +250,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'ADD_NEW_SEPARATION_REQUEST' });
     },
-    AddNewDoctor: (separation: Separation, doctor: Doctor): AppThunkAction<AddNewDoctorRequestAction | AddNewDoctorRequestSuccessAction | AddNewDoctorRequestErrorAction> => (dispatch, getState) => {
+    AddNewDoctor: (separation: Separation, doctor: Doctor): AppThunkAction<AddNewDoctorAction> => (dispatch, getState) => {
         const fetchTask = fetch(`/api/visitation/addnewdoctor?sep=${separation.Id}`, {
             credentials: 'same-origin',
             method: 'POST',
@@ -272,7 +281,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'ADD_NEW_DOCTOR_REQUEST' });
     },
-    AddNewVisitor: (doctor: Doctor, visitor: Visitor): AppThunkAction<AddNewVisitorRequestAction | AddNewVisitorRequestSuccessAction | AddNewVisitorRequestErrorAction> => (dispatch, getState) => {
+    AddNewVisitor: (doctor: Doctor, visitor: Visitor): AppThunkAction<AddNewVisitorAction> => (dispatch, getState) => {
         const fetchTask = fetch(`/api/visitation/addnewvisitor?doc=${doctor.Id}`, {
             credentials: 'same-origin',
             method: 'POST',
@@ -314,12 +323,18 @@ const unloadedState: VisitationState = {
 
 export const reducer: Reducer<VisitationState> = (state: VisitationState, action: KnownAction) => {
     switch (action.type) {
-        case 'ADD_NEW_VISITOR_REQUEST':
-        case 'ADD_NEW_DOCTOR_REQUEST':
-        case 'ADD_NEW_SEPARATION_REQUEST':
         case 'GET_VISITORS_REQUEST':
         case 'GET_DOCTORS_REQUEST':
         case 'GET_SEPARATIONS_REQUEST':
+            return {
+                ...state,
+                Pending: true,
+                Data: []
+            };
+
+        case 'ADD_NEW_VISITOR_REQUEST':
+        case 'ADD_NEW_DOCTOR_REQUEST':
+        case 'ADD_NEW_SEPARATION_REQUEST':
             return {
                 ...state,
                 Pending: true

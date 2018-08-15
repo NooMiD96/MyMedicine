@@ -3,7 +3,7 @@ using MyMedicine.Models.Chat;
 
 namespace MyMedicine.Middleware
 {
-    public static class ChatHalper
+    public static partial class ChatHelper
     {
         static readonly int CountOfMessageCashed = 10;
 

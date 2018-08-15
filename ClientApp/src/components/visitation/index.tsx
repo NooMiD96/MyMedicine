@@ -1,3 +1,3 @@
-import Visitation from './visitation';
+import Visitation from './components/visitation';
 
 export default Visitation;

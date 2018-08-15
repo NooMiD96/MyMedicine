@@ -9,7 +9,7 @@ using MyMedicine.Models.Chat;
 
 namespace MyMedicine.Middleware
 {
-    public static class ChatHelper
+    public static partial class ChatHelper
     {
         public static async Task<string> ReceiveStringAsync(this WebSocket socket, CancellationToken ct = default)
         {

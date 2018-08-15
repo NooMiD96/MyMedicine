@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Input, Select, Radio, DatePicker } from 'antd';
+
 import InputWrapper from './visitationAdd.style';
-import { Doctor, Visitor } from './reducer';
+
+import { Doctor, Visitor } from '../../reducer';
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
