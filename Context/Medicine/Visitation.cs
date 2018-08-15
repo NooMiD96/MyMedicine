@@ -21,10 +21,10 @@ namespace MyMedicine.Context.Medicine
 
         [Required, ForeignKey(nameof(Doctor))]
         public int DoctorId { get; set; }
-        [Required, ForeignKey(nameof(Disease))]
-        public int DiseaseId { get; set; }
+        //[Required, ForeignKey(nameof(Disease))]
+        //public int DiseaseId { get; set; }
 
-        //Children
+        //Parent
         public Doctor Doctor { get; set; }
     }
 
@@ -43,11 +43,11 @@ namespace MyMedicine.Context.Medicine
         //[Required, ForeignKey(nameof(Disease))]
         //public int DiseaseId { get; set; }
 
-        //Parent(s)
-        public ICollection<Visitation> VisitationList { get; set; } = new List<Visitation>();
+        //Parent
         public Separation Separation { get; set; }
 
         //Childrens
+        public ICollection<Visitation> VisitationList { get; set; } = new List<Visitation>();
         //public ICollection<Disease> DiseaseList { get; set; } = new List<Disease>();
     }
 
