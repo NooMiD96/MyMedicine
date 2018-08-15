@@ -26,60 +26,7 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
-    <Compile Remove="ClientApp\components\**" />
-    <Compile Remove="ClientApp\core\**" />
-    <Compile Remove="ClientApp\src\components\Comp2\**" />
-    <Compile Remove="ClientApp\src\components\counter\**" />
-    <Compile Remove="ClientApp\src\components\diseaseList\**" />
-    <Compile Remove="ClientApp\src\components\disease\**" />
-    <Compile Remove="ClientApp\src\components\import_export\**" />
-    <Compile Remove="ClientApp\src\components\login\**" />
-    <Compile Remove="ClientApp\src\components\registration\**" />
-    <Compile Remove="ClientApp\src\components\store\**" />
-    <Compile Remove="ClientApp\src\core\app\authorization\**" />
-    <Compile Remove="ClientApp\src\core\app\login\**" />
-    <Compile Remove="ClientApp\src\core\app\registration\**" />
-    <Compile Remove="ClientApp\src\core\components\**" />
-    <Compile Remove="ClientApp\src\login\**" />
-    <Compile Remove="ClientApp\store\**" />
-    <Content Remove="ClientApp\**" />
-    <EmbeddedResource Remove="ClientApp\components\**" />
-    <EmbeddedResource Remove="ClientApp\core\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\Comp2\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\counter\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\diseaseList\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\disease\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\import_export\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\login\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\registration\**" />
-    <EmbeddedResource Remove="ClientApp\src\components\store\**" />
-    <EmbeddedResource Remove="ClientApp\src\core\app\authorization\**" />
-    <EmbeddedResource Remove="ClientApp\src\core\app\login\**" />
-    <EmbeddedResource Remove="ClientApp\src\core\app\registration\**" />
-    <EmbeddedResource Remove="ClientApp\src\core\components\**" />
-    <EmbeddedResource Remove="ClientApp\src\login\**" />
-    <EmbeddedResource Remove="ClientApp\store\**" />
-    <None Remove="ClientApp\components\**" />
-    <None Remove="ClientApp\core\**" />
-    <None Remove="ClientApp\src\components\Comp2\**" />
-    <None Remove="ClientApp\src\components\counter\**" />
-    <None Remove="ClientApp\src\components\diseaseList\**" />
-    <None Remove="ClientApp\src\components\disease\**" />
-    <None Remove="ClientApp\src\components\import_export\**" />
-    <None Remove="ClientApp\src\components\login\**" />
-    <None Remove="ClientApp\src\components\registration\**" />
-    <None Remove="ClientApp\src\components\store\**" />
-    <None Remove="ClientApp\src\core\app\authorization\**" />
-    <None Remove="ClientApp\src\core\app\login\**" />
-    <None Remove="ClientApp\src\core\app\registration\**" />
-    <None Remove="ClientApp\src\core\components\**" />
-    <None Remove="ClientApp\src\login\**" />
-    <None Remove="ClientApp\store\**" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <None Remove="ClientApp\boot-client.tsx" />
     <None Remove="ClientApp\boot-server.tsx" />
