@@ -9,8 +9,12 @@ namespace MyMedicine.Context.Medicine
 {
     public partial class MedicineContext
     {
-        public async Task<List<Separation>> GetSeparationsListAsync() => await Separations
-            .ToListAsync();
+        public IEnumerable<Separation> GetAllVisitations() => Separations
+            .Include(x => x.DoctorList)
+                .ThenInclude(x => x.VisitationList)
+            .AsEnumerable();
+
+        public async Task<List<Separation>> GetSeparationsListAsync() => await Separations.ToListAsync();
         public async Task<List<Doctor>> GetDoctorsListAsync(int separationId) => await (
                 from s in Separations
                 join d in Doctors on s.SeparationId equals d.SeparationId
@@ -23,12 +27,13 @@ namespace MyMedicine.Context.Medicine
                 where d.DoctorId == doctorId
                 select v
             ).ToListAsync();
+
         /// <summary>
         /// </summary>
         /// <param name="posts"></param>
         /// <param name="type">0 - add new, 1 - edit, 2 - skip</param>
         /// <returns></returns>
-        public async ValueTask<bool> ChangeSeparationListAsync(List<Separation> separations, int type)
+        public async ValueTask<bool> ImportSeparationListAsync(List<Separation> separations, int type)
         {
             var contextSeparations = await Separations.AsNoTracking().ToListAsync();
 
@@ -38,7 +43,6 @@ namespace MyMedicine.Context.Medicine
                     separations.ForEach(separation => separation.SeparationId = 0);
 
                     Separations.AddRange(separations.AsEnumerable());
-
                     break;
 
                 case 1:
@@ -58,7 +62,6 @@ namespace MyMedicine.Context.Medicine
                             Separations.Add(separation);
                         }
                     }
-
                     break;
 
                 case 2:
@@ -68,7 +71,6 @@ namespace MyMedicine.Context.Medicine
                             separation.SeparationId = 0;
                             Separations.Add(separation);
                         }
-
                     break;
 
                 default:
@@ -86,7 +88,6 @@ namespace MyMedicine.Context.Medicine
             {
                 Separations.Add(new Separation()
                 {
-                    SeparationId = 0,
                     Address = separation.Address
                 });
 
@@ -108,7 +109,7 @@ namespace MyMedicine.Context.Medicine
                     .Where(s => s.SeparationId == separationId)
                     .FirstOrDefaultAsync();
 
-                if(sep == null)
+                if (sep == null)
                 {
                     return false;
                 }

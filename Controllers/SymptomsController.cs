@@ -48,7 +48,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
 
-            await _context.ChangeSymptomsListAsync(editList, 1);
+            await _context.ImportSymptomsListAsync(editList, 1);
 
             return "true";
         }

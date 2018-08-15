@@ -13,7 +13,7 @@ namespace MyMedicine.Controllers
     public partial class ImportExportController: Controller
     {
         private MedicineContext _context;
-        public ImportExportController([FromServices] MedicineContext context)
+        public ImportExportController([FromServices] MedicineContext context): this()
         {
             _context = context;
         }
@@ -35,7 +35,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Not allowed");
             }
             var context = await ControllersServices.GetJsonFromBodyRequestAsync(Request.Body);
-            bool isParsed = TryDeserialize(context, type);
+            var isParsed = TryDeserialize(context, type);
 
             if(!isParsed)
             {
@@ -63,6 +63,7 @@ namespace MyMedicine.Controllers
                 using(var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create))
                 {
                     await WriteInFile(zip, "Posts.json", _context.GetAllPosts());
+                    await WriteInFile(zip, "Visitations.json", _context.GetAllVisitations());
                     await WriteInFile(zip, "Symptoms.json", _context.GetAllSymptoms());
                 }
 

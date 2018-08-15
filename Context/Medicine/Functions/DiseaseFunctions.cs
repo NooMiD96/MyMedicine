@@ -17,7 +17,7 @@ namespace MyMedicine.Context.Medicine
         /// <param name="symptoms">List of symptoms</param>
         /// <param name="type">0 - add new, 1 - edit, 2 - skip</param>
         /// <returns></returns>
-        public async ValueTask<bool> ChangeSymptomsListAsync(List<Symptom> symptoms, int type)
+        public async ValueTask<bool> ImportSymptomsListAsync(List<Symptom> symptoms, int type)
         {
             var contextSymptoms = await Symptoms.AsNoTracking().ToListAsync();
 
