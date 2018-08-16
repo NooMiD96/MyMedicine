@@ -59,12 +59,12 @@ class Authorization extends React.Component<AuthorizationProps, {}> {
 function mapStateToProps(state: ApplicationState) {
     return {
         ...state.user
-    } as UserState.UserState;
+    } as any;
 }
 
 const mapDispatchToProps = {
     ...UserState.actionCreators
-};
+} as any;
 
 export default connect(
     mapStateToProps,

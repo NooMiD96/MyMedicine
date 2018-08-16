@@ -17,11 +17,7 @@ export class VisitationTable extends React.Component<VisitationTableProps, Visit
         return <Table
             dataSource={data}
             columns={columns}
-            rowKey={record => {
-                debugger;
-                return `${step}-${record.Id}`;
-            }
-        }
+            rowKey={record => `${step}-${record.Id}`}
         // rowSelection={rowSelection}
         // rowKey={(record: SymptomsState.Symptom) => record.SymptomId.toString()}
         // title={() => <div>

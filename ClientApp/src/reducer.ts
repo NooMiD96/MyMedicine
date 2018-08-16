@@ -1,3 +1,4 @@
+import { RouterState } from 'react-router-redux';
 import * as SymptomsState from 'components/symptoms/reducer';
 import * as PostsState from 'components/home/reducer';
 import * as CreateEditPostState from 'components/home/post/edit/reducer';
@@ -18,6 +19,7 @@ export interface ApplicationState {
     importExport: ImportExportState.ImportExportState;
     visitation: VisitationState.VisitationState;
     app: AppState.AppState;
+    routing: RouterState;
 }
 
 export const reducers = {

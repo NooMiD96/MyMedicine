@@ -1,42 +1,76 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
-import * as AntdLayout from 'antd/lib/layout/layout';
+import { Link } from 'react-router-dom';
+import { RouterState } from 'react-router-redux';
+import { BasicProps as LayoutBasicProps } from 'antd/lib/layout/layout';
 import { Menu, Icon } from 'antd';
-import StyleWrapper from './style/MyHeader.style';
-import Authorization from 'components/authorization';
-import ImportExport from 'components/importExport';
+
 import * as AppState from './reducer';
 import { ApplicationState } from '../../reducer';
 
-type HeaderProps = AppState.AppState
-  & { Role: string }
-  & { Header: React.ComponentClass<AntdLayout.BasicProps> };
+import StyleWrapper from './style/MyHeader.style';
+import Authorization from 'components/authorization';
+import ImportExport from 'components/importExport';
 
-class MyHeader extends React.Component<HeaderProps, {}> {
+type HeaderProps = AppState.AppState
+  & { Role: string, routing: RouterState }
+  & { Header: React.ComponentClass<LayoutBasicProps> };
+
+const routes: {} = {
+  '/': '0',
+  '/visitation': '1',
+  '/symptoms': '2',
+  '/searchdisease': '3',
+  '/chat': '4'
+};
+
+class MyHeader extends React.Component<HeaderProps, { selectedMenuKey: string[] }> {
+  state = {
+    selectedMenuKey: ['0']
+  };
+
+  componentDidMount() {
+    if (this.props.routing.location) {
+      this.setState({
+        selectedMenuKey: [
+          (routes as any)[this.props.routing.location.pathname] || '0'
+        ]
+      });
+    }
+  }
+
+  onSelectItemHandler = (event: { item: {}, key: string, selectedKeys: string[] }) => {
+    if (!this.state.selectedMenuKey.includes(event.key)) {
+      this.setState({
+        selectedMenuKey: [event.key]
+      });
+    }
+  }
+
   public render() {
     const { IsMobile, Header, Role } = this.props;
+    const { selectedMenuKey } = this.state;
     let NavLinks = [
       <Menu.Item key='0' className='logo'>
-        <NavLink exact to={'/'}>MyMedicine</NavLink>
+        <Link to={'/'}>MyMedicine</Link>
       </Menu.Item>
     ];
     if (Role === 'Admin') {
       NavLinks = NavLinks.concat([
         <Menu.Item key='1'>
-          <NavLink exact to={'/visitation'}>Visitation</NavLink>
+          <Link to={'/visitation'}>Visitation</Link>
         </Menu.Item>,
         <Menu.Item key='2'>
-          <NavLink exact to={'/symptoms'}>Symptom List</NavLink>
+          <Link to={'/symptoms'}>Symptom List</Link>
         </Menu.Item>
       ]);
     }
     NavLinks = NavLinks.concat([
       <Menu.Item key='3'>
-        <NavLink exact to={'/searchdisease'}>Search Disease</NavLink>
+        <Link to={'/searchdisease'}>Search Disease</Link>
       </Menu.Item>,
       <Menu.Item key='4'>
-        <NavLink exact to={'/chat'}>Chat</NavLink>
+        <Link to={'/chat'}>Chat</Link>
       </Menu.Item>
     ]);
 
@@ -46,6 +80,8 @@ class MyHeader extends React.Component<HeaderProps, {}> {
           theme='dark'
           mode='horizontal'
           className='header-menu'
+          onSelect={this.onSelectItemHandler}
+          selectedKeys={selectedMenuKey}
         >
           {
             IsMobile
@@ -56,7 +92,9 @@ class MyHeader extends React.Component<HeaderProps, {}> {
           }
         </Menu>
         <Authorization isMobile={IsMobile} />
-        {Role && <ImportExport isMobile={IsMobile} />}
+        {
+          Role === 'Admin' && <ImportExport isMobile={IsMobile} />
+        }
       </Header>
     </StyleWrapper>;
   }
@@ -65,8 +103,9 @@ class MyHeader extends React.Component<HeaderProps, {}> {
 function mapStateToProps(state: ApplicationState) {
   return {
     ...state.app,
-    Role: state.user.UserRole
-  } as AppState.AppState & { Role: string };
+    Role: state.user.UserRole,
+    routing: state.routing
+  } as any;
 }
 
 export default connect(

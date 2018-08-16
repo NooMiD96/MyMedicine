@@ -102,7 +102,6 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
   componentDidMount() {
     const { props } = this;
     const { state: locationState } = props.location;
-    debugger;
 
     if (locationState) {
       switch (locationState.step) {
@@ -144,7 +143,6 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
 
   // set 'step' and 'column' in component state
   componentWillReceiveProps(nextProps: VisitationProps) {
-    debugger;
     // if we got data (finish fetching) then set 'step' and 'column' in state
     if (this.props.Pending && !nextProps.Pending) {
       const newLocationState = nextProps.location.state;
