@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
 import { message } from 'antd';
+import { isDate } from 'moment';
 
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
@@ -207,12 +208,15 @@ export const actionCreators = {
                 Id: value.VisitationId,
                 FirstName: value.FirstName,
                 SecondName: value.SecondName,
-                Date: new Date(value.Date),
+                Date: isDate(value.Date)
+                    ? value.Date
+                    : new Date(value.Date),
                 Male: value.Male
             }));
             dispatch({ type: 'GET_VISITORS_REQUEST_SUCCESS', Visitors });
         }).catch((err: Error) => {
-            console.log('Error :-S in user\n', err.message);
+            console.warn('Error :-S in user\n', err.message);
+            console.warn(err.stack);
             dispatch({ type: 'GET_VISITORS_REQUEST_ERROR', ErrorInner: err.message });
         });
 

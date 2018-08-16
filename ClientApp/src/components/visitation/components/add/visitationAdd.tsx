@@ -1,240 +1,155 @@
 import * as React from 'react';
-import { Input, Select, Radio, DatePicker } from 'antd';
+import { History } from 'history';
 
-import InputWrapper from './visitationAdd.style';
-
+import * as moment from 'moment';
 import { Doctor, Visitor } from '../../reducer';
-
-const RadioGroup = Radio.Group;
-const Option = Select.Option;
+import { AddVisitor } from './AddVisitor';
+import { AddDoctor } from './AddDoctor';
+import { AddSeparation } from './AddSeparation';
 
 type VisitationTableProps = {
-    step: number,
-    record: any,
-    AddNewSeparations: (separation: string) => void,
-    AddNewDoctor: (doctor: Doctor) => void,
-    AddNewVisitor: (visitor: Visitor) => void
+  step: number,
+  record: any,
+  history: History,
+  AddNewSeparations: (separation: string) => void,
+  AddNewDoctor: (doctor: Doctor) => void,
+  AddNewVisitor: (visitor: Visitor) => void
 };
 
 type VisitationTableState = {
-    inputSeparation: string;
-    firstName: string;
-    secondName: string;
-    date: Date;
-    male: boolean;
-    selectedType: string;
+  inputSeparation: string;
+  firstName: string;
+  secondName: string;
+  date: moment.Moment;
+  male: boolean;
 };
 
 export class VisitationAdd extends React.Component<VisitationTableProps, VisitationTableState> {
-    constructor(props: any) {
-        super(props);
+  state = {
+    inputSeparation: '',
+    firstName: '',
+    secondName: '',
+    date: moment(),
+    male: true
+  };
 
-        this.state = {
-            inputSeparation: '',
-            firstName: '',
-            secondName: '',
-            date: new Date(),
-            male: true,
-            selectedType: '0'
-        };
+  onInputChange = (e: any, field?: string) => {
+    if (!this.props.step) {
+      this.setState({
+        inputSeparation: e.target.value
+      });
+    } else {
+      if (field === 'first') {
+        this.setState({
+          firstName: e.target.value
+        });
+      } else {
+        this.setState({
+          secondName: e.target.value
+        });
+      }
+    }
+  }
 
-        this.onInputPressEnter = this.onInputPressEnter.bind(this);
-        this.onRadioChange = this.onRadioChange.bind(this);
-        this.onDateChange = this.onDateChange.bind(this);
+  onRadioChange = (e: any) => this.setState({
+    male: e.target.value
+  })
+
+  onDateChange = (date: moment.Moment, _dateString: string) => this.setState({
+    date: date
+  })
+
+  onInputPressEnter = () => {
+    const { step } = this.props;
+    if (![0, 1, 2].includes(step)) {
+      this.props.history.push({
+        pathname: '/',
+        state: undefined
+      });
     }
 
-    onInputChange = (e: any, step: string, field?: string) => {
-        switch (step) {
-            case '0':
-                this.setState({
-                    inputSeparation: e.target.value
-                });
-                break;
-
-            case '1':
-            case '2':
-                if (field === 'first') {
-                    this.setState({
-                        firstName: e.target.value
-                    });
-                } else {
-                    this.setState({
-                        secondName: e.target.value
-                    });
-                }
-                break;
-
-            default:
-                break;
-        }
+    if (step === 0) {
+      const inputSeparation = this.state.inputSeparation.trim();
+      if (inputSeparation) {
+        this.props.AddNewSeparations(inputSeparation);
+        this.setState({
+          inputSeparation: ''
+        });
+      }
+    } else {
+      const FirstName = this.state.firstName.trim();
+      const SecondName = this.state.secondName.trim();
+      if (FirstName && SecondName) {
+        step === 1
+          ? this.props.AddNewDoctor({
+            Id: 0,
+            FirstName,
+            SecondName
+          })
+          : this.props.AddNewVisitor({
+            Id: 0,
+            FirstName,
+            SecondName,
+            Date: this.state.date.toDate(),
+            Male: this.state.male
+          });
+        this.setState({
+          firstName: '',
+          secondName: '',
+          date: moment(),
+          male: true
+        });
+      }
     }
+  }
 
-    onInputPressEnter = () => {
-        const {step} = this.props;
-        let FirstName;
-        let SecondName;
+  public render() {
+    const { firstName, secondName, inputSeparation, male, date } = this.state;
+    const { step, record } = this.props;
 
-        switch (step) {
-            case 0:
-                const inputSeparation = this.state.inputSeparation.trim();
-                if (inputSeparation) {
-                    this.props.AddNewSeparations(inputSeparation);
-                    this.setState({
-                        inputSeparation: ''
-                    });
-                }
-                break;
+    const generalProps = {
+      step: step,
+      onInputChange: (e: any, field?: string) => this.onInputChange(e, field),
+      onInputPressEnter: () => this.onInputPressEnter()
+    };
 
-            case 1:
-                FirstName = this.state.firstName.trim();
-                SecondName = this.state.secondName.trim();
+    switch (step) {
+      case 0:
+        return (
+          <AddSeparation
+            {...generalProps}
+            inputSeparation={inputSeparation}
+          />
+        );
 
-                if (FirstName && SecondName) {
-                    this.props.AddNewDoctor({
-                        Id: 0,
-                        FirstName,
-                        SecondName
-                    });
-                    this.setState({
-                        firstName: '',
-                        secondName: ''
-                    });
-                }
-                break;
+      case 1:
+        return (
+          <AddDoctor
+            {...generalProps}
+            record={record}
+            firstName={firstName}
+            secondName={secondName}
+          />
+        );
 
-            case 2:
-                FirstName = this.state.firstName.trim();
-                SecondName = this.state.secondName.trim();
+      case 2:
+        return (
+          <AddVisitor
+            {...generalProps}
+            record={record}
+            firstName={firstName}
+            secondName={secondName}
+            male={male}
+            date={date}
+            onDateChange={(date: any, _dateString: string) =>
+              this.onDateChange(date, _dateString)
+            }
+            onRadioChange={(e: any) => this.onRadioChange(e)}
+          />
+        );
 
-                if (FirstName && SecondName) {
-                    this.props.AddNewVisitor({
-                        Id: 0,
-                        FirstName,
-                        SecondName,
-                        Date: this.state.date.toUTCString() as any,
-                        Male: this.state.male
-                    });
-                    this.setState({
-                        firstName: '',
-                        secondName: '',
-                        date: new Date(),
-                        male: true
-                    });
-                }
-                break;
-
-            default:
-                break;
-        }
+      default:
+        return <div />;
     }
-
-    onRadioChange = (e: any) => this.setState({
-        male: e.target.value
-    })
-
-    onDateChange = (date: any, _dateString: string) => this.setState({
-        date: date._d
-    })
-
-    public render() {
-        const step = this.props.step.toString();
-        let toRender;
-
-        switch (step) {
-            case '0':
-                toRender = (
-                    <InputWrapper step={step}>
-                        <Input
-                            addonBefore={<div>
-                                <span className='add-new-holder'>Add new</span>
-                                <Select
-                                    className='select-item-container'
-                                    value={step}
-                                >
-                                    <Option value='0'>Separation</Option>
-                                    <Option value='1' disabled>Doctor</Option>
-                                    <Option value='2' disabled>Visitor</Option>
-                                </Select>
-                            </div>}
-                            onChange={(e: any) => this.onInputChange(e, step)}
-                            onPressEnter={this.onInputPressEnter}
-                            value={this.state.inputSeparation}
-                        />
-                    </InputWrapper>
-                );
-                break;
-
-            case '1':
-                toRender = (
-                    <InputWrapper step={step}>
-                        <Input
-                            addonBefore={<div>
-                                <span className='add-new-holder'>Add in {this.props.record.Address} new</span>
-                                <Select
-                                    className='select-item-container'
-                                    value={step}
-                                >
-                                    <Option value='0' disabled>Separation</Option>
-                                    <Option value='1'>Doctor</Option>
-                                    <Option value='2' disabled>Visitor</Option>
-                                </Select>
-                            </div>}
-                            onChange={(e: any) => this.onInputChange(e, step, 'first')}
-                            onPressEnter={this.onInputPressEnter}
-                            value={this.state.firstName}
-                            placeholder='First Name'
-                        />
-                        <Input
-                            addonBefore={<div className='addon-holder' />}
-                            onChange={(e: any) => this.onInputChange(e, step, 'second')}
-                            onPressEnter={this.onInputPressEnter}
-                            value={this.state.secondName}
-                            placeholder='Second Name'
-                        />
-                    </InputWrapper>
-                );
-                break;
-
-            case '2':
-                toRender = (
-                    <InputWrapper step={step}>
-                        <Input
-                            addonBefore={<div>
-                                <span className='add-new-holder'>Add to {this.props.record.SecondName} new</span>
-                                <Select
-                                    className='select-item-container'
-                                    value={step}
-                                >
-                                    <Option value='0' disabled>Separation</Option>
-                                    <Option value='1' disabled>Doctor</Option>
-                                    <Option value='2'>Visitor</Option>
-                                </Select>
-                            </div>}
-                            onChange={(e: any) => this.onInputChange(e, step, 'first')}
-                            onPressEnter={this.onInputPressEnter}
-                            value={this.state.firstName}
-                            placeholder='First Name'
-                        />
-                        <Input
-                            addonBefore={<div className='addon-holder' />}
-                            onChange={(e: any) => this.onInputChange(e, step, 'second')}
-                            onPressEnter={this.onInputPressEnter}
-                            value={this.state.secondName}
-                            placeholder='Second Name'
-                        />
-                        <DatePicker onChange={this.onDateChange} />
-                        <RadioGroup onChange={this.onRadioChange} value={this.state.male}>
-                            <Radio value={true}>Male</Radio>
-                            <Radio value={false}>Female</Radio>
-                        </RadioGroup>
-                    </InputWrapper>
-                );
-                break;
-            default:
-                toRender = <div/>;
-                break;
-        }
-
-        return toRender;
-    }
+  }
 }

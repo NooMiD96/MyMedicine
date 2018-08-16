@@ -202,6 +202,7 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
               AddNewVisitor={(visitor: VisitationState.Visitor) => AddNewVisitor(record, visitor)}
               step={step}
               record={record}
+              history={this.props.history}
             />
           </Col>
           <Col span={24}>
