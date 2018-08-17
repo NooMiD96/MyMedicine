@@ -47,6 +47,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   componentDidUpdate(prevProp: ComponentProps) {
     const { Pending, ErrorInner } = this.props;
     if (prevProp.Pending && !Pending && !ErrorInner) {
+      // TODO: leave one list after sending another
       const { SendedList, DeleteList, EditList } = this.state;
       if (SendedList === 'EditList') {
         this.setState({
@@ -92,7 +93,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
           ...EditList
         ],
         indexForNewElement: indexForNewElement - 1
-      }, () => this.props.AddNewSymptom({ SymptomId: indexForNewElement, Name: '' }));
+      }, () => this.props.AddNewSymptom({ SymptomId: indexForNewElement - 1, Name: '' }));
     }
   }
 
@@ -135,18 +136,23 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       // this.props.setError('Something going wrong! We can\'t find this Symptom!');
       return;
     }
-    const symptom = {
-      Name: value,
-      SymptomId: id
-    } as SymptomsState.Symptom;
-    const { EditList } = this.state;
-    const element = EditList.find(val => val === id);
-    if (element !== -1) {
-      this.props.SetNewValue(symptom);
-    } else {
+
+    const element = this.props.Symptoms.find(s => s.SymptomId === id);
+    if (element) {
+      const { indexForNewElement, EditList } = this.state;
+
       this.setState({
-        EditList: [...EditList, id]
-      }, () => this.props.AddNewSymptom(symptom));
+        EditList: EditList.includes(id)
+          ? [...EditList]
+          : [...EditList, id],
+        indexForNewElement: !element.Name
+          && element.SymptomId === indexForNewElement
+          ? indexForNewElement - 1
+          : indexForNewElement
+      }, () => this.props.SetNewValue({
+        SymptomId: id,
+        Name: value
+      }));
     }
   }
 
@@ -172,7 +178,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
 
   rowSelection = {
     onChange: (selectedRowKeys: string[]) => this.setState({
-      DeleteList: selectedRowKeys.map(x => parseFloat(x.split('-')[0]))
+      DeleteList: selectedRowKeys.map(x => parseFloat(x.split('_')[0]))
     })
   };
 
@@ -216,19 +222,21 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
         spinning={Pending}
       >
 
-        <SymptomsTable
-          dataSource={filtered
-            ? filterData
-            : Symptoms
-          }
-          lastCreatedElementIndex={indexForNewElement}
-          filtered={filtered}
-          tableTitle={this.tableTitle}
-          rowSelectionChange={this.rowSelection}
-          onFilterHandler={this.onFilterHandler}
-          RemoveCreatedElement={this.RemoveCreatedElement}
-          SetValueToElementById={this.SetValueToElementById}
-        />
+        {
+          Symptoms.length && <SymptomsTable
+            dataSource={filtered
+              ? filterData
+              : Symptoms
+            }
+            lastCreatedElementIndex={indexForNewElement}
+            filtered={filtered}
+            tableTitle={this.tableTitle}
+            rowSelectionChange={this.rowSelection}
+            onFilterHandler={this.onFilterHandler}
+            RemoveCreatedElement={this.RemoveCreatedElement}
+            SetValueToElementById={this.SetValueToElementById}
+          />
+        }
       </Spin>
     </div>;
   }

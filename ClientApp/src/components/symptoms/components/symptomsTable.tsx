@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Table, Input, Button, Icon } from 'antd';
 
-import * as SymptomsState from '../reducer';
+import { Symptom } from '../reducer';
 
 /////////////////////////////////////
 //#region ComponentsTypeDefinition
 /////////////////////////////////////
-type SymptomsProps = {
-  dataSource: SymptomsState.Symptom[],
+type ComponentProps = {
+  dataSource: Symptom[],
   filtered: boolean,
   lastCreatedElementIndex: number,
   tableTitle: () => JSX.Element,
@@ -19,7 +19,7 @@ type SymptomsProps = {
   SetValueToElementById: (id: number, value: string) => void
 };
 
-type SymptomsState = {
+type ComponentState = {
   editElementId?: number,
   inputValue: string,
   searchText: string,
@@ -30,8 +30,8 @@ type SymptomsState = {
 //#endregion ComponentsTypeDefinition
 /////////////////////////////////////
 
-export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState> {
-  state: SymptomsState = {
+export class SymptomsTable extends React.Component<ComponentProps, ComponentState> {
+  state: ComponentState = {
     editElementId: undefined,
     inputValue: '',
     searchText: '',
@@ -40,19 +40,27 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
   };
   searchInput: any;
 
-  componentWillReceiveProps(nextProps: SymptomsProps) {
+  componentWillReceiveProps(nextProps: ComponentProps, nextState: ComponentState) {
+    // need test next line
     if (nextProps.dataSource !== this.props.dataSource) {
       const { lastCreatedElementIndex } = this.props;
       const newElement = nextProps.dataSource.find(x => x.SymptomId === lastCreatedElementIndex);
       this.setState({
         editElementId: newElement && !newElement.Name
           ? lastCreatedElementIndex
-          : this.state.editElementId
+          : nextState.editElementId
       });
     }
   }
 
   // TODO?: shouldComponentUpdate
+  shouldComponentUpdate(_nextProps: ComponentProps, nextState: ComponentState) {
+    const state = this.state;
+    if (state.inputValue !== nextState.inputValue && nextState.inputValue) {
+      return false;
+    }
+    return true;
+  }
 
   onTableChange = (_pagination: any, _filters: string[], sorter: any) => {
     this.setState({ sorter: sorter.order });
@@ -113,7 +121,7 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     filterDropdownVisible: false
   }, () => this.props.onFilterHandler(this.state.searchText))
 
-  sorter = (a: SymptomsState.Symptom, b: SymptomsState.Symptom) => {
+  sorter = (a: Symptom, b: Symptom) => {
     if (this.state.sorter === 'descend') {
       return !a.Name
         ? 1
@@ -125,12 +133,12 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     }
   }
 
-  actionRender = (_text: any, record: SymptomsState.Symptom) => (
+  actionRender = (_text: any, record: Symptom) => (
     <span>
       <Button onClick={() => this.onEditApplyButtonClick(record)}>Edit/Apply</Button>
     </span>
   )
-  symptomNameRender = (text: any, record: SymptomsState.Symptom) => record.SymptomId === this.state.editElementId
+  symptomNameRender = (text: any, record: Symptom) => record.SymptomId === this.state.editElementId
     ? <Input
       data-id={record.SymptomId}
       defaultValue={text}
@@ -169,8 +177,8 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     width: '12%',
     render: this.actionRender
   }]
-  rowKey = (record: SymptomsState.Symptom, index: number | string) => typeof (index) === 'number'
-    ? `${record.SymptomId.toString()}-${index}`
+  rowKey = (record: Symptom, index: number | string) => typeof (index) === 'number'
+    ? `${record.SymptomId.toString(10)}_${index}`
     : index
   //////////////////////////
   //#endregion column define
