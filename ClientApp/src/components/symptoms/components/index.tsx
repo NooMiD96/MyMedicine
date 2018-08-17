@@ -17,7 +17,7 @@ type ComponentProps = SymptomsState.SymptomsState
   & RouteComponentProps<{}>;
 
 type ComponentState = {
-  EditList: SymptomsState.Symptom[],
+  EditList: number[],
   DeleteList: number[],
   filterData: SymptomsState.Symptom[],
   indexForNewElement: number,
@@ -37,7 +37,6 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     SendedList: '',
     filtered: false
   };
-  searchInput: any;
 
   componentDidMount() {
     this.props.UserRole !== 'Admin'
@@ -52,7 +51,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       if (SendedList === 'EditList') {
         this.setState({
           DeleteList: DeleteList.filter(dl =>
-            !EditList.find(el => el.SymptomId === dl)
+            !EditList.find(el => el === dl)
           ),
           EditList: [],
           SendedList: '',
@@ -61,7 +60,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       } else if (SendedList === 'DeleteList') {
         this.setState({
           EditList: EditList.filter(el =>
-            !DeleteList.find(dl => dl === el.SymptomId)
+            !DeleteList.find(dl => dl === el)
           ),
           DeleteList: [],
           SendedList: '',
@@ -74,115 +73,93 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       }
     }
   }
-////////////////////////////
-//#region RequestArea
-////////////////////////////
+
+  // TODO: shouldComponentUpdate
+
+  ////////////////////////////
+  //#region RequestArea
+  ////////////////////////////
   onAddSymptom = () => {
     const { indexForNewElement, EditList } = this.state;
 
-    const lastElement = EditList.find(x => x.SymptomId === indexForNewElement + 1);
-    if (!lastElement
-      || lastElement && lastElement.Name
-    ) {
+    const findElement = this.props.Symptoms.find(x => x.SymptomId === indexForNewElement);
+    if (!findElement) {
+      this.props.AddNewSymptom({ SymptomId: indexForNewElement, Name: '' });
+    } else if (findElement && findElement.Name) {
       this.setState({
         EditList: [
-          { Name: '', SymptomId: indexForNewElement } as SymptomsState.Symptom,
+          indexForNewElement,
           ...EditList
         ],
         indexForNewElement: indexForNewElement - 1
-      });
+      }, () => this.props.AddNewSymptom({ SymptomId: indexForNewElement, Name: '' }));
     }
   }
 
   onChangeSymptoms = () => this.setState({
     SendedList: 'EditList'
-  }, () => this.props.ChangeSymptoms(this.state.EditList))
+  }, () => this.props.ChangeSymptoms(
+    this.props.Symptoms.filter(x =>
+      x.SymptomId < 0 || this.state.EditList.includes(x.SymptomId)
+    )
+  ))
 
   onDeleteSymptoms = () => this.setState({
     SendedList: 'DeleteList'
-  }, () =>
-      this.props.DeleteSymptoms(
-        this.state.DeleteList
-          .filter(x => x > 0)
-          .map(x => ({
-            SymptomId: x
-          }) as SymptomsState.Symptom)
-      )
-  )
+  }, () => this.props.DeleteSymptoms(this.state.DeleteList))
 
-////////////////////////////
-//#endregion RequestArea
-////////////////////////////
-////////////////////////////
-//#region TableDefinition
-////////////////////////////
-  RemoveElementById = (id: number) => {
-    if (id === this.state.indexForNewElement + 1) {
-      this.setState({
-        EditList: this.state.EditList.filter(x => x.SymptomId !== id)
-      });
+  ////////////////////////////
+  //#endregion RequestArea
+  ////////////////////////////
+  ////////////////////////////
+  //#region TableDefinition
+  ////////////////////////////
+  /**
+   * Remove element from state
+   * @param {number} id - id of element which need to be removed
+   */
+  RemoveCreatedElement = (id: number) => {
+    if (id === this.state.indexForNewElement) {
+      this.props.DeleteSymptom(id);
     }
   }
 
+  /**
+   * Set new value to element with id
+   * @param {number} id - id of element which need to be edit
+   * @param {string} value - value for new element
+   */
   SetValueToElementById = (id: number, value: string) => {
-    if (id < 0) {
-      const findIndex = this.state.EditList.findIndex(val => val.SymptomId === id);
-      if (findIndex !== -1) {
-        this.setState({
-          EditList: this.state.EditList.map(x =>
-            x.SymptomId !== id
-              ? x
-              : { ...x, Name: value } as SymptomsState.Symptom
-          )
-        });
-      } else {
-        this.setState({
-          EditList: [
-            ...this.state.EditList,
-            { Name: value, SymptomId: id } as SymptomsState.Symptom
-          ]
-        });
-      }
+    if (!this.props.Symptoms.find(x => x.SymptomId === id)) {
+      console.warn('Something going wrong! We can\'t find this Symptom!');
+      // this.props.setError('Something going wrong! We can\'t find this Symptom!');
+      return;
+    }
+    const symptom = {
+      Name: value,
+      SymptomId: id
+    } as SymptomsState.Symptom;
+    const { EditList } = this.state;
+    const element = EditList.find(val => val === id);
+    if (element !== -1) {
+      this.props.SetNewValue(symptom);
     } else {
-      const findIndex = this.state.EditList.findIndex(val => val.SymptomId === id);
-      if (findIndex !== -1) {
-        this.setState({
-          EditList: this.state.EditList.map(x =>
-            x.SymptomId !== id
-              ? x
-              : { ...x, Name: value } as SymptomsState.Symptom
-          )
-        });
-      } else {
-        const findIndex = this.props.Symptoms.findIndex(val => val.SymptomId === id);
-        if (findIndex !== -1) {
-          this.setState({
-            EditList: this.state.EditList.map(x =>
-              x.SymptomId !== id
-                ? x
-                : { ...x, Name: value } as SymptomsState.Symptom
-            )
-          });
-        } else {
-          this.setState({
-            EditList: [
-              ...this.state.EditList,
-              { Name: value, SymptomId: id } as SymptomsState.Symptom
-            ]
-          });
-        }
-      }
+      this.setState({
+        EditList: [...EditList, id]
+      }, () => this.props.AddNewSymptom(symptom));
     }
   }
 
+  /**
+   * find new list of elements by entered string
+   */
   onFilterHandler = (searchText: string) => {
     if (searchText) {
       const reg = new RegExp(searchText, 'gi');
       this.setState({
         filtered: true,
         filterData: [
-          ...this.props.Symptoms.filter((record: SymptomsState.Symptom) => !!record.Name.match(reg)),
-          ...this.state.EditList.filter((record: SymptomsState.Symptom) => !!record.Name.match(reg))
+          ...this.props.Symptoms.filter((record: SymptomsState.Symptom) => !!record.Name.match(reg))
         ]
       });
     } else {
@@ -218,9 +195,9 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       Delete selected elements
     </Button>
   </div>
-////////////////////////////
-//#endregion TableDefinition
-////////////////////////////
+  ////////////////////////////
+  //#endregion TableDefinition
+  ////////////////////////////
 
   render() {
     if (this.props.UserRole !== 'Admin') {
@@ -228,7 +205,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     }
 
     const { ErrorInner, CleanErrorInner, Symptoms, Pending } = this.props;
-    const { filterData, filtered, EditList, indexForNewElement } = this.state;
+    const { filterData, filtered, indexForNewElement } = this.state;
 
     return <div>
       <AlertModule
@@ -242,14 +219,14 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
         <SymptomsTable
           dataSource={filtered
             ? filterData
-            : EditList.concat(Symptoms)
+            : Symptoms
           }
-          lastCreatedElementIndex={indexForNewElement + 1}
+          lastCreatedElementIndex={indexForNewElement}
           filtered={filtered}
           tableTitle={this.tableTitle}
           rowSelectionChange={this.rowSelection}
           onFilterHandler={this.onFilterHandler}
-          RemoveElementById={this.RemoveElementById}
+          RemoveCreatedElement={this.RemoveCreatedElement}
           SetValueToElementById={this.SetValueToElementById}
         />
       </Spin>

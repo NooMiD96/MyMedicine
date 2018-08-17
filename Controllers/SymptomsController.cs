@@ -47,13 +47,17 @@ namespace MyMedicine.Controllers
             {
                 return ControllersServices.ErrorMessage("Not allowed");
             }
+            if (editList == null || editList.Count == 0)
+            {
+                return ControllersServices.ErrorMessage("List is empty");
+            }
 
             await _context.ImportSymptomsListAsync(editList, 1);
 
             return "true";
         }
         [HttpDelete("[action]")]
-        public async Task<string> DeleteSymptoms([FromBody] List<Symptom> deleteList)
+        public async Task<string> DeleteSymptoms([FromBody] List<int> deleteList)
         {
             if (!User.Identity.IsAuthenticated)
             {

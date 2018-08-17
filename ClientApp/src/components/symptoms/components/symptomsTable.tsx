@@ -15,7 +15,7 @@ type SymptomsProps = {
     onChange: (selectedRowKeys: any) => void
   },
   onFilterHandler: (searchText: string) => void,
-  RemoveElementById: (id: number) => void,
+  RemoveCreatedElement: (id: number) => void,
   SetValueToElementById: (id: number, value: string) => void
 };
 
@@ -23,7 +23,8 @@ type SymptomsState = {
   editElementId?: number,
   inputValue: string,
   searchText: string,
-  filterDropdownVisible: boolean
+  filterDropdownVisible: boolean,
+  sorter: string
 };
 /////////////////////////////////////
 //#endregion ComponentsTypeDefinition
@@ -34,24 +35,32 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     editElementId: undefined,
     inputValue: '',
     searchText: '',
-    filterDropdownVisible: false
+    filterDropdownVisible: false,
+    sorter: ''
   };
   searchInput: any;
 
   componentWillReceiveProps(nextProps: SymptomsProps) {
-    if (nextProps.lastCreatedElementIndex
-      && nextProps.lastCreatedElementIndex !== this.props.lastCreatedElementIndex
-    ) {
+    if (nextProps.dataSource !== this.props.dataSource) {
+      const { lastCreatedElementIndex } = this.props;
+      const newElement = nextProps.dataSource.find(x => x.SymptomId === lastCreatedElementIndex);
       this.setState({
-        editElementId: nextProps.lastCreatedElementIndex
+        editElementId: newElement && !newElement.Name
+          ? lastCreatedElementIndex
+          : this.state.editElementId
       });
     }
   }
 
-////////////////////////////////
-//#region SaveElementsChanges
-////////////////////////////////
-  onEditApplyClick = (record: any) => {
+  // TODO?: shouldComponentUpdate
+
+  onTableChange = (_pagination: any, _filters: string[], sorter: any) => {
+    this.setState({ sorter: sorter.order });
+  }
+  ////////////////////////////////
+  //#region SaveElementsChanges
+  ////////////////////////////////
+  onEditApplyButtonClick = (record: any) => {
     if (record.SymptomId === this.state.editElementId) {
       this.saveElementInEditList(this.state.editElementId, this.state.inputValue);
     } else {
@@ -61,7 +70,7 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     }
   }
 
-  onPressEnterEdit = (e: any) => this.saveElementInEditList(
+  onEditPressEnter = (e: any) => this.saveElementInEditList(
     Number.parseInt(e.target.getAttribute('data-id'), 10),
     e.target.value
   )
@@ -75,7 +84,7 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     // if NEW symptom is empty delete his
     if (!value) {
       if (id === editElementId) {
-        this.props.RemoveElementById(id);
+        this.props.RemoveCreatedElement(id);
       }
     } else {
       this.props.SetValueToElementById(id, value);
@@ -90,12 +99,12 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
   onTableElementChange = (e: any) => this.setState({
     inputValue: e.target.value
   })
-////////////////////////////////
-//#endregion SaveElementsChanges
-////////////////////////////////
-//////////////////////////
-//#region column define
-//////////////////////////
+  ////////////////////////////////
+  //#endregion SaveElementsChanges
+  ////////////////////////////////
+  //////////////////////////
+  //#region column define
+  //////////////////////////
   onSearchTextChange = (e: any) => this.setState({
     searchText: e.target.value
   })
@@ -104,9 +113,21 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     filterDropdownVisible: false
   }, () => this.props.onFilterHandler(this.state.searchText))
 
+  sorter = (a: SymptomsState.Symptom, b: SymptomsState.Symptom) => {
+    if (this.state.sorter === 'descend') {
+      return !a.Name
+        ? 1
+        : a.Name.localeCompare(b.Name, undefined, { usage: 'sort' });
+    } else {
+      return !a.Name
+        ? -1
+        : a.Name.localeCompare(b.Name, undefined, { usage: 'sort' });
+    }
+  }
+
   actionRender = (_text: any, record: SymptomsState.Symptom) => (
     <span>
-      <Button onClick={() => this.onEditApplyClick(record)}>Edit/Apply</Button>
+      <Button onClick={() => this.onEditApplyButtonClick(record)}>Edit/Apply</Button>
     </span>
   )
   symptomNameRender = (text: any, record: SymptomsState.Symptom) => record.SymptomId === this.state.editElementId
@@ -114,7 +135,7 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
       data-id={record.SymptomId}
       defaultValue={text}
       onChange={this.onTableElementChange}
-      onPressEnter={this.onPressEnterEdit}
+      onPressEnter={this.onEditPressEnter}
     />
     : text
   onFilterDropdownVisibleChange = (visible: any) => this.setState({
@@ -141,28 +162,32 @@ export class SymptomsTable extends React.Component<SymptomsProps, SymptomsState>
     ),
     filterIcon: <Icon type='filter' style={{ color: this.props.filtered ? '#108ee9' : '#aaa' }} />,
     filterDropdownVisible: this.state.filterDropdownVisible,
-    onFilterDropdownVisibleChange: this.onFilterDropdownVisibleChange
+    onFilterDropdownVisibleChange: this.onFilterDropdownVisibleChange,
+    sorter: this.sorter
   }, {
     title: 'Action',
     width: '12%',
     render: this.actionRender
   }]
-  rowKey = (record: SymptomsState.Symptom, index: number | string) => typeof(index) === 'number'
+  rowKey = (record: SymptomsState.Symptom, index: number | string) => typeof (index) === 'number'
     ? `${record.SymptomId.toString()}-${index}`
     : index
-//////////////////////////
-//#endregion column define
-//////////////////////////
+  //////////////////////////
+  //#endregion column define
+  //////////////////////////
 
   render() {
     const { dataSource, rowSelectionChange, tableTitle } = this.props;
 
-    return <Table
-      dataSource={dataSource}
-      rowSelection={rowSelectionChange}
-      title={tableTitle}
-      columns={this.columns()}
-      rowKey={this.rowKey}
-    />;
+    return (
+      <Table
+        dataSource={dataSource}
+        rowSelection={rowSelectionChange}
+        title={tableTitle}
+        columns={this.columns()}
+        rowKey={this.rowKey}
+        onChange={this.onTableChange}
+      />
+    );
   }
 }

@@ -24,15 +24,26 @@ namespace MyMedicine.Context.Medicine
             switch (type)
             {
                 case 0:
-                    symptoms.ForEach(symptom => symptom.SymptomId = 0);
-                    Symptoms.AddRange(symptoms.AsEnumerable());
+                    Symptoms.AddRange(
+                        symptoms
+                        .Where(x => !String.IsNullOrEmpty(x.Name))
+                        .Select(x =>
+                        {
+                            x.SymptomId = 0;
+                            return x;
+                        })
+                        .AsEnumerable()
+                    );
 
                     break;
 
                 case 1:
-                    int index = -1;
+                    var index = -1;
                     foreach (var symptom in symptoms)
                     {
+                        if (String.IsNullOrEmpty(symptom.Name))
+                            continue;
+
                         index = contextSymptoms.IndexOf(symptom);
 
                         if (index != -1)
@@ -51,7 +62,7 @@ namespace MyMedicine.Context.Medicine
 
                 case 2:
                     foreach (var symptom in symptoms)
-                        if (!contextSymptoms.Contains(symptom))
+                        if (!contextSymptoms.Contains(symptom) || String.IsNullOrEmpty(symptom.Name))
                         {
                             symptom.SymptomId = 0;
                             Symptoms.Add(symptom);
@@ -68,11 +79,10 @@ namespace MyMedicine.Context.Medicine
             return true;
         }
 
-        public async ValueTask<bool> DeletesymptomsAsync(List<Symptom> symptoms)
+        public async ValueTask<bool> DeletesymptomsAsync(List<int> symptoms)
         {
-            var symptomsIds =symptoms.Select(x => x.SymptomId);
             var contextSymptoms = Symptoms
-                .Where(x => symptomsIds.Contains(x.SymptomId))
+                .Where(x => symptoms.Contains(x.SymptomId))
                 .AsNoTracking()
                 .AsEnumerable();
 
