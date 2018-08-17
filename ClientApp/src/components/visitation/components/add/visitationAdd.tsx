@@ -110,7 +110,7 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
     const generalProps = {
       step: step,
       onInputChange: (e: any, field?: string) => this.onInputChange(e, field),
-      onInputPressEnter: () => this.onInputPressEnter()
+      onInputPressEnter: this.onInputPressEnter
     };
 
     switch (step) {
@@ -141,10 +141,8 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
             secondName={secondName}
             male={male}
             date={date}
-            onDateChange={(date: any, _dateString: string) =>
-              this.onDateChange(date, _dateString)
-            }
-            onRadioChange={(e: any) => this.onRadioChange(e)}
+            onDateChange={this.onDateChange}
+            onRadioChange={this.onRadioChange}
           />
         );
 

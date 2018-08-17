@@ -32,7 +32,7 @@ export const AddSeparation = (props: AddSeparationProp) => {
           <Option value={2} disabled>Visitor</Option>
         </Select>
       </div>}
-      onChange={(e: any) => onInputChange(e)}
+      onChange={onInputChange}
       onPressEnter={onInputPressEnter}
       value={inputSeparation}
     />
