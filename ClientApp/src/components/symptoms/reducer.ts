@@ -1,8 +1,8 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
+import { message } from 'antd';
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
-import { message } from 'antd';
 // ----------------- STATE -----------------
 export interface SymptomsState {
     Symptoms: Symptom[];

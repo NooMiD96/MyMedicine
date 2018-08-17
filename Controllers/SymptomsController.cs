@@ -53,7 +53,7 @@ namespace MyMedicine.Controllers
             return "true";
         }
         [HttpDelete("[action]")]
-        public async Task<string> DeleteSymptoms([FromBody] List<int> deleteList)
+        public async Task<string> DeleteSymptoms([FromBody] List<Symptom> deleteList)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -62,6 +62,10 @@ namespace MyMedicine.Controllers
             if (!User.IsInRole("Admin"))
             {
                 return ControllersServices.ErrorMessage("Not allowed");
+            }
+            if (deleteList == null || deleteList.Count == 0)
+            {
+                return ControllersServices.ErrorMessage("List is empty");
             }
 
             var Symptoms = await _context.DeletesymptomsAsync(deleteList);

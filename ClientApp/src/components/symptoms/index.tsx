@@ -1,3 +1,3 @@
-import Symptoms from './symptoms';
+import Symptoms from './components';
 
 export default Symptoms;

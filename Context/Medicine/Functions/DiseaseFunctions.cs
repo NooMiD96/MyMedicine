@@ -68,10 +68,11 @@ namespace MyMedicine.Context.Medicine
             return true;
         }
 
-        public async ValueTask<bool> DeletesymptomsAsync(List<int> symptoms)
+        public async ValueTask<bool> DeletesymptomsAsync(List<Symptom> symptoms)
         {
+            var symptomsIds =symptoms.Select(x => x.SymptomId);
             var contextSymptoms = Symptoms
-                .Where(s => symptoms.Contains(s.SymptomId))
+                .Where(x => symptomsIds.Contains(x.SymptomId))
                 .AsNoTracking()
                 .AsEnumerable();
 
