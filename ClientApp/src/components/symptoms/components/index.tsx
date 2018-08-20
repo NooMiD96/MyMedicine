@@ -21,7 +21,8 @@ type ComponentState = {
   DeleteList: number[],
   filterData: SymptomsState.Symptom[],
   indexForNewElement: number,
-  SendedList: string,
+  filterText: string,
+  sendedList: string,
   filtered: boolean
 };
 /////////////////////////////////////
@@ -34,7 +35,8 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     DeleteList: [],
     filterData: [],
     indexForNewElement: -1,
-    SendedList: '',
+    filterText: '',
+    sendedList: '',
     filtered: false
   };
 
@@ -44,38 +46,55 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       : this.props.GetSymptoms();
   }
 
-  componentDidUpdate(prevProp: ComponentProps) {
-    const { Pending, ErrorInner } = this.props;
-    if (prevProp.Pending && !Pending && !ErrorInner) {
+  componentWillReceiveProps(nextProps: ComponentProps) {
+    const { Pending: thisPending, Symptoms: thisSymptoms } = this.props;
+
+    if (thisSymptoms !== nextProps.Symptoms
+      && this.state.filterText
+    ) {
+      this.onFilterHandler(this.state.filterText, nextProps.Symptoms);
+    }
+
+    if (thisPending && !nextProps.Pending && !nextProps.ErrorInner) {
       // TODO: leave one list after sending another
-      const { SendedList, DeleteList, EditList } = this.state;
-      if (SendedList === 'EditList') {
+      const { sendedList, DeleteList, EditList } = this.state;
+      if (sendedList === 'EditList') {
         this.setState({
           DeleteList: DeleteList.filter(dl =>
             !EditList.find(el => el === dl)
           ),
           EditList: [],
-          SendedList: '',
+          sendedList: '',
           indexForNewElement: -1
         });
-      } else if (SendedList === 'DeleteList') {
+      } else if (sendedList === 'DeleteList') {
         this.setState({
           EditList: EditList.filter(el =>
             !DeleteList.find(dl => dl === el)
           ),
           DeleteList: [],
-          SendedList: '',
+          sendedList: '',
           indexForNewElement: -1
         });
       } else {
         this.setState({
-          SendedList: ''
+          sendedList: ''
         });
       }
     }
   }
 
-  // TODO: shouldComponentUpdate
+  shouldComponentUpdate(nextProps: ComponentProps, nextState: ComponentState) {
+    if ( this.props.Symptoms !== nextProps.Symptoms
+      || this.props.Pending !== nextProps.Pending
+      || this.props.ErrorInner !== nextProps.ErrorInner
+      || this.state.filterData !== nextState.filterData
+      || this.state.DeleteList !== nextState.DeleteList
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   ////////////////////////////
   //#region RequestArea
@@ -98,15 +117,11 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   }
 
   onChangeSymptoms = () => this.setState({
-    SendedList: 'EditList'
-  }, () => this.props.ChangeSymptoms(
-    this.props.Symptoms.filter(x =>
-      x.SymptomId < 0 || this.state.EditList.includes(x.SymptomId)
-    )
-  ))
+    sendedList: 'EditList'
+  }, () => this.props.ChangeSymptoms(this.state.EditList))
 
   onDeleteSymptoms = () => this.setState({
-    SendedList: 'DeleteList'
+    sendedList: 'DeleteList'
   }, () => this.props.DeleteSymptoms(this.state.DeleteList))
 
   ////////////////////////////
@@ -121,7 +136,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
    */
   RemoveCreatedElement = (id: number) => {
     if (id === this.state.indexForNewElement) {
-      this.props.DeleteSymptom(id);
+      this.props.DeleteSymptoms([id]);
     }
   }
 
@@ -131,14 +146,12 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
    * @param {string} value - value for new element
    */
   SetValueToElementById = (id: number, value: string) => {
-    if (!this.props.Symptoms.find(x => x.SymptomId === id)) {
+    const element = this.props.Symptoms.find(x => x.SymptomId === id);
+    if (!element) {
       console.warn('Something going wrong! We can\'t find this Symptom!');
       // this.props.setError('Something going wrong! We can\'t find this Symptom!');
       return;
-    }
-
-    const element = this.props.Symptoms.find(s => s.SymptomId === id);
-    if (element) {
+    } else {
       const { indexForNewElement, EditList } = this.state;
 
       this.setState({
@@ -159,28 +172,34 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   /**
    * find new list of elements by entered string
    */
-  onFilterHandler = (searchText: string) => {
-    if (searchText) {
-      const reg = new RegExp(searchText, 'gi');
+  onFilterHandler = (filterText: string, symptoms?: SymptomsState.Symptom[]) => {
+    if (filterText) {
+      const reg = new RegExp(filterText, 'gi');
       this.setState({
+        filterText: filterText,
         filtered: true,
         filterData: [
-          ...this.props.Symptoms.filter((record: SymptomsState.Symptom) => !!record.Name.match(reg))
+          ...(symptoms
+            ? symptoms
+            : this.props.Symptoms
+          ).filter((record: SymptomsState.Symptom) => !!record.Name.match(reg) || !record.Name)
         ]
       });
     } else {
       this.setState({
+        filterText: '',
         filtered: false,
         filterData: []
       });
     }
   }
 
-  rowSelection = {
-    onChange: (selectedRowKeys: string[]) => this.setState({
-      DeleteList: selectedRowKeys.map(x => parseFloat(x.split('_')[0]))
+  rowSelection = () => ({
+    selectedRowKeys: this.state.DeleteList,
+    onChange: (selectedRowKeys: number[]) => this.setState({
+      DeleteList: selectedRowKeys
     })
-  };
+  })
 
   tableTitle = () => <div>
     <Button
@@ -211,34 +230,38 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     }
 
     const { ErrorInner, CleanErrorInner, Symptoms, Pending } = this.props;
-    const { filterData, filtered, indexForNewElement } = this.state;
+    const { filterData, filtered, indexForNewElement, filterText } = this.state;
 
-    return <div>
-      <AlertModule
-        ErrorInner={ErrorInner}
-        CleanErrorInner={CleanErrorInner}
-      />
-      <Spin
-        spinning={Pending}
+    return (
+      <div
+        className={`symptoms-table-container table-container${filtered ? ' filtered-table-container' : ''}`}
       >
-
-        {
-          Symptoms.length && <SymptomsTable
-            dataSource={filtered
-              ? filterData
-              : Symptoms
-            }
-            lastCreatedElementIndex={indexForNewElement}
-            filtered={filtered}
-            tableTitle={this.tableTitle}
-            rowSelectionChange={this.rowSelection}
-            onFilterHandler={this.onFilterHandler}
-            RemoveCreatedElement={this.RemoveCreatedElement}
-            SetValueToElementById={this.SetValueToElementById}
-          />
-        }
-      </Spin>
-    </div>;
+        <AlertModule
+          ErrorInner={ErrorInner}
+          CleanErrorInner={CleanErrorInner}
+        />
+        <Spin
+          spinning={Pending}
+        >
+          {
+            Symptoms.length && <SymptomsTable
+              dataSource={filtered
+                ? filterData
+                : Symptoms
+              }
+              lastCreatedElementIndex={indexForNewElement}
+              filtered={filtered}
+              filterText={filterText}
+              tableTitle={this.tableTitle}
+              rowSelectionChange={this.rowSelection()}
+              onFilterHandler={this.onFilterHandler}
+              RemoveCreatedElement={this.RemoveCreatedElement}
+              SetValueToElementById={this.SetValueToElementById}
+            />
+          }
+        </Spin>
+      </div>
+    );
   }
 }
 

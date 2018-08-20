@@ -9,22 +9,21 @@ import { Symptom } from '../reducer';
 type ComponentProps = {
   dataSource: Symptom[],
   filtered: boolean,
+  filterText: string,
   lastCreatedElementIndex: number,
   tableTitle: () => JSX.Element,
   rowSelectionChange: {
+    selectedRowKeys: number[],
     onChange: (selectedRowKeys: any) => void
   },
-  onFilterHandler: (searchText: string) => void,
+  onFilterHandler: (filterText: string) => void,
   RemoveCreatedElement: (id: number) => void,
   SetValueToElementById: (id: number, value: string) => void
 };
 
 type ComponentState = {
-  editElementId?: number,
-  inputValue: string,
-  searchText: string,
-  filterDropdownVisible: boolean,
-  sorter: string
+  sorter: string,
+  editElementId?: number
 };
 /////////////////////////////////////
 //#endregion ComponentsTypeDefinition
@@ -32,13 +31,11 @@ type ComponentState = {
 
 export class SymptomsTable extends React.Component<ComponentProps, ComponentState> {
   state: ComponentState = {
-    editElementId: undefined,
-    inputValue: '',
-    searchText: '',
-    filterDropdownVisible: false,
-    sorter: ''
+    sorter: '',
+    editElementId: undefined
   };
-  searchInput: any;
+  searchInput: Input | null = null;
+  editTableElementInput: Input | null = null;
 
   componentWillReceiveProps(nextProps: ComponentProps, nextState: ComponentState) {
     // need test next line
@@ -53,16 +50,21 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     }
   }
 
-  // TODO?: shouldComponentUpdate
-  shouldComponentUpdate(_nextProps: ComponentProps, nextState: ComponentState) {
-    const state = this.state;
-    if (state.inputValue !== nextState.inputValue && nextState.inputValue) {
-      return false;
+  shouldComponentUpdate(nextProps: ComponentProps, nextState: ComponentState) {
+    if (this.props.dataSource !== nextProps.dataSource
+      || this.props.filterText !== nextProps.filterText
+      || this.props.filtered !== nextProps.filtered
+      || this.props.rowSelectionChange.selectedRowKeys !== nextProps.rowSelectionChange.selectedRowKeys
+      // if in next state editElementId is undefined
+      // then we early send request to get filtered dataSource
+      || this.state.editElementId !== nextState.editElementId
+    ) {
+      return true;
     }
-    return true;
+    return false;
   }
 
-  onTableChange = (_pagination: any, _filters: string[], sorter: any) => {
+  onTableChange = (_pagination: any, _filters: any, sorter: any) => {
     this.setState({ sorter: sorter.order });
   }
   ////////////////////////////////
@@ -70,7 +72,10 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
   ////////////////////////////////
   onEditApplyButtonClick = (record: any) => {
     if (record.SymptomId === this.state.editElementId) {
-      this.saveElementInEditList(this.state.editElementId, this.state.inputValue);
+      this.saveElementInEditList(
+        this.state.editElementId,
+        this.editTableElementInput!.input.value
+      );
     } else {
       this.setState({
         editElementId: record.SymptomId
@@ -99,87 +104,76 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     }
 
     this.setState({
-      editElementId: undefined,
-      inputValue: ''
+      editElementId: undefined
     });
   }
-
-  onTableElementChange = (e: any) => this.setState({
-    inputValue: e.target.value
-  })
   ////////////////////////////////
   //#endregion SaveElementsChanges
   ////////////////////////////////
   //////////////////////////
   //#region column define
   //////////////////////////
-  onSearchTextChange = (e: any) => this.setState({
-    searchText: e.target.value
-  })
-  onSearch = () => this.setState({
-    searchText: '',
-    filterDropdownVisible: false
-  }, () => this.props.onFilterHandler(this.state.searchText))
-
-  sorter = (a: Symptom, b: Symptom) => {
-    if (this.state.sorter === 'descend') {
-      return !a.Name
-        ? 1
-        : a.Name.localeCompare(b.Name, undefined, { usage: 'sort' });
-    } else {
-      return !a.Name
-        ? -1
-        : a.Name.localeCompare(b.Name, undefined, { usage: 'sort' });
-    }
+  onSearch = () => {
+    const filterText = this.searchInput!.input.value.trim();
+    this.props.onFilterHandler(filterText);
   }
 
-  actionRender = (_text: any, record: Symptom) => (
-    <span>
-      <Button onClick={() => this.onEditApplyButtonClick(record)}>Edit/Apply</Button>
-    </span>
+  filterDropdown = () => (
+    <div className='custom-filter-dropdown'>
+      <Input
+        ref={el => this.searchInput = el}
+        placeholder='Search name'
+        onPressEnter={this.onSearch}
+      />
+      <Button type='primary' onClick={this.onSearch}>
+        Search
+      </Button>
+    </div>
   )
+
+  actionRender = (_text: any, record: Symptom) => <Button onClick={() => this.onEditApplyButtonClick(record)}>Edit/Apply</Button>;
+  onFilterDropdownVisibleChange = (isVisible: boolean) => {
+    if (this.searchInput) {
+      if (isVisible) {
+        setTimeout(() => this.searchInput!.focus(), 1);
+      } else {
+        setTimeout(() => this.searchInput!.input.value = this.props.filterText, 250);
+      }
+    }
+  }
+  filterIcon = () => <Icon type='filter' style={{ color: this.props.filtered ? '#108ee9' : '#aaa' }} />;
   symptomNameRender = (text: any, record: Symptom) => record.SymptomId === this.state.editElementId
     ? <Input
       data-id={record.SymptomId}
+      ref={el => this.editTableElementInput = el}
       defaultValue={text}
-      onChange={this.onTableElementChange}
       onPressEnter={this.onEditPressEnter}
     />
     : text
-  onFilterDropdownVisibleChange = (visible: any) => this.setState({
-    filterDropdownVisible: visible
-  }, () => this.searchInput ? this.searchInput.focus() : '')
+  sorter = (a: Symptom, b: Symptom) => {
+    if (a.Name) {
+      return a.Name.localeCompare(b.Name, undefined, { usage: 'sort' });
+    } else {
+      return this.state.sorter === 'descend'
+        ? 1
+        : -1;
+    }
+  }
 
-  columns = () => [{
+  columns = [{
     title: 'Symptom name',
     dataIndex: 'Name',
     render: this.symptomNameRender,
-    filterDropdown: (
-      <div className='custom-filter-dropdown'>
-        <Input
-          ref={el => this.searchInput = el}
-          placeholder='Search name'
-          value={this.state.searchText}
-          onChange={this.onSearchTextChange}
-          onPressEnter={this.onSearch}
-        />
-        <Button type='primary' onClick={this.onSearch}>
-          Search
-        </Button>
-      </div>
-    ),
-    filterIcon: <Icon type='filter' style={{ color: this.props.filtered ? '#108ee9' : '#aaa' }} />,
-    filterDropdownVisible: this.state.filterDropdownVisible,
+    filterDropdown: this.filterDropdown,
+    filterIcon: this.filterIcon,
     onFilterDropdownVisibleChange: this.onFilterDropdownVisibleChange,
     sorter: this.sorter
   }, {
     title: 'Action',
     width: '12%',
     render: this.actionRender
-  }]
-  rowKey = (record: Symptom, index: number | string) => typeof (index) === 'number'
-    ? `${record.SymptomId.toString(10)}_${index}`
-    : index
+  }];
+  rowKey = (record: Symptom) => record.SymptomId as any;
   //////////////////////////
   //#endregion column define
   //////////////////////////
@@ -192,7 +186,7 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
         dataSource={dataSource}
         rowSelection={rowSelectionChange}
         title={tableTitle}
-        columns={this.columns()}
+        columns={this.columns}
         rowKey={this.rowKey}
         onChange={this.onTableChange}
       />

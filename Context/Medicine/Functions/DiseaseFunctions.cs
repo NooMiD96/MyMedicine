@@ -38,18 +38,16 @@ namespace MyMedicine.Context.Medicine
                     break;
 
                 case 1:
-                    var index = -1;
                     foreach (var symptom in symptoms)
                     {
                         if (String.IsNullOrEmpty(symptom.Name))
                             continue;
 
-                        index = contextSymptoms.IndexOf(symptom);
+                        var item = contextSymptoms.FirstOrDefault(x => x.SymptomId == symptom.SymptomId);
 
-                        if (index != -1)
+                        if (item != null)
                         {
-                            contextSymptoms[index] = symptom;
-                            Symptoms.Update(contextSymptoms[index]);
+                            Symptoms.Update(symptom);
                         }
                         else
                         {
