@@ -39,6 +39,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     sendedList: '',
     filtered: false
   };
+  tableRef: any = null;
 
   componentDidMount() {
     this.props.UserRole !== 'Admin'
@@ -56,26 +57,36 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     }
 
     if (thisPending && !nextProps.Pending && !nextProps.ErrorInner) {
-      // TODO: leave one list after sending another
+      // leave one list after sending another with actual data
       const { sendedList, DeleteList, EditList } = this.state;
       if (sendedList === 'EditList') {
+        const newDeleteList = DeleteList
+          .filter(dl =>
+            !EditList.includes(dl)
+          );
         this.setState({
-          DeleteList: DeleteList.filter(dl =>
-            !EditList.find(el => el === dl)
-          ),
+          DeleteList: newDeleteList,
           EditList: [],
           sendedList: '',
           indexForNewElement: -1
         });
+        if (!!this.tableRef) {
+          this.tableRef.resetSelectedRowKeys(newDeleteList);
+        }
       } else if (sendedList === 'DeleteList') {
+        const newEditList = EditList
+          .filter(el =>
+            !DeleteList.includes(el)
+          );
         this.setState({
-          EditList: EditList.filter(el =>
-            !DeleteList.find(dl => dl === el)
-          ),
           DeleteList: [],
+          EditList: newEditList,
           sendedList: '',
           indexForNewElement: -1
         });
+        if (!!this.tableRef) {
+          this.tableRef.resetSelectedRowKeys();
+        }
       } else {
         this.setState({
           sendedList: ''
@@ -194,11 +205,8 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     }
   }
 
-  rowSelection = () => ({
-    selectedRowKeys: this.state.DeleteList,
-    onChange: (selectedRowKeys: number[]) => this.setState({
-      DeleteList: selectedRowKeys
-    })
+  onChangeRowSelection = (selectedRowKeys: number[]) => this.setState({
+    DeleteList: selectedRowKeys
   })
 
   tableTitle = () => <div>
@@ -224,6 +232,12 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   //#endregion TableDefinition
   ////////////////////////////
 
+  onKeyhandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.keyCode === 27 && e.key.toLowerCase() === 'escape') {
+      this.tableRef.resetEditElementId();
+    }
+  }
+
   render() {
     if (this.props.UserRole !== 'Admin') {
       return <div />;
@@ -235,6 +249,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     return (
       <div
         className={`symptoms-table-container table-container${filtered ? ' filtered-table-container' : ''}`}
+        onKeyDown={this.onKeyhandler}
       >
         <AlertModule
           ErrorInner={ErrorInner}
@@ -243,22 +258,21 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
         <Spin
           spinning={Pending}
         >
-          {
-            Symptoms.length && <SymptomsTable
-              dataSource={filtered
-                ? filterData
-                : Symptoms
-              }
-              lastCreatedElementIndex={indexForNewElement}
-              filtered={filtered}
-              filterText={filterText}
-              tableTitle={this.tableTitle}
-              rowSelectionChange={this.rowSelection()}
-              onFilterHandler={this.onFilterHandler}
-              RemoveCreatedElement={this.RemoveCreatedElement}
-              SetValueToElementById={this.SetValueToElementById}
-            />
-          }
+          <SymptomsTable
+            ref={ref => this.tableRef = ref}
+            dataSource={filtered
+              ? filterData
+              : Symptoms
+            }
+            lastCreatedElementIndex={indexForNewElement}
+            filtered={filtered}
+            filterText={filterText}
+            tableTitle={this.tableTitle}
+            onChangeRowSelection={this.onChangeRowSelection}
+            onFilterHandler={this.onFilterHandler}
+            RemoveCreatedElement={this.RemoveCreatedElement}
+            SetValueToElementById={this.SetValueToElementById}
+          />
         </Spin>
       </div>
     );

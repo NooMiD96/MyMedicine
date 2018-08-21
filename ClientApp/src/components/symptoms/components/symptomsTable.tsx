@@ -12,10 +12,7 @@ type ComponentProps = {
   filterText: string,
   lastCreatedElementIndex: number,
   tableTitle: () => JSX.Element,
-  rowSelectionChange: {
-    selectedRowKeys: number[],
-    onChange: (selectedRowKeys: any) => void
-  },
+  onChangeRowSelection: (selectedRowKeys: any) => void,
   onFilterHandler: (filterText: string) => void,
   RemoveCreatedElement: (id: number) => void,
   SetValueToElementById: (id: number, value: string) => void
@@ -23,7 +20,8 @@ type ComponentProps = {
 
 type ComponentState = {
   sorter: string,
-  editElementId?: number
+  editElementId?: number,
+  selectedRowKeys: number[]
 };
 /////////////////////////////////////
 //#endregion ComponentsTypeDefinition
@@ -32,7 +30,8 @@ type ComponentState = {
 export class SymptomsTable extends React.Component<ComponentProps, ComponentState> {
   state: ComponentState = {
     sorter: '',
-    editElementId: undefined
+    editElementId: undefined,
+    selectedRowKeys: []
   };
   searchInput: Input | null = null;
   editTableElementInput: Input | null = null;
@@ -54,7 +53,7 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     if (this.props.dataSource !== nextProps.dataSource
       || this.props.filterText !== nextProps.filterText
       || this.props.filtered !== nextProps.filtered
-      || this.props.rowSelectionChange.selectedRowKeys !== nextProps.rowSelectionChange.selectedRowKeys
+      || this.state.selectedRowKeys !== nextState.selectedRowKeys
       // if in next state editElementId is undefined
       // then we early send request to get filtered dataSource
       || this.state.editElementId !== nextState.editElementId
@@ -142,14 +141,23 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     }
   }
   filterIcon = () => <Icon type='filter' style={{ color: this.props.filtered ? '#108ee9' : '#aaa' }} />;
-  symptomNameRender = (text: any, record: Symptom) => record.SymptomId === this.state.editElementId
-    ? <Input
-      data-id={record.SymptomId}
-      ref={el => this.editTableElementInput = el}
-      defaultValue={text}
-      onPressEnter={this.onEditPressEnter}
-    />
-    : text
+  symptomNameRender = (text: any, record: Symptom) => {
+    if (record.SymptomId === this.state.editElementId) {
+      const jsxElement = (
+        <Input
+          data-id={record.SymptomId}
+          ref={el => this.editTableElementInput = el}
+          defaultValue={text}
+          onPressEnter={this.onEditPressEnter}
+        />
+      );
+      setTimeout(() => this.editTableElementInput ? this.editTableElementInput.focus() : null, 150);
+      return jsxElement;
+    } else {
+      return text;
+    }
+  }
+
   sorter = (a: Symptom, b: Symptom) => {
     if (a.Name) {
       return a.Name.localeCompare(b.Name, undefined, { usage: 'sort' });
@@ -177,14 +185,33 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
   //////////////////////////
   //#endregion column define
   //////////////////////////
+  rowSelection = () => ({
+    selectedRowKeys: this.state.selectedRowKeys,
+    onChange: (selectedRowKeys: number[] | any) => {
+      this.props.onChangeRowSelection(selectedRowKeys);
+      this.setState({
+        selectedRowKeys
+      });
+    }
+  })
+  //////////////////////////////
+  //#region ControlsForParent
+  //////////////////////////////
+  resetEditElementId = () => this.saveElementInEditList(this.state.editElementId);
+  resetSelectedRowKeys = (newSelectedKeys?: number[]) => this.setState({
+    selectedRowKeys: newSelectedKeys || []
+  })
+  //////////////////////////////
+  //#endregion ControlsForParent
+  //////////////////////////////
 
   render() {
-    const { dataSource, rowSelectionChange, tableTitle } = this.props;
+    const { dataSource, tableTitle } = this.props;
 
     return (
       <Table
         dataSource={dataSource}
-        rowSelection={rowSelectionChange}
+        rowSelection={this.rowSelection()}
         title={tableTitle}
         columns={this.columns}
         rowKey={this.rowKey}
