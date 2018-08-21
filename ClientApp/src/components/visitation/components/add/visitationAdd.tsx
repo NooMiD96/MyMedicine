@@ -13,7 +13,7 @@ type VisitationTableProps = {
   history: History,
   AddNewSeparations: (separation: string) => void,
   AddNewDoctor: (doctor: Doctor) => void,
-  AddNewVisitor: (visitor: Visitor) => void
+  AddNewVisitor: (visitor: Visitor) => void,
 };
 
 type VisitationTableState = {
@@ -30,33 +30,33 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
     firstName: '',
     secondName: '',
     date: moment(),
-    male: true
+    male: true,
   };
 
   onInputChange = (e: any, field?: string) => {
     if (!this.props.step) {
       this.setState({
-        inputSeparation: e.target.value
+        inputSeparation: e.target.value,
       });
     } else {
       if (field === 'first') {
         this.setState({
-          firstName: e.target.value
+          firstName: e.target.value,
         });
       } else {
         this.setState({
-          secondName: e.target.value
+          secondName: e.target.value,
         });
       }
     }
   }
 
   onRadioChange = (e: any) => this.setState({
-    male: e.target.value
+    male: e.target.value,
   })
 
   onDateChange = (date: moment.Moment, _dateString: string) => this.setState({
-    date: date
+    date: date,
   })
 
   onInputPressEnter = () => {
@@ -64,7 +64,7 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
     if (![0, 1, 2].includes(step)) {
       this.props.history.push({
         pathname: '/',
-        state: undefined
+        state: undefined,
       });
     }
 
@@ -73,7 +73,7 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
       if (inputSeparation) {
         this.props.AddNewSeparations(inputSeparation);
         this.setState({
-          inputSeparation: ''
+          inputSeparation: '',
         });
       }
     } else {
@@ -84,20 +84,20 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
           ? this.props.AddNewDoctor({
             Id: 0,
             FirstName,
-            SecondName
+            SecondName,
           })
           : this.props.AddNewVisitor({
             Id: 0,
             FirstName,
             SecondName,
             Date: this.state.date.toDate(),
-            Male: this.state.male
+            Male: this.state.male,
           });
         this.setState({
           firstName: '',
           secondName: '',
           date: moment(),
-          male: true
+          male: true,
         });
       }
     }
@@ -110,7 +110,7 @@ export class VisitationAdd extends React.Component<VisitationTableProps, Visitat
     const generalProps = {
       step: step,
       onInputChange: (e: any, field?: string) => this.onInputChange(e, field),
-      onInputPressEnter: this.onInputPressEnter
+      onInputPressEnter: this.onInputPressEnter,
     };
 
     switch (step) {

@@ -38,7 +38,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
             loading: false,
             confirmDirty: false,
             enableReCaptcha: false,
-            isCanRegistr: true
+            isCanRegistr: true,
         };
     }
     recaptcha: any;
@@ -51,7 +51,8 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
             if (this.props.ErrorInner) {
                 try {
                     this.recaptcha.reloadCaptch();
-                } catch (e) {}
+                // tslint:disable-next-line:no-empty
+                } catch (e) { }
 
                 const registrTryCount = +(sessionStorage.getItem('registrTry') as any) + 1;
                 if (registrTryCount >= 3) {
@@ -62,19 +63,19 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
             } else {
                 enableReCaptcha = false;
                 isCanRegistr = true;
-                sessionStorage.setItem('registrTry', `0`);
+                sessionStorage.setItem('registrTry', '0');
             }
 
             this.setState({
                 loading: false,
                 enableReCaptcha,
-                isCanRegistr
+                isCanRegistr,
             });
         }
     }
 
     showModal = () => this.setState({
-        visible: true
+        visible: true,
     })
 
     handleConfirmBlur = (e: any) => {
@@ -95,6 +96,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     validateToNextPassword = (_rule: any, value: any, callback: any) => {
         const form = this.props.form;
         if (value && this.state.confirmDirty) {
+            // tslint:disable-next-line:no-empty
             form.validateFields(['confirm'], { force: true }, () => { });
         }
         callback();
@@ -105,7 +107,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         this.props.form.validateFields((err, values) => {
             if (!err && this.state.isCanRegistr) {
                 this.setState({
-                    loading: true
+                    loading: true,
                 });
                 this.props.RegistrationRequest(values.userName, values.email, values.password);
             }
@@ -116,7 +118,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         e.preventDefault();
         this.setState({
             loading: false,
-            visible: false
+            visible: false,
         });
         this.props.form.resetFields();
         if (this.props.ErrorInner) {
@@ -127,7 +129,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
     onCaptchaChange = (value: any) => {
         if (value) {
             this.setState({
-                isCanRegistr: true
+                isCanRegistr: true,
             });
         }
     }
@@ -145,12 +147,12 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 8 }
+                sm: { span: 8 },
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 16 }
-            }
+                sm: { span: 16 },
+            },
         };
 
         return <StyleWrapper>
@@ -164,10 +166,10 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                     <Button key='back' onClick={this.handleCancel}>Return</Button>,
                     <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError()) && this.state.isCanRegistr}>
                         Registration
-                    </Button>
+                    </Button>,
                 ]}
             >
-                <AlertModule CleanErrorInner={CleanErrorInner} ErrorInner={ErrorInner}/>
+                <AlertModule CleanErrorInner={CleanErrorInner} ErrorInner={ErrorInner} />
 
                 <FormItem
                     {...formItemLayout}
@@ -175,7 +177,7 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                     label={'User Name'}
                 >
                     {getFieldDecorator('userName', {
-                        rules: [{ required: true, message: 'Please input your username!' }]
+                        rules: [{ required: true, message: 'Please input your username!' }],
                     })(
                         <Input
                             placeholder='Enter your username'
@@ -192,10 +194,10 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 >
                     {getFieldDecorator('email', {
                         rules: [{
-                            type: 'email', message: 'The input is not valid E-mail!'
+                            type: 'email', message: 'The input is not valid E-mail!',
                         }, {
-                            required: true, message: 'Please input your Password!'
-                        }]
+                            required: true, message: 'Please input your e-mail!',
+                        }],
                     })(
                         <Input
                             type='email'
@@ -213,12 +215,12 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 >
                     {getFieldDecorator('password', {
                         rules: [{
-                            required: true, message: 'Please input your Password!'
+                            required: true, message: 'Please input your Password!',
                         }, {
-                            min: minPasswordLength, message: `Password must have min ${minPasswordLength} symbols!`
+                            min: minPasswordLength, message: `Password must have min ${minPasswordLength} symbols!`,
                         }, {
-                            validator: this.validateToNextPassword
-                        }]
+                            validator: this.validateToNextPassword,
+                        }],
                     })(
                         <Input
                             type='password'
@@ -236,10 +238,10 @@ class RegistrationComponent extends React.Component<LoginProps, LoginState> {
                 >
                     {getFieldDecorator('confirm', {
                         rules: [{
-                            required: true, message: 'Please confirm your password!'
+                            required: true, message: 'Please confirm your password!',
                         }, {
-                            validator: this.compareToFirstPassword
-                        }]
+                            validator: this.compareToFirstPassword,
+                        }],
                     })(
                         <Input
                             type='password'

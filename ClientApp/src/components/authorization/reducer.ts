@@ -62,10 +62,10 @@ interface ResponseType { Error: string; UserName: string; UserRole: string; }
 
 export const actionCreators = {
     GetUserInfo: (): AppThunkAction<GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction> => (dispatch, _getState) => {
-        let fetchTask = fetch(`/api/authorization/getuserinfo`, {
+        let fetchTask = fetch('/api/authorization/getuserinfo', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            credentials: 'same-origin'
+            credentials: 'same-origin',
         }).then((response: Response) => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -87,11 +87,11 @@ export const actionCreators = {
         dispatch({ type: 'GET_USER_INFO_REQUEST' });
     },
     LoginRequest: (un: string, pw: string): AppThunkAction<LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction> => (dispatch, _getState) => {
-        let fetchTask = fetch(`/api/authorization/signin`, {
+        let fetchTask = fetch('/api/authorization/signin', {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({ UserName: un, Password: pw })
+            body: JSON.stringify({ UserName: un, Password: pw }),
         }).then((response: Response) => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -110,11 +110,11 @@ export const actionCreators = {
         dispatch({ type: 'LOGIN_USER_REQUEST' });
     },
     RegistrationRequest: (un: string, email: string, pw: string): AppThunkAction<RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction> => (dispatch, _getState) => {
-        let fetchTask = fetch(`/api/authorization/registration`, {
+        let fetchTask = fetch('/api/authorization/registration', {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({ UserName: un, Email: email, Password: pw })
+            body: JSON.stringify({ UserName: un, Email: email, Password: pw }),
         }).then((response: Response) => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -133,9 +133,9 @@ export const actionCreators = {
         dispatch({ type: 'REGISTRATION_USER_REQUEST' });
     },
     LogOut: (): AppThunkAction<LogOutAction> => (dispatch, _getState) => {
-        let fetchTask = fetch(`/api/authorization/signout`, {
+        let fetchTask = fetch('/api/authorization/signout', {
             method: 'PATCH',
-            credentials: 'same-origin'
+            credentials: 'same-origin',
         }).then((response: Response) => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return;
@@ -147,7 +147,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'LOG_OUT' });
     },
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 
 // ---------------- REDUCER ----------------
@@ -160,7 +160,7 @@ export const reducer: Reducer<UserState> = (state: UserState, action: KnownActio
         case 'REGISTRATION_USER_REQUEST':
             return {
                 ...state,
-                Pending: true
+                Pending: true,
             };
 
         case 'GET_USER_INFO_SUCCESS':
@@ -169,7 +169,7 @@ export const reducer: Reducer<UserState> = (state: UserState, action: KnownActio
                 IsNeedGetData: false,
                 Pending: false,
                 UserName: action.UserName,
-                UserRole: action.UserRole
+                UserRole: action.UserRole,
             };
 
         case 'LOGIN_USER_SUCCESS':
@@ -177,7 +177,7 @@ export const reducer: Reducer<UserState> = (state: UserState, action: KnownActio
             return {
                 ...state,
                 IsNeedGetData: true,
-                Pending: true
+                Pending: true,
             };
 
         case 'GET_USER_INFO_ERROR':
@@ -187,14 +187,14 @@ export const reducer: Reducer<UserState> = (state: UserState, action: KnownActio
                 ...state,
                 Pending: false,
                 IsNeedGetData: false,
-                ErrorInner: action.ErrorInner
+                ErrorInner: action.ErrorInner,
             };
 
         case 'CLEAN_ERROR_INNER':
             return {
                 ...state,
                 Pending: false,
-                ErrorInner: ''
+                ErrorInner: '',
             };
 
         case 'LOG_OUT':

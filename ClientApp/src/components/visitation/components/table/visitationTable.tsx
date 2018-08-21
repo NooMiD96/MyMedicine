@@ -4,7 +4,7 @@ import { Table } from 'antd';
 type VisitationTableProps = {
     columns: any[],
     data: any[],
-    step: number
+    step: number,
 };
 
 type VisitationTableState = {

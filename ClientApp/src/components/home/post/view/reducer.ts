@@ -105,7 +105,7 @@ export const actionCreators = {
     GetPost: (PostId: number): AppThunkAction<PostRequestAction | PostRequestSuccessAction | PostRequestErrorAction> => (dispatch, _getState) => {
         const fetchTask = fetch(`/api/post/getpost?postid=${PostId}`, {
             method: 'GET',
-            credentials: 'same-origin'
+            credentials: 'same-origin',
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -122,7 +122,7 @@ export const actionCreators = {
                 Date: data.Post.Date,
                 ImgUrl: data.Post.ImgUrl,
                 CommentsCount: data.Post.CommentsCount,
-                CommentsList: data.Post.CommentsList
+                CommentsList: data.Post.CommentsList,
             });
         }).catch((err: Error) => {
             console.log('Error :-S in post\n', err.message);
@@ -137,7 +137,7 @@ export const actionCreators = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',
-            body: comment
+            body: comment,
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -165,7 +165,7 @@ export const actionCreators = {
         const { PostId } = getState().post;
         const fetchTask = fetch(`/api/post/getcomments?postid=${PostId}`, {
             method: 'GET',
-            credentials: 'same-origin'
+            credentials: 'same-origin',
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -186,7 +186,7 @@ export const actionCreators = {
     DeletePost: (PostId: number): AppThunkAction<DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction> => (dispatch, _getState) => {
         const fetchTask = fetch(`/api/post/deletepost?postid=${PostId}`, {
             method: 'DELETE',
-            credentials: 'same-origin'
+            credentials: 'same-origin',
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -214,7 +214,7 @@ export const actionCreators = {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',
-            body: JSON.stringify(commentList)
+            body: JSON.stringify(commentList),
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -238,7 +238,7 @@ export const actionCreators = {
         dispatch({ type: 'DELETE_COMMENT_LIST_REQUEST' });
     },
     CleanePostData: () => <CleanePostDataAction>{ type: 'CLEANE_POST_DATA' },
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 
 // ---------------- REDUCER ----------------
@@ -251,7 +251,7 @@ const unloadedState: PostState = {
     CommentsCount: 0,
     CommentsList: [],
     Pending: false,
-    ErrorInner: ''
+    ErrorInner: '',
 };
 
 export const reducer: Reducer<PostState> = (state: PostState, action: KnownAction) => {
@@ -260,7 +260,7 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
             return {
                 ...state,
                 Pending: true,
-                PostId: action.PostId
+                PostId: action.PostId,
             };
 
         case 'POST_REQUEST_SUCCESS':
@@ -273,7 +273,7 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
                 Date: action.Date,
                 ImgUrl: action.ImgUrl,
                 CommentsCount: action.CommentsCount,
-                CommentsList: action.CommentsList
+                CommentsList: action.CommentsList,
             };
 
         case 'DELETE_COMMENT_LIST_REQUEST_ERROR':
@@ -284,7 +284,7 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
             return {
                 ...state,
                 Pending: false,
-                ErrorInner: action.ErrorInner
+                ErrorInner: action.ErrorInner,
             };
 
         case 'DELETE_COMMENT_LIST_REQUEST':
@@ -293,14 +293,14 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
         case 'GET_COMMENTS_REQUEST':
             return {
                 ...state,
-                Pending: true
+                Pending: true,
             };
 
         case 'SEND_COMMENT_REQUEST_SUCCESS':
             return {
                 ...state,
                 Pending: false,
-                CommentsList: [...state.CommentsList, action.comment]
+                CommentsList: [...state.CommentsList, action.comment],
             };
 
         case 'GET_COMMENTS_REQUEST_SUCCESS':
@@ -308,7 +308,7 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
                 ...state,
                 Pending: false,
                 CommentsList: action.CommentsList,
-                CommentsCount: action.CommentsList.length
+                CommentsCount: action.CommentsList.length,
             };
 
         case 'CLEANE_POST_DATA':
@@ -318,13 +318,13 @@ export const reducer: Reducer<PostState> = (state: PostState, action: KnownActio
         case 'DELETE_COMMENT_LIST_REQUEST_SUCCESS':
             return {
                 ...state,
-                Pending: false
+                Pending: false,
             };
 
         case 'CLEAN_ERROR_INNER':
             return {
                 ...state,
-                ErrorInner: ''
+                ErrorInner: '',
             };
 
         default:

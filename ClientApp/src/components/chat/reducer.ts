@@ -83,7 +83,7 @@ export const actionCreators = {
         if (socket) {
             socket.send(JSON.stringify({ UserName: userName, MessageInner: message, Date: date.toUTCString() }));
         }
-    }
+    },
 };
 
 // ---------------- REDUCER ----------------
@@ -94,7 +94,7 @@ export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownActio
         case 'SUBSCRIBE_TO_CHAT':
             return {
                 ...state,
-                socket: action.socket
+                socket: action.socket,
             };
 
         case 'UNSUBSCRIBE_TO_CHAT':
@@ -113,13 +113,13 @@ export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownActio
             }
             return {
                 ...state,
-                messages
+                messages,
             };
 
         case 'SET_COUNT_OF_CONNECTIONS':
             return {
                 ...state,
-                countOfConnections: action.countOfConnections
+                countOfConnections: action.countOfConnections,
             };
 
         default:

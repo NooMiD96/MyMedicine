@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
 import { message } from 'antd';
+
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
 // ----------------- STATE -----------------
@@ -80,10 +81,10 @@ interface ResponseType { Error: string; Symptoms: Symptom[]; }
 
 export const actionCreators = {
   GetSymptoms: (): AppThunkAction<GetSymptomsAction> => (dispatch, getState) => {
-    const fetchTask = fetch(`/api/symptoms/getsymptoms`, {
+    const fetchTask = fetch('/api/symptoms/getsymptoms', {
       credentials: 'same-origin',
       method: 'GET',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' }
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
     }).then(response => {
       if (response.status !== 200) {
         throw new Error(response.statusText);
@@ -113,11 +114,11 @@ export const actionCreators = {
     const { Symptoms } = getState().symptoms;
     const symptoms = Symptoms.filter(x => editList.includes(x.SymptomId));
 
-    const fetchTask = fetch(`/api/symptoms/changesymptoms`, {
+    const fetchTask = fetch('/api/symptoms/changesymptoms', {
       credentials: 'same-origin',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify(symptoms)
+      body: JSON.stringify(symptoms),
     }).then(response => {
       if (response.status !== 200) {
         throw new Error(response.statusText);
@@ -135,7 +136,7 @@ export const actionCreators = {
       }
       dispatch({
         type: 'DELETE_LOCAL_SYMPTOMS',
-        symptomIds: editList
+        symptomIds: editList,
       });
       dispatch({ type: 'CHANGE_SYMPTOMS_REQUEST_SUCCESS' });
       actionCreators.GetSymptoms()(dispatch as any, getState);
@@ -152,16 +153,16 @@ export const actionCreators = {
     if (localElements.length === deleteList.length) {
       dispatch({
         type: 'DELETE_LOCAL_SYMPTOMS',
-        symptomIds: localElements
+        symptomIds: localElements,
       });
     } else {
       const requestElemets = deleteList.filter(x => x > 0);
 
-      const fetchTask = fetch(`/api/symptoms/deletesymptoms`, {
+      const fetchTask = fetch('/api/symptoms/deletesymptoms', {
         credentials: 'same-origin',
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(requestElemets)
+        body: JSON.stringify(requestElemets),
       }).then(response => {
         if (response.status !== 200) {
           throw new Error(response.statusText);
@@ -180,7 +181,7 @@ export const actionCreators = {
         dispatch({ type: 'DELETE_SYMPTOMS_REQUEST_SUCCESS' });
         dispatch({
           type: 'DELETE_LOCAL_SYMPTOMS',
-          symptomIds: localElements
+          symptomIds: localElements,
         });
         actionCreators.GetSymptoms()(dispatch as any, getState);
       }).catch((err: Error) => {
@@ -194,7 +195,7 @@ export const actionCreators = {
   },
   AddNewSymptom: (symptom: Symptom) => <AddNewSymptomAction>{ type: 'ADD_NEW_SYMPTOM', symptom },
   SetNewValue: (symptom: Symptom) => <SetNewValueAction>{ type: 'SET_NEW_VALUE', symptom },
-  CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+  CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 //#endregion ACTION CREATORS
 // ---------------- REDUCER ----------------
@@ -202,7 +203,7 @@ export const actionCreators = {
 const unloadedState: SymptomsState = {
   Symptoms: [],
   Pending: false,
-  ErrorInner: ''
+  ErrorInner: '',
 };
 
 export const reducer: Reducer<SymptomsState> = (state: SymptomsState, action: KnownAction) => {
@@ -212,7 +213,7 @@ export const reducer: Reducer<SymptomsState> = (state: SymptomsState, action: Kn
     case 'SYMPTOMS_REQUEST':
       return {
         ...state,
-        Pending: true
+        Pending: true,
       };
 
     case 'DELETE_SYMPTOMS_REQUEST_SUCCESS':
@@ -225,8 +226,8 @@ export const reducer: Reducer<SymptomsState> = (state: SymptomsState, action: Kn
         Pending: false,
         Symptoms: [
           ...state.Symptoms.filter(x => x.SymptomId < 0),
-          ...action.Symptoms
-        ]
+          ...action.Symptoms,
+        ],
       };
 
     case 'DELETE_SYMPTOMS_REQUEST_ERROR':
@@ -235,7 +236,7 @@ export const reducer: Reducer<SymptomsState> = (state: SymptomsState, action: Kn
       return {
         ...state,
         Pending: false,
-        ErrorInner: action.ErrorInner
+        ErrorInner: action.ErrorInner,
       };
 
     case 'ADD_NEW_SYMPTOM':
@@ -243,8 +244,8 @@ export const reducer: Reducer<SymptomsState> = (state: SymptomsState, action: Kn
         ...state,
         Symptoms: [
           action.symptom,
-          ...state.Symptoms
-        ]
+          ...state.Symptoms,
+        ],
       };
 
     case 'SET_NEW_VALUE':
@@ -253,19 +254,19 @@ export const reducer: Reducer<SymptomsState> = (state: SymptomsState, action: Kn
         Symptoms: state.Symptoms.map(x => x.SymptomId === action.symptom.SymptomId
           ? action.symptom
           : x
-        )
+        ),
       };
 
     case 'DELETE_LOCAL_SYMPTOMS':
       return {
         ...state,
-        Symptoms: state.Symptoms.filter(x => !action.symptomIds.includes(x.SymptomId))
+        Symptoms: state.Symptoms.filter(x => !action.symptomIds.includes(x.SymptomId)),
       };
 
     case 'CLEAN_ERROR_INNER':
       return {
         ...state,
-        ErrorInner: ''
+        ErrorInner: '',
       };
 
     default:

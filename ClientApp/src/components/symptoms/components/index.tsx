@@ -23,7 +23,7 @@ type ComponentState = {
   indexForNewElement: number,
   filterText: string,
   sendedList: string,
-  filtered: boolean
+  filtered: boolean,
 };
 /////////////////////////////////////
 //#endregion ComponentsTypeDefinition
@@ -37,7 +37,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     indexForNewElement: -1,
     filterText: '',
     sendedList: '',
-    filtered: false
+    filtered: false,
   };
   tableRef: any = null;
 
@@ -46,7 +46,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       DeleteList: DeleteList,
       EditList: EditList,
       sendedList: '',
-      indexForNewElement: -1
+      indexForNewElement: -1,
     });
     if (!!this.tableRef) {
       this.tableRef.resetSelectedRowKeys(DeleteList);
@@ -84,7 +84,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
         );
       } else {
         this.setState({
-          sendedList: ''
+          sendedList: '',
         });
       }
     }
@@ -115,9 +115,9 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       this.setState({
         EditList: [
           indexForNewElement,
-          ...EditList
+          ...EditList,
         ],
-        indexForNewElement: indexForNewElement - 1
+        indexForNewElement: indexForNewElement - 1,
       });
       this.props.AddNewSymptom({ SymptomId: indexForNewElement - 1, Name: '' });
     }
@@ -125,14 +125,14 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
 
   onChangeSymptoms = () => {
     this.setState({
-      sendedList: 'EditList'
+      sendedList: 'EditList',
     });
     this.props.ChangeSymptoms(this.state.EditList);
   }
 
   onDeleteSymptoms = () => {
     this.setState({
-      sendedList: 'DeleteList'
+      sendedList: 'DeleteList',
     });
     this.props.DeleteSymptoms(this.state.DeleteList);
   }
@@ -169,7 +169,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
 
       this.props.SetNewValue({
         SymptomId: id,
-        Name: value
+        Name: value,
       });
       this.setState({
         EditList: EditList.includes(id)
@@ -178,7 +178,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
         indexForNewElement: !element.Name
           && element.SymptomId === indexForNewElement
           ? indexForNewElement - 1
-          : indexForNewElement
+          : indexForNewElement,
       });
     }
   }
@@ -196,20 +196,20 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
           ...(symptoms
             ? symptoms
             : this.props.Symptoms
-          ).filter((record: SymptomsState.Symptom) => !!record.Name.match(reg) || !record.Name)
-        ]
+          ).filter((record: SymptomsState.Symptom) => !!record.Name.match(reg) || !record.Name),
+        ],
       });
     } else {
       this.setState({
         filterText: '',
         filtered: false,
-        filterData: []
+        filterData: [],
       });
     }
   }
 
   onChangeRowSelection = (selectedRowKeys: number[]) => this.setState({
-    DeleteList: selectedRowKeys
+    DeleteList: selectedRowKeys,
   })
 
   tableTitle = () => <div>
@@ -285,15 +285,15 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
 function mapStateToProps(state: ApplicationState) {
   return {
     ...state.symptoms,
-    UserRole: state.user.UserRole
+    UserRole: state.user.UserRole,
   } as ComponentProps;
 }
 
 const mapDispatchToProps = {
-  ...SymptomsState.actionCreators
+  ...SymptomsState.actionCreators,
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Symptoms) as typeof Symptoms;
+)(Symptoms);

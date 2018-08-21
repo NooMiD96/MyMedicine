@@ -33,7 +33,7 @@ export class Home extends React.Component<PostsProps, {}> {
                 this.props.UserRole === 'Admin' &&
                 <Button
                     className='edit-button'
-                    onClick={() => this.props.history.push(`/edit/0`)}
+                    onClick={() => this.props.history.push('/edit/0')}
                 >
                     Create new record
                 </Button>
@@ -52,7 +52,7 @@ export class Home extends React.Component<PostsProps, {}> {
                             <span>
                                 <Icon type='message' style={{ marginRight: 8 }} />
                                 {item.CommentsCount}
-                            </span>
+                            </span>,
                         ]}
                         extra={item.ImgUrl && <img width={200} alt='logo' src={item.ImgUrl} />}
                     >
@@ -71,15 +71,15 @@ export class Home extends React.Component<PostsProps, {}> {
 function mapStateToProps(state: ApplicationState) {
     return {
         ...state.posts,
-        UserRole: state.user.UserRole
+        UserRole: state.user.UserRole,
     } as PostsState.PostsState & { UserRole: string };
 }
 
 const mapDispatchToProps = {
-    ...PostsState.actionCreators
+    ...PostsState.actionCreators,
 };
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Home) as typeof Home;
+)(Home);

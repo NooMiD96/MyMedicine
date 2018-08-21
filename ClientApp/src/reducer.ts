@@ -1,4 +1,4 @@
-import { RouterState } from 'react-router-redux';
+import { RouterState } from 'connected-react-router';
 import * as SymptomsState from 'components/symptoms/reducer';
 import * as PostsState from 'components/home/reducer';
 import * as CreateEditPostState from 'components/home/post/edit/reducer';
@@ -31,7 +31,7 @@ export const reducers = {
     chat: ChatState.reducer,
     importExport: ImportExportState.reducer,
     visitation: VisitationState.reducer,
-    app: AppState.reducer
+    app: AppState.reducer,
 };
 
 export interface AppThunkAction<TAction> {

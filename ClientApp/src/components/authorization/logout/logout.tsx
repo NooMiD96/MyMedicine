@@ -4,7 +4,7 @@ import StyleWrapper from './logout.style';
 
 type LoginProps = {
     isMobile: boolean,
-    LogOut: () => void
+    LogOut: () => void,
 };
 
 export class Logout extends React.Component<LoginProps, {}> {

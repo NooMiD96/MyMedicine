@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { RouterState } from 'react-router-redux';
 import { BasicProps as LayoutBasicProps } from 'antd/lib/layout/layout';
 import { Menu, Icon } from 'antd';
 
@@ -13,28 +12,29 @@ import Authorization from 'components/authorization';
 import ImportExport from 'components/importExport';
 
 type HeaderProps = AppState.AppState
-  & { Role: string, routing: RouterState }
+  & { Role: string }
   & { Header: React.ComponentClass<LayoutBasicProps> };
 
 const routes: {} = {
-  '/': '0',
-  '/visitation': '1',
-  '/symptoms': '2',
-  '/searchdisease': '3',
-  '/chat': '4'
+  '': '0',
+  'visitation': '1',
+  'symptoms': '2',
+  'searchdisease': '3',
+  'chat': '4',
 };
 
 class MyHeader extends React.Component<HeaderProps, { selectedMenuKey: string[] }> {
   state = {
-    selectedMenuKey: ['0']
+    selectedMenuKey: ['0'],
   };
 
   componentDidMount() {
-    if (this.props.routing.location) {
+    const urls = document.location.pathname.split('/').filter(Boolean);
+    if (urls.length) {
       this.setState({
         selectedMenuKey: [
-          (routes as any)[this.props.routing.location.pathname] || '0'
-        ]
+          (routes as any)[urls[0].toLowerCase()] || '0',
+        ],
       });
     }
   }
@@ -42,7 +42,7 @@ class MyHeader extends React.Component<HeaderProps, { selectedMenuKey: string[] 
   onSelectItemHandler = (event: { item: {}, key: string, selectedKeys: string[] }) => {
     if (!this.state.selectedMenuKey.includes(event.key)) {
       this.setState({
-        selectedMenuKey: [event.key]
+        selectedMenuKey: [event.key],
       });
     }
   }
@@ -53,7 +53,7 @@ class MyHeader extends React.Component<HeaderProps, { selectedMenuKey: string[] 
     let NavLinks = [
       <Menu.Item key='0' className='logo'>
         <Link to={'/'}>MyMedicine</Link>
-      </Menu.Item>
+      </Menu.Item>,
     ];
     if (Role === 'Admin') {
       NavLinks = NavLinks.concat([
@@ -62,7 +62,7 @@ class MyHeader extends React.Component<HeaderProps, { selectedMenuKey: string[] 
         </Menu.Item>,
         <Menu.Item key='2'>
           <Link to={'/symptoms'}>Symptom List</Link>
-        </Menu.Item>
+        </Menu.Item>,
       ]);
     }
     NavLinks = NavLinks.concat([
@@ -71,7 +71,7 @@ class MyHeader extends React.Component<HeaderProps, { selectedMenuKey: string[] 
       </Menu.Item>,
       <Menu.Item key='4'>
         <Link to={'/chat'}>Chat</Link>
-      </Menu.Item>
+      </Menu.Item>,
     ]);
 
     return <StyleWrapper>
@@ -104,10 +104,10 @@ function mapStateToProps(state: ApplicationState) {
   return {
     ...state.app,
     Role: state.user.UserRole,
-    routing: state.routing
+    routing: state.routing,
   } as any;
 }
 
 export default connect(
   mapStateToProps
-)(MyHeader) as typeof MyHeader;
+)(MyHeader);

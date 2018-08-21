@@ -8,6 +8,7 @@ using MyMedicine.Context.Medicine;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyMedicine.Middleware;
+using System.Collections.Generic;
 
 namespace MyMedicine
 {
@@ -54,6 +55,7 @@ namespace MyMedicine
                 app.UseDeveloperExceptionPage();
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
+                    HotModuleReplacementClientOptions = new Dictionary<string, string> { { "dynamicPublicPath", "false" } },
                     HotModuleReplacement = true,
                     ReactHotModuleReplacement = true
                 });

@@ -43,7 +43,7 @@ export const actionCreators = {
     GetPosts: (page: number, pageSize: number): AppThunkAction<PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction> => (dispatch) => {
         const fetchTask = fetch(`/api/post/getposts?page=${page}&pageSize=${pageSize}`, {
             credentials: 'same-origin',
-            method: 'GET'
+            method: 'GET',
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -63,7 +63,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'POSTS_REQUEST' });
     },
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 
 // ---------------- REDUCER ----------------
@@ -71,7 +71,7 @@ const unloadedState: PostsState = {
     Posts: [],
     TotalCount: 0,
     Pending: false,
-    ErrorInner: ''
+    ErrorInner: '',
 };
 
 export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAction) => {
@@ -79,7 +79,7 @@ export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAct
         case 'POSTS_REQUEST':
             return {
                 ...state,
-                Pending: true
+                Pending: true,
             };
 
         case 'POSTS_REQUEST_SUCCESS':
@@ -89,20 +89,20 @@ export const reducer: Reducer<PostsState> = (state: PostsState, action: KnownAct
                 ...state,
                 Pending: false,
                 Posts: posts,
-                TotalCount: action.TotalCount
+                TotalCount: action.TotalCount,
             };
 
         case 'POSTS_REQUEST_ERROR':
             return {
                 ...state,
                 Pending: false,
-                ErrorInner: action.ErrorInner
+                ErrorInner: action.ErrorInner,
             };
 
         case 'CLEAN_ERROR_INNER':
             return {
                 ...state,
-                ErrorInner: ''
+                ErrorInner: '',
             };
 
         default:

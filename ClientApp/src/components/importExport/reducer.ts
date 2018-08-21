@@ -36,7 +36,7 @@ export const actionCreators = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',
-            body: file.file
+            body: file.file,
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -61,8 +61,8 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'IMPORT_REQUEST' });
     },
-    ExportFiles: (): Window | null => window.open(`/api/importexport/export`),
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+    ExportFiles: (): Window | null => window.open('/api/importexport/export'),
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 
 // ---------------- REDUCER ----------------
@@ -73,26 +73,26 @@ export const reducer: Reducer<ImportExportState> = (state: ImportExportState, ac
         case 'IMPORT_REQUEST':
             return {
                 ...state,
-                Uploading: true
+                Uploading: true,
             };
 
         case 'IMPORT_SUCCESS':
             return {
                 ...state,
-                Uploading: false
+                Uploading: false,
             };
 
         case 'IMPORT_ERROR':
             return {
                 ...state,
                 Uploading: false,
-                ErrorInner: action.ErrorInner
+                ErrorInner: action.ErrorInner,
             };
 
         case 'CLEAN_ERROR_INNER':
             return {
                 ...state,
-                ErrorInner: ''
+                ErrorInner: '',
             };
 
         default:

@@ -26,7 +26,7 @@ export class View extends React.Component<ViewProps, ViewState> {
         this.onChangeChecker = this.onChangeChecker.bind(this);
 
         this.state = {
-            checkedList: {}
+            checkedList: {},
         };
     }
 
@@ -76,8 +76,8 @@ export class View extends React.Component<ViewProps, ViewState> {
         this.setState({
             checkedList: {
                 ...this.state.checkedList,
-                [item.target.value]: item.target.checked
-            }
+                [item.target.value]: item.target.checked,
+            },
         });
     }
 
@@ -128,8 +128,8 @@ export class View extends React.Component<ViewProps, ViewState> {
                 {getFieldDecorator('comment', {
                     rules: [
                         { required: true, message: 'Please input your comment!' },
-                        { max: 50, message: 'Max length of comment is 50 symbols!' }
-                    ]
+                        { max: 50, message: 'Max length of comment is 50 symbols!' },
+                    ],
                 })(
                     <Input
                         placeholder='Enter your comment'
@@ -219,15 +219,15 @@ function mapStateToProps(state: ApplicationState) {
     return {
         ...state.post,
         UserName: state.user.UserName,
-        UserRole: state.user.UserRole
+        UserRole: state.user.UserRole,
     } as PostState.PostState & { UserName: string, UserRole: string };
 }
 
 const mapDispatchToProps = {
-    ...PostState.actionCreators
+    ...PostState.actionCreators,
 };
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ViewForm) as typeof ViewForm;
+)(ViewForm);

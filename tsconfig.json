@@ -9,7 +9,6 @@
     "jsx": "react",
     "experimentalDecorators": true,
     "sourceMap": true,
-    // "declaration": true,
     "skipDefaultLibCheck": true,
     "strict": true,
     "lib": [
@@ -34,9 +33,5 @@
   },
   "awesomeTypescriptLoaderOptions": {
     "transpileOnly": true
-  },
-  "exclude": [
-    "bin",
-    "node_modules"
-  ]
+  }
 }

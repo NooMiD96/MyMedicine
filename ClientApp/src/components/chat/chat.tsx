@@ -15,7 +15,7 @@ type ChatProps = ChatState.ChatState
 type ChatState = {
     message: string,
     color: string,
-    isAutoscroll: boolean
+    isAutoscroll: boolean,
 };
 
 class Chat extends React.Component<ChatProps, ChatState> {
@@ -29,7 +29,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
         this.state = {
             message: '',
             color: Colors[0],
-            isAutoscroll: true
+            isAutoscroll: true,
         };
     }
     list: any;
@@ -49,7 +49,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
 
     onChangeMessage = (e: any) => this.setState({
         ...this.state,
-        message: e.target.value
+        message: e.target.value,
     })
 
     onPressEnterHandler = (_e: any) => {
@@ -61,7 +61,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
             this.scrollToBottom();
             this.setState({
                 ...this.state,
-                message: ''
+                message: '',
             });
         }
     }
@@ -80,7 +80,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
             if (height < 0) {
                 this.setState({
                     ...this.state,
-                    isAutoscroll: !this.state.isAutoscroll
+                    isAutoscroll: !this.state.isAutoscroll,
                 });
             }
         } else {
@@ -88,7 +88,7 @@ class Chat extends React.Component<ChatProps, ChatState> {
             if (height > 0) {
                 this.setState({
                     ...this.state,
-                    isAutoscroll: !this.state.isAutoscroll
+                    isAutoscroll: !this.state.isAutoscroll,
                 });
             }
         }
@@ -154,15 +154,15 @@ class Chat extends React.Component<ChatProps, ChatState> {
 function mapStateToProps(state: ApplicationState) {
     return {
         ...state.chat,
-        UserName: state.user.UserName
+        UserName: state.user.UserName,
     } as ChatState.ChatState & { UserName: string };
 }
 
 const mapDispatchToProps = {
-    ...ChatState.actionCreators
+    ...ChatState.actionCreators,
 };
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Chat) as typeof Chat;
+)(Chat);

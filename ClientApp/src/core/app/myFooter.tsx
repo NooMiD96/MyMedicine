@@ -4,8 +4,9 @@ import * as AntdLayout from 'antd/lib/layout/layout';
 import FooterWrapped from './style/myFooter.style';
 import * as AppState from './reducer';
 import { ApplicationState } from '../../reducer';
-
+// tslint:disable-next-line
 const Debounce = (require('react-throttle') as any).Debounce as any;
+// tslint:disable-next-line
 const WindowSizeListener = (require('react-window-size-listener') as any).default as any;
 
 type HeaderProps = AppState.AppState
@@ -43,15 +44,15 @@ class MyFooter extends React.Component<HeaderProps, {}> {
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        ...state.app
+        ...state.app,
     } as AppState.AppState;
 }
 
 const mapDispatchToProps = {
-    ...AppState.actionCreators
+    ...AppState.actionCreators,
 };
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(MyFooter) as typeof MyFooter;
+)(MyFooter);

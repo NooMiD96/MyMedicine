@@ -2,17 +2,18 @@ import * as React from 'react';
 import { Provider } from 'react-redux';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
-import { replace } from 'react-router-redux';
+import { replace } from 'connected-react-router';
 import { createMemoryHistory } from 'history';
 import { createServerRenderer, RenderResult } from 'aspnet-prerendering';
+
 import { routes } from './routes';
 import configureStore from './configureStore';
 import { ServerStyleSheet } from 'styled-components';
 import * as AppState from 'core/app/reducer';
 import * as PostsState from 'components/home/reducer';
 
-export default createServerRenderer(params => {
-    return new Promise<RenderResult>((resolve, reject) => {
+export default createServerRenderer(params =>
+    new Promise<RenderResult>((resolve, reject) => {
         // Prepare Redux store with in-memory history, and dispatch a navigation event
         // corresponding to the incoming URL
         const basename = params.baseUrl.substring(0, params.baseUrl.length - 1); // Remove trailing slash
@@ -33,9 +34,7 @@ export default createServerRenderer(params => {
         const routerContext: any = {};
         const app = (
             <Provider store={store}>
-                <StaticRouter basename={basename} context={routerContext} location={params.location.path}>
-                    {routes}
-                </StaticRouter>
+                <StaticRouter basename={basename} context={routerContext} location={params.location.path} children={ routes } />
             </Provider>
         );
         // If there's a redirection, just send this information back to the host application
@@ -51,8 +50,8 @@ export default createServerRenderer(params => {
         params.domainTasks.then(() => {
             resolve({
                 html: `<div id="react-app-styles">${sheet.getStyleTags()}</div><div id="react-app">${renderToString(app)}</div>`,
-                globals: { initialReduxState: store.getState(), recaptchaOptions: { lang: 'en' } }
+                globals: { initialReduxState: store.getState(), recaptchaOptions: { lang: 'en' } },
             });
         }, reject); // Also propagate any errors back into the host application
-    });
-});
+    })
+);

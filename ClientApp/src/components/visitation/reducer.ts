@@ -118,10 +118,10 @@ interface VisitorResponseType { Error: string; Visitors: any[]; }
 
 export const actionCreators = {
     GetSeparations: (): AppThunkAction<GetSeparationsAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/visitation/getseparations`, {
+        const fetchTask = fetch('/api/visitation/getseparations', {
             credentials: 'same-origin',
             method: 'GET',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' }
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -139,7 +139,7 @@ export const actionCreators = {
             }
             const Separations = data.Separations.map((value: any) => ({
                 Id: value.SeparationId,
-                Address: value.Address
+                Address: value.Address,
             }));
             dispatch({ type: 'GET_SEPARATIONS_REQUEST_SUCCESS', Separations });
         }).catch((err: Error) => {
@@ -154,7 +154,7 @@ export const actionCreators = {
         const fetchTask = fetch(`/api/visitation/getdoctors?sep=${separation.Id}`, {
             credentials: 'same-origin',
             method: 'GET',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' }
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -173,7 +173,7 @@ export const actionCreators = {
             const Doctors = data.Doctors.map((value: any) => ({
                 Id: value.DoctorId,
                 FirstName: value.FirstName,
-                SecondName: value.SecondName
+                SecondName: value.SecondName,
             }));
             dispatch({ type: 'GET_DOCTORS_REQUEST_SUCCESS', Doctors });
         }).catch((err: Error) => {
@@ -188,7 +188,7 @@ export const actionCreators = {
         const fetchTask = fetch(`/api/visitation/getvisitors?doc=${doctor.Id}`, {
             credentials: 'same-origin',
             method: 'GET',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' }
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -211,7 +211,7 @@ export const actionCreators = {
                 Date: isDate(value.Date)
                     ? value.Date
                     : new Date(value.Date),
-                Male: value.Male
+                Male: value.Male,
             }));
             dispatch({ type: 'GET_VISITORS_REQUEST_SUCCESS', Visitors });
         }).catch((err: Error) => {
@@ -224,11 +224,11 @@ export const actionCreators = {
         dispatch({ type: 'GET_VISITORS_REQUEST' });
     },
     AddNewSeparations: (separation: string): AppThunkAction<AddNewSeparationAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/visitation/addnewseparation`, {
+        const fetchTask = fetch('/api/visitation/addnewseparation', {
             credentials: 'same-origin',
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({Address: separation})
+            body: JSON.stringify({Address: separation}),
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -259,7 +259,7 @@ export const actionCreators = {
             credentials: 'same-origin',
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify(doctor)
+            body: JSON.stringify(doctor),
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -290,7 +290,7 @@ export const actionCreators = {
             credentials: 'same-origin',
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify(visitor)
+            body: JSON.stringify(visitor),
         }).then(response => {
             if (response.status !== 200) {
                 throw new Error(response.statusText);
@@ -316,13 +316,13 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'ADD_NEW_VISITOR_REQUEST' });
     },
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 // ---------------- REDUCER ----------------
 const unloadedState: VisitationState = {
     Data: [],
     Pending: false,
-    ErrorInner: ''
+    ErrorInner: '',
 };
 
 export const reducer: Reducer<VisitationState> = (state: VisitationState, action: KnownAction) => {
@@ -333,7 +333,7 @@ export const reducer: Reducer<VisitationState> = (state: VisitationState, action
             return {
                 ...state,
                 Pending: true,
-                Data: []
+                Data: [],
             };
 
         case 'ADD_NEW_VISITOR_REQUEST':
@@ -341,28 +341,28 @@ export const reducer: Reducer<VisitationState> = (state: VisitationState, action
         case 'ADD_NEW_SEPARATION_REQUEST':
             return {
                 ...state,
-                Pending: true
+                Pending: true,
             };
 
         case 'GET_VISITORS_REQUEST_SUCCESS':
             return {
                 ...state,
                 Pending: false,
-                Data: action.Visitors
+                Data: action.Visitors,
             };
 
         case 'GET_DOCTORS_REQUEST_SUCCESS':
             return {
                 ...state,
                 Pending: false,
-                Data: action.Doctors
+                Data: action.Doctors,
             };
 
         case 'GET_SEPARATIONS_REQUEST_SUCCESS':
             return {
                 ...state,
                 Pending: false,
-                Data: action.Separations
+                Data: action.Separations,
             };
 
         case 'ADD_NEW_VISITOR_REQUEST_SUCCESS':
@@ -370,7 +370,7 @@ export const reducer: Reducer<VisitationState> = (state: VisitationState, action
         case 'ADD_NEW_SEPARATION_REQUEST_SUCCESS':
             return {
                 ...state,
-                Pending: true
+                Pending: true,
             };
 
         case 'ADD_NEW_VISITOR_REQUEST_ERROR':
@@ -381,13 +381,13 @@ export const reducer: Reducer<VisitationState> = (state: VisitationState, action
         case 'GET_SEPARATIONS_REQUEST_ERROR':
             return {
                 ...state,
-                Pending: false
+                Pending: false,
             };
 
         case 'CLEAN_ERROR_INNER':
             return {
                 ...state,
-                ErrorInner: ''
+                ErrorInner: '',
             };
 
         default:

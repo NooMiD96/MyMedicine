@@ -9,7 +9,7 @@ type AddSeparationProp = {
   step: number,
   inputSeparation: string,
   onInputChange: (e: any) => void,
-  onInputPressEnter: () => void
+  onInputPressEnter: () => void,
 };
 
 export const AddSeparation = (props: AddSeparationProp) => {
@@ -17,7 +17,7 @@ export const AddSeparation = (props: AddSeparationProp) => {
     step,
     inputSeparation,
     onInputChange,
-    onInputPressEnter
+    onInputPressEnter,
   } = props;
   return <InputWrapper step={step}>
     <Input

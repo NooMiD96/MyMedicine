@@ -3,13 +3,12 @@ import ReCaptcha from 'react-google-recaptcha';
 
 type ReCaptchaProps = {
     enableReCaptcha: boolean;
-    onCaptchaChange: (value: any) => void
+    onCaptchaChange: (value: any) => void;
 };
 
 export default class extends React.Component<ReCaptchaProps, {}> {
     constructor(props: any) {
         super(props);
-
     }
     recaptcha: any;
 

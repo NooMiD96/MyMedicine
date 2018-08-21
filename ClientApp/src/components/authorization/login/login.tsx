@@ -34,7 +34,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
             visible: false,
             loading: false,
             enableReCaptcha: false,
-            isCanAuth: true
+            isCanAuth: true,
         };
     }
     recaptcha: any;
@@ -47,6 +47,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
             if (this.props.ErrorInner) {
                 try {
                     this.recaptcha.reloadCaptch();
+                // tslint:disable-next-line:no-empty
                 } catch (e) {}
 
                 const authTryCount = +(sessionStorage.getItem('authTry') as any) + 1;
@@ -58,19 +59,19 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
             } else {
                 enableReCaptcha = false;
                 isCanAuth = true;
-                sessionStorage.setItem('authTry', `0`);
+                sessionStorage.setItem('authTry', '0');
             }
 
             this.setState({
                 loading: false,
                 enableReCaptcha,
-                isCanAuth
+                isCanAuth,
             });
         }
     }
 
     showModal = () => this.setState({
-        visible: true
+        visible: true,
     })
 
     handleOk = (e: any) => {
@@ -78,7 +79,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         this.props.form.validateFields((err, values) => {
             if (!err && this.state.isCanAuth) {
                 this.setState({
-                    loading: true
+                    loading: true,
                 });
                 this.props.LoginRequest(values.userName, values.password);
             }
@@ -89,7 +90,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         e.preventDefault();
         this.setState({
             loading: false,
-            visible: false
+            visible: false,
         });
         this.props.form.resetFields();
         if (this.props.ErrorInner) {
@@ -100,7 +101,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
     onCaptchaChange = (value: any) => {
         if (value) {
             this.setState({
-                isCanAuth: true
+                isCanAuth: true,
             });
         }
     }
@@ -115,12 +116,12 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 6 }
+                sm: { span: 6 },
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 18 }
-            }
+                sm: { span: 18 },
+            },
         };
 
         return <StyleWrapper>
@@ -134,7 +135,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
                     <Button key='back' onClick={this.handleCancel}>Return</Button>,
                     <Button key='submit' type='primary' loading={this.state.loading} onClick={this.handleOk} disabled={hasErrors(getFieldsError()) && this.state.isCanAuth}>
                         Log in
-                    </Button>
+                    </Button>,
                 ]}
             >
                 <AlertModule CleanErrorInner={CleanErrorInner} ErrorInner={ErrorInner}/>
@@ -144,7 +145,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
                     label={'User Name'}
                 >
                     {getFieldDecorator('userName', {
-                        rules: [{ required: true, message: 'Please input your username!' }]
+                        rules: [{ required: true, message: 'Please input your username!' }],
                     })(
                         <Input
                             placeholder='Enter your username'
@@ -159,7 +160,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
                     label={'Password'}
                 >
                     {getFieldDecorator('password', {
-                        rules: [{ required: true, message: 'Please input your Password!' }]
+                        rules: [{ required: true, message: 'Please input your Password!' }],
                     })(
                         <Input
                             type='password'

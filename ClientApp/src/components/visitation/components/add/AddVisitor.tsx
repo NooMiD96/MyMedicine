@@ -17,7 +17,7 @@ type AddVisitorProp = {
   onInputChange: (e: any, field: string) => void,
   onInputPressEnter: () => void,
   onDateChange: (date: any, _dateString: string) => void,
-  onRadioChange: (e: any) => void
+  onRadioChange: (e: any) => void,
 };
 
 export const AddVisitor = (props: AddVisitorProp) => {
@@ -31,7 +31,7 @@ export const AddVisitor = (props: AddVisitorProp) => {
     onInputChange,
     onInputPressEnter,
     onDateChange,
-    onRadioChange
+    onRadioChange,
   } = props;
   return <InputWrapper step={step}>
     <Input

@@ -16,14 +16,14 @@ type VisitationProps = VisitationState.VisitationState
 
 type SymptomsState = {
   step: number,
-  column: any[]
+  column: any[],
 };
 
 const columnsDef = [
   (self: { props: VisitationProps }) => [{
     title: 'Address',
     dataIndex: 'Address',
-    key: 'SeparationId'
+    key: 'SeparationId',
   }, {
     title: 'Action',
     key: 'action',
@@ -32,23 +32,23 @@ const columnsDef = [
         pathname: '/visitation',
         state: {
           step: 1,
-          record: record
-        }
+          record: record,
+        },
       })}
         style={{ cursor: 'pointer' }}
       >
         Go to <Icon type='arrow-right' />
       </a>
-    )
+    ),
   }],
   (self: { props: VisitationProps }) => [{
     title: 'First Name',
     dataIndex: 'FirstName',
-    key: 'FirstName'
+    key: 'FirstName',
   }, {
     title: 'Second Name',
     dataIndex: 'SecondName',
-    key: 'SecondName'
+    key: 'SecondName',
   }, {
     title: 'Action',
     render: (_: never, record: any) => (
@@ -56,30 +56,30 @@ const columnsDef = [
         pathname: '/visitation',
         state: {
           step: 2,
-          record: record
-        }
+          record: record,
+        },
       })}
         style={{ cursor: 'pointer' }}
       >
         Go to <Icon type='arrow-right' />
       </a>
-    )
+    ),
   }],
   (_self: { props: VisitationProps }) => [{
     title: 'First Name',
     dataIndex: 'FirstName',
-    key: 'FirstName'
+    key: 'FirstName',
   }, {
     title: 'Second Name',
     dataIndex: 'SecondName',
-    key: 'SecondName'
+    key: 'SecondName',
   }, {
     title: 'Date',
     dataIndex: 'Date',
     key: 'Date',
     render: (_: never, record: any) => (
       <span>{record.Date.toLocaleString()}</span>
-    )
+    ),
   }, {
     title: 'Male',
     dataIndex: 'Male',
@@ -88,13 +88,13 @@ const columnsDef = [
       record.Male === true
         ? <Icon type='check' />
         : <Icon type='close' />
-    )
-  }]
+    ),
+  }],
 ];
 export class Visitation extends React.Component<VisitationProps, SymptomsState> {
   state = {
     step: 0,
-    column: []
+    column: [],
   };
 
   // was called when user go to the Visitation tab
@@ -154,7 +154,7 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
 
       this.setState({
         step,
-        column: columnsDef[step](this)
+        column: columnsDef[step](this),
       });
     }
     // if location was changed then set 'step' in state
@@ -163,7 +163,7 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
       this.setState({
         step: nextProps.location.state
           ? nextProps.location.state.step
-          : 0
+          : 0,
       });
     }
   }
@@ -177,7 +177,7 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
       AddNewDoctor,
       AddNewVisitor,
       Data,
-      location
+      location,
     } = this.props;
     const { column, step } = this.state;
 
@@ -227,15 +227,15 @@ export class Visitation extends React.Component<VisitationProps, SymptomsState> 
 
 function mapStateToProps(state: ApplicationState) {
   return {
-    ...state.visitation
+    ...state.visitation,
   } as VisitationProps;
 }
 
 const mapDispatchToProps = {
-  ...VisitationState.actionCreators
+  ...VisitationState.actionCreators,
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Visitation) as typeof Visitation;
+)(Visitation);

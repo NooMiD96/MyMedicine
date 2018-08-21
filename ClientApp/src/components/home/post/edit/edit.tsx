@@ -61,7 +61,7 @@ export class Edit extends React.Component<EditProps, {}> {
         if (prevProps.Pending && !this.props.Pending && !this.props.ErrorInner) {
             if (this.props.match.params.id <= 0) {
                 this.props.GetPosts(1, 5);
-                this.props.history.push(`/`);
+                this.props.history.push('/');
             } else {
                 this.props.GetPost(this.props.match.params.id);
                 this.props.history.push(`/post/${this.props.PostId}`);
@@ -74,7 +74,7 @@ export class Edit extends React.Component<EditProps, {}> {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 this.setState({
-                    loading: true
+                    loading: true,
                 });
                 this.props.CreateEditPost(this.props.match.params.id, values.header, values.context, values.imgUrl);
             }
@@ -102,7 +102,7 @@ export class Edit extends React.Component<EditProps, {}> {
                                     label={'Header'}
                                 >
                                     {getFieldDecorator('header', {
-                                        rules: [{ required: true, message: 'Please input your comment!' }]
+                                        rules: [{ required: true, message: 'Please input your comment!' }],
                                     })(
                                         <Input
                                             placeholder='Enter header of post'
@@ -116,7 +116,7 @@ export class Edit extends React.Component<EditProps, {}> {
                                     label={'Url to image'}
                                 >
                                     {getFieldDecorator('imgUrl', {
-                                        rules: [{ required: false, message: 'Please input your comment!' }]
+                                        rules: [{ required: false, message: 'Please input your comment!' }],
                                     })(
                                         <Input
                                             placeholder='Enter url to image'
@@ -134,7 +134,7 @@ export class Edit extends React.Component<EditProps, {}> {
                                     label={'Context'}
                                 >
                                     {getFieldDecorator('context', {
-                                        rules: [{ required: true, message: 'Please input your comment!' }]
+                                        rules: [{ required: true, message: 'Please input your comment!' }],
                                     })(
                                         <Input.TextArea
                                             autosize={{ minRows: 2, maxRows: 12 }}
@@ -169,17 +169,17 @@ function mapStateToProps(state: ApplicationState) {
         Header: state.post.Header,
         Context: state.post.Context,
         ImgUrl: state.post.ImgUrl,
-        PostId: state.post.PostId
+        PostId: state.post.PostId,
     } as CreateEditPostState.CreateEditPostState & { UserRole: string } & PostStateProps;
 }
 
 const mapDispatchToProps = {
     ...CreateEditPostState.actionCreators,
     GetPost: PostState.actionCreators.GetPost,
-    GetPosts: PostsState.actionCreators.GetPosts
+    GetPosts: PostsState.actionCreators.GetPosts,
 } as typeof CreateEditPostState.actionCreators & GetPostFunc;
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(EditForm) as typeof EditForm;
+)(EditForm);

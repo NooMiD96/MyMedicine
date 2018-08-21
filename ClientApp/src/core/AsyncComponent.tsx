@@ -8,14 +8,14 @@ export function AsyncComponent(ComponentLoader: any) {
         constructor(props: any) {
             super(props);
             this.state = {
-                Component: null
+                Component: null,
             };
         }
 
         async componentDidMount() {
             const Component = await ComponentLoader();
             this.setState({
-                Component: Component.default
+                Component: Component.default,
             });
         }
 

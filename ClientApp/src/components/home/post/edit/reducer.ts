@@ -37,7 +37,7 @@ export const actionCreators = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',
-            body: JSON.stringify({ header, context, imgUrl })
+            body: JSON.stringify({ header, context, imgUrl }),
         }).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
@@ -59,7 +59,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'CREATE_EDIT_POST_REQUEST' });
     },
-    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' }
+    CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 
 // ---------------- REDUCER ----------------
@@ -70,26 +70,26 @@ export const reducer: Reducer<CreateEditPostState> = (state: CreateEditPostState
         case 'CREATE_EDIT_POST_REQUEST':
             return {
                 ...state,
-                Pending: true
+                Pending: true,
             };
 
         case 'CREATE_EDIT_POST_SUCCESS':
             return {
                 ...state,
-                Pending: false
+                Pending: false,
             };
 
         case 'CREATE_EDIT_POST_ERROR':
             return {
                 ...state,
                 Pending: false,
-                ErrorInner: action.ErrorInner
+                ErrorInner: action.ErrorInner,
             };
 
         case 'CLEAN_ERROR_INNER':
             return {
                 ...state,
-                ErrorInner: ''
+                ErrorInner: '',
             };
 
         default:

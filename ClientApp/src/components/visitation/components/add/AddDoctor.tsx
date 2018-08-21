@@ -11,7 +11,7 @@ type AddDoctorProp = {
   firstName: string,
   secondName: string,
   onInputChange: (e: any, field: string) => void,
-  onInputPressEnter: () => void
+  onInputPressEnter: () => void,
 };
 
 export const AddDoctor = (props: AddDoctorProp) => {
@@ -21,7 +21,7 @@ export const AddDoctor = (props: AddDoctorProp) => {
     firstName,
     secondName,
     onInputChange,
-    onInputPressEnter
+    onInputPressEnter,
   } = props;
   return <InputWrapper step={step}>
     <Input

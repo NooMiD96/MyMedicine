@@ -14,7 +14,7 @@ type KnownAction = SetIsMobileAction | any;
 
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
-    SetIsMobile: (IsMobile: boolean) => (<SetIsMobileAction>{ type: 'SET_IS_MOBILE', IsMobile: IsMobile })
+    SetIsMobile: (IsMobile: boolean) => (<SetIsMobileAction>{ type: 'SET_IS_MOBILE', IsMobile: IsMobile }),
 };
 
 // ---------------- REDUCER ----------------
@@ -25,7 +25,7 @@ export const reducer: Reducer<AppState> = (state: AppState, action: KnownAction)
         case 'SET_IS_MOBILE':
             return {
                 ...state,
-                IsMobile: action.IsMobile
+                IsMobile: action.IsMobile,
             };
         default:
             const exhaustiveCheck: never = action as never;

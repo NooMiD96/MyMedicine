@@ -15,13 +15,13 @@ type ComponentProps = {
   onChangeRowSelection: (selectedRowKeys: any) => void,
   onFilterHandler: (filterText: string) => void,
   RemoveCreatedElement: (id: number) => void,
-  SetValueToElementById: (id: number, value: string) => void
+  SetValueToElementById: (id: number, value: string) => void,
 };
 
 type ComponentState = {
   sorter: string,
   editElementId?: number,
-  selectedRowKeys: number[]
+  selectedRowKeys: number[],
 };
 /////////////////////////////////////
 //#endregion ComponentsTypeDefinition
@@ -31,7 +31,7 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
   state: ComponentState = {
     sorter: '',
     editElementId: undefined,
-    selectedRowKeys: []
+    selectedRowKeys: [],
   };
   searchInput: Input | null = null;
   editTableElementInput: Input | null = null;
@@ -44,7 +44,7 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
       this.setState({
         editElementId: newElement && !newElement.Name
           ? lastCreatedElementIndex
-          : nextState.editElementId
+          : nextState.editElementId,
       });
     }
   }
@@ -77,7 +77,7 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
       );
     } else {
       this.setState({
-        editElementId: record.SymptomId
+        editElementId: record.SymptomId,
       });
     }
   }
@@ -103,7 +103,7 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     }
 
     this.setState({
-      editElementId: undefined
+      editElementId: undefined,
     });
   }
   ////////////////////////////////
@@ -175,11 +175,11 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     filterDropdown: this.filterDropdown,
     filterIcon: this.filterIcon,
     onFilterDropdownVisibleChange: this.onFilterDropdownVisibleChange,
-    sorter: this.sorter
+    sorter: this.sorter,
   }, {
     title: 'Action',
     width: '12%',
-    render: this.actionRender
+    render: this.actionRender,
   }];
   rowKey = (record: Symptom) => record.SymptomId as any;
   //////////////////////////
@@ -190,16 +190,16 @@ export class SymptomsTable extends React.Component<ComponentProps, ComponentStat
     onChange: (selectedRowKeys: number[] | any) => {
       this.props.onChangeRowSelection(selectedRowKeys);
       this.setState({
-        selectedRowKeys
+        selectedRowKeys,
       });
-    }
+    },
   })
   //////////////////////////////
   //#region ControlsForParent
   //////////////////////////////
   resetEditElementId = () => this.saveElementInEditList(this.state.editElementId);
   resetSelectedRowKeys = (newSelectedKeys?: number[]) => this.setState({
-    selectedRowKeys: newSelectedKeys || []
+    selectedRowKeys: newSelectedKeys || [],
   })
   //////////////////////////////
   //#endregion ControlsForParent
