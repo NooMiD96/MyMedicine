@@ -41,6 +41,18 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   };
   tableRef: any = null;
 
+  private resetListsAfterSending(DeleteList: number[], EditList: number[]) {
+    this.setState({
+      DeleteList: DeleteList,
+      EditList: EditList,
+      sendedList: '',
+      indexForNewElement: -1
+    });
+    if (!!this.tableRef) {
+      this.tableRef.resetSelectedRowKeys(DeleteList);
+    }
+  }
+
   componentDidMount() {
     this.props.UserRole !== 'Admin'
       ? this.props.history.push('/')
@@ -50,6 +62,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   componentWillReceiveProps(nextProps: ComponentProps) {
     const { Pending: thisPending, Symptoms: thisSymptoms } = this.props;
 
+    // filtering again symptoms after changes
     if (thisSymptoms !== nextProps.Symptoms
       && this.state.filterText
     ) {
@@ -60,33 +73,15 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
       // leave one list after sending another with actual data
       const { sendedList, DeleteList, EditList } = this.state;
       if (sendedList === 'EditList') {
-        const newDeleteList = DeleteList
-          .filter(dl =>
-            !EditList.includes(dl)
-          );
-        this.setState({
-          DeleteList: newDeleteList,
-          EditList: [],
-          sendedList: '',
-          indexForNewElement: -1
-        });
-        if (!!this.tableRef) {
-          this.tableRef.resetSelectedRowKeys(newDeleteList);
-        }
+        this.resetListsAfterSending(
+          DeleteList.filter(dl => !EditList.includes(dl)),
+          []
+        );
       } else if (sendedList === 'DeleteList') {
-        const newEditList = EditList
-          .filter(el =>
-            !DeleteList.includes(el)
-          );
-        this.setState({
-          DeleteList: [],
-          EditList: newEditList,
-          sendedList: '',
-          indexForNewElement: -1
-        });
-        if (!!this.tableRef) {
-          this.tableRef.resetSelectedRowKeys();
-        }
+        this.resetListsAfterSending(
+          [],
+          EditList.filter(el => !DeleteList.includes(el))
+        );
       } else {
         this.setState({
           sendedList: ''
@@ -96,11 +91,11 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
   }
 
   shouldComponentUpdate(nextProps: ComponentProps, nextState: ComponentState) {
-    if ( this.props.Symptoms !== nextProps.Symptoms
+    if (this.props.Symptoms !== nextProps.Symptoms
       || this.props.Pending !== nextProps.Pending
       || this.props.ErrorInner !== nextProps.ErrorInner
       || this.state.filterData !== nextState.filterData
-      || this.state.DeleteList !== nextState.DeleteList
+      || !!this.state.DeleteList.length !== !!nextState.DeleteList.length
     ) {
       return true;
     }
@@ -116,24 +111,31 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     const findElement = this.props.Symptoms.find(x => x.SymptomId === indexForNewElement);
     if (!findElement) {
       this.props.AddNewSymptom({ SymptomId: indexForNewElement, Name: '' });
-    } else if (findElement && findElement.Name) {
+    } else if (findElement.Name) {
       this.setState({
         EditList: [
           indexForNewElement,
           ...EditList
         ],
         indexForNewElement: indexForNewElement - 1
-      }, () => this.props.AddNewSymptom({ SymptomId: indexForNewElement - 1, Name: '' }));
+      });
+      this.props.AddNewSymptom({ SymptomId: indexForNewElement - 1, Name: '' });
     }
   }
 
-  onChangeSymptoms = () => this.setState({
-    sendedList: 'EditList'
-  }, () => this.props.ChangeSymptoms(this.state.EditList))
+  onChangeSymptoms = () => {
+    this.setState({
+      sendedList: 'EditList'
+    });
+    this.props.ChangeSymptoms(this.state.EditList);
+  }
 
-  onDeleteSymptoms = () => this.setState({
-    sendedList: 'DeleteList'
-  }, () => this.props.DeleteSymptoms(this.state.DeleteList))
+  onDeleteSymptoms = () => {
+    this.setState({
+      sendedList: 'DeleteList'
+    });
+    this.props.DeleteSymptoms(this.state.DeleteList);
+  }
 
   ////////////////////////////
   //#endregion RequestArea
@@ -165,6 +167,10 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
     } else {
       const { indexForNewElement, EditList } = this.state;
 
+      this.props.SetNewValue({
+        SymptomId: id,
+        Name: value
+      });
       this.setState({
         EditList: EditList.includes(id)
           ? [...EditList]
@@ -173,10 +179,7 @@ export class Symptoms extends React.Component<ComponentProps, ComponentState> {
           && element.SymptomId === indexForNewElement
           ? indexForNewElement - 1
           : indexForNewElement
-      }, () => this.props.SetNewValue({
-        SymptomId: id,
-        Name: value
-      }));
+      });
     }
   }
 
