@@ -9,7 +9,7 @@ using System.IO;
 
 namespace MyMedicine.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("apiadm/[controller]")]
     public partial class ImportExportController: Controller
     {
         private MedicineContext _context;
@@ -26,14 +26,6 @@ namespace MyMedicine.Controllers
         [HttpPost("[action]")]
         public async Task<string> Import([FromQuery] int type)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
             var context = await ControllersServices.GetJsonFromBodyRequestAsync(Request.Body);
             var isParsed = TryDeserialize(context, type);
 
@@ -49,15 +41,6 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Export()
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Content(ControllersServices.ErrorMessage("auth"));
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return Content(ControllersServices.ErrorMessage("Not allowed "));
-            }
-
             using(var memoryStream = new MemoryStream())
             {
                 using(var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create))

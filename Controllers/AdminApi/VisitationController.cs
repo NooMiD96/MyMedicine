@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace MyMedicine.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("apiadm/[controller]")]
     public class VisitationController : Controller
     {
         private MedicineContext _context;
@@ -22,15 +22,6 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetSeparations()
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
             var Separations = await _context.GetSeparationsListAsync();
 
             return JsonConvert.SerializeObject(new { Separations }, ControllersServices.JsonSettings);
@@ -39,15 +30,6 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetDoctors([FromQuery] int sep)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
             var Doctors = await _context.GetDoctorsListAsync(sep);
 
             return JsonConvert.SerializeObject(new { Doctors }, ControllersServices.JsonSettings);
@@ -56,15 +38,6 @@ namespace MyMedicine.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetVisitors([FromQuery] int doc)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
             var Visitors = await _context.GetVisitorsListAsync(doc);
 
             return JsonConvert.SerializeObject(new { Visitors }, ControllersServices.JsonSettings);
@@ -73,15 +46,6 @@ namespace MyMedicine.Controllers
         [HttpPost("[action]")]
         public async Task<string> AddNewSeparation([FromBody] Separation separation)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
             var result = await _context.AddNewSeparationAsync(separation);
             if(result)
             {
@@ -99,15 +63,6 @@ namespace MyMedicine.Controllers
         [HttpPost("[action]")]
         public async Task<string> AddNewDoctor([FromQuery] int sep, [FromBody] Doctor doctor)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
             var result = await _context.AddNewDoctorAsync(sep, doctor);
             if (result)
             {
@@ -122,15 +77,6 @@ namespace MyMedicine.Controllers
         [HttpPost("[action]")]
         public async Task<string> AddNewVisitor([FromQuery] int doc, [FromBody] Visitation visitor)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
             var result = await _context.AddNewVisitorAsync(doc, visitor);
             if (result)
             {

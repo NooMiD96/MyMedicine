@@ -32,7 +32,7 @@ type KnownAction = ImportRequestAction | ImportSuccessAction | ImportErrorAction
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
     ImportFile: (file: any, type: number): AppThunkAction<ImportRequestAction | ImportSuccessAction | ImportErrorAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/importexport/import?type=${type}`, {
+        const fetchTask = fetch(`/apiadm/importexport/import?type=${type}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',
@@ -61,7 +61,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'IMPORT_REQUEST' });
     },
-    ExportFiles: (): Window | null => window.open('/api/importexport/export'),
+    ExportFiles: (): Window | null => window.open('/apiadm/importexport/export'),
     CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
 

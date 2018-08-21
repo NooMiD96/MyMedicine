@@ -26,11 +26,11 @@ export interface Comment {
 }
 
 // ----------------- ACTIONS -----------------
-interface PostRequestAction {
+interface GetPostRequestAction {
     type: 'POST_REQUEST';
     PostId: number;
 }
-interface PostRequestSuccessAction {
+interface GetPostRequestSuccessAction {
     type: 'POST_REQUEST_SUCCESS';
     Author: string;
     Header: string;
@@ -40,10 +40,11 @@ interface PostRequestSuccessAction {
     CommentsCount: number;
     CommentsList: Comment[];
 }
-interface PostRequestErrorAction {
+interface GetPostRequestErrorAction {
     type: 'POST_REQUEST_ERROR';
     ErrorInner: string;
 }
+type GetPostAction = GetPostRequestAction | GetPostRequestSuccessAction | GetPostRequestErrorAction;
 interface SendCommentRequestAction {
     type: 'SEND_COMMENT_REQUEST';
 }
@@ -55,6 +56,7 @@ interface SendCommentRequestErrorAction {
     type: 'SEND_COMMENT_REQUEST_ERROR';
     ErrorInner: string;
 }
+type SendCommentAction = SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction;
 interface GetCommentsRequestAction {
     type: 'GET_COMMENTS_REQUEST';
 }
@@ -66,6 +68,7 @@ interface GetCommentsRequestErrorAction {
     type: 'GET_COMMENTS_REQUEST_ERROR';
     ErrorInner: string;
 }
+type GetCommentsAction = GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction;
 interface DeletePostRequestAction {
     type: 'DELETE_POST_REQUEST';
 }
@@ -76,6 +79,7 @@ interface DeletePostRequestErrorAction {
     type: 'DELETE_POST_REQUEST_ERROR';
     ErrorInner: string;
 }
+type DeletePostAction = DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction;
 interface DeleteCommentListRequestAction {
     type: 'DELETE_COMMENT_LIST_REQUEST';
 }
@@ -86,6 +90,7 @@ interface DeleteCommentListRequestErrorAction {
     type: 'DELETE_COMMENT_LIST_REQUEST_ERROR';
     ErrorInner: string;
 }
+type DeleteCommentListAction = DeleteCommentListRequestAction | DeleteCommentListRequestSuccessAction | DeleteCommentListRequestErrorAction;
 interface CleanePostDataAction {
     type: 'CLEANE_POST_DATA';
 }
@@ -93,16 +98,13 @@ interface CleanErrorInnerAction {
     type: 'CLEAN_ERROR_INNER';
 }
 
-type KnownAction = PostRequestAction | PostRequestSuccessAction | PostRequestErrorAction
-    | SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction
-    | GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction
-    | DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction
-    | DeleteCommentListRequestAction | DeleteCommentListRequestSuccessAction | DeleteCommentListRequestErrorAction
+type KnownAction = GetPostAction | SendCommentAction | GetCommentsAction
+    | DeletePostAction | DeleteCommentListAction
     | CleanePostDataAction | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
-    GetPost: (PostId: number): AppThunkAction<PostRequestAction | PostRequestSuccessAction | PostRequestErrorAction> => (dispatch, _getState) => {
+    GetPost: (PostId: number): AppThunkAction<GetPostAction> => (dispatch, _getState) => {
         const fetchTask = fetch(`/api/post/getpost?postid=${PostId}`, {
             method: 'GET',
             credentials: 'same-origin',
@@ -132,7 +134,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'POST_REQUEST', PostId });
     },
-    SendComment: (comment: string, PostId: number): AppThunkAction<SendCommentRequestAction | SendCommentRequestSuccessAction | SendCommentRequestErrorAction> => (dispatch, _getState) => {
+    SendComment: (comment: string, PostId: number): AppThunkAction<SendCommentAction> => (dispatch, _getState) => {
         const fetchTask = fetch(`/api/post/addcomment?postid=${PostId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -161,7 +163,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'SEND_COMMENT_REQUEST' });
     },
-    GetComments: (): AppThunkAction<GetCommentsRequestAction | GetCommentsRequestSuccessAction | GetCommentsRequestErrorAction> => (dispatch, getState) => {
+    GetComments: (): AppThunkAction<GetCommentsAction> => (dispatch, getState) => {
         const { PostId } = getState().post;
         const fetchTask = fetch(`/api/post/getcomments?postid=${PostId}`, {
             method: 'GET',
@@ -183,8 +185,8 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_COMMENTS_REQUEST' });
     },
-    DeletePost: (PostId: number): AppThunkAction<DeletePostRequestAction | DeletePostRequestSuccessAction | DeletePostRequestErrorAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/api/post/deletepost?postid=${PostId}`, {
+    DeletePost: (PostId: number): AppThunkAction<DeletePostAction> => (dispatch, _getState) => {
+        const fetchTask = fetch(`/apiadm/post/deletepost?postid=${PostId}`, {
             method: 'DELETE',
             credentials: 'same-origin',
         }).then(response => {
@@ -209,8 +211,8 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'DELETE_POST_REQUEST' });
     },
-    DeleteCommentsList: (PostId: number, commentList: [any]): AppThunkAction<DeleteCommentListRequestAction | DeleteCommentListRequestSuccessAction | DeleteCommentListRequestErrorAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/api/post/deletecommentslist?postid=${PostId}`, {
+    DeleteCommentsList: (PostId: number, commentList: [any]): AppThunkAction<DeleteCommentListAction> => (dispatch, _getState) => {
+        const fetchTask = fetch(`/apiadm/post/deletecommentslist?postid=${PostId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',

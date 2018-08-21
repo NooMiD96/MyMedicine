@@ -9,7 +9,6 @@ import { createServerRenderer, RenderResult } from 'aspnet-prerendering';
 import { routes } from './routes';
 import configureStore from './configureStore';
 import { ServerStyleSheet } from 'styled-components';
-import * as AppState from 'core/app/reducer';
 import * as PostsState from 'components/home/reducer';
 
 export default createServerRenderer(params =>
@@ -21,20 +20,19 @@ export default createServerRenderer(params =>
         const store = configureStore(createMemoryHistory());
         // dispatch
         store.dispatch(replace(urlAfterBasename));
-        store.dispatch(AppState.actionCreators.SetIsMobile(params.data.isMobile ? params.data.isMobile : false));
-        PostsState.actionCreators.GetPosts(1, 5)(store.dispatch, store.getState);
-
+        store.dispatch({ type: 'SET_IS_MOBILE', IsMobile: params.data.isMobile || false });
         if (params.data.user) {
             const user = JSON.parse(params.data.user);
-            store.getState().user.UserName = user.UserName;
-            store.getState().user.UserRole = user.UserRole;
+            store.dispatch({ type: 'GET_USER_INFO_SUCCESS', UserName: user.UserName, UserRole: user.UserRole });
         }
+
         // Prepare an instance of the application and perform an inital render that will
         // cause any async tasks (e.g., data access) to begin
+        PostsState.actionCreators.GetPosts(1, 5)(store.dispatch, store.getState);
         const routerContext: any = {};
         const app = (
             <Provider store={store}>
-                <StaticRouter basename={basename} context={routerContext} location={params.location.path} children={ routes } />
+                <StaticRouter basename={basename} context={routerContext} location={params.location.path} children={routes} />
             </Provider>
         );
         // If there's a redirection, just send this information back to the host application

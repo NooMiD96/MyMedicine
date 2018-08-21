@@ -11,7 +11,7 @@ namespace MyMedicine.Controllers
     public class SearchDiseaseController : Controller
     {
         [HttpGet("[action]")]
-        public string Registration()
+        public string Index()
         {
             return "Hi!";
         }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyMedicine
 {
-    public class MyServices
+    public static class MyServices
     {
         public static async Task InitIdentityDataBase(IServiceProvider serviceProvider, IConfiguration Configuration)
         {

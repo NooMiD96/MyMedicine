@@ -118,7 +118,7 @@ interface VisitorResponseType { Error: string; Visitors: any[]; }
 
 export const actionCreators = {
     GetSeparations: (): AppThunkAction<GetSeparationsAction> => (dispatch, getState) => {
-        const fetchTask = fetch('/api/visitation/getseparations', {
+        const fetchTask = fetch('/apiadm/visitation/getseparations', {
             credentials: 'same-origin',
             method: 'GET',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -151,7 +151,7 @@ export const actionCreators = {
         dispatch({ type: 'GET_SEPARATIONS_REQUEST' });
     },
     GetDoctors: (separation: Separation): AppThunkAction<GetDoctorsAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/visitation/getdoctors?sep=${separation.Id}`, {
+        const fetchTask = fetch(`/apiadm/visitation/getdoctors?sep=${separation.Id}`, {
             credentials: 'same-origin',
             method: 'GET',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -185,7 +185,7 @@ export const actionCreators = {
         dispatch({ type: 'GET_DOCTORS_REQUEST' });
     },
     GetVisitors: (doctor: Doctor): AppThunkAction<GetVisitorsAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/visitation/getvisitors?doc=${doctor.Id}`, {
+        const fetchTask = fetch(`/apiadm/visitation/getvisitors?doc=${doctor.Id}`, {
             credentials: 'same-origin',
             method: 'GET',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -224,7 +224,7 @@ export const actionCreators = {
         dispatch({ type: 'GET_VISITORS_REQUEST' });
     },
     AddNewSeparations: (separation: string): AppThunkAction<AddNewSeparationAction> => (dispatch, getState) => {
-        const fetchTask = fetch('/api/visitation/addnewseparation', {
+        const fetchTask = fetch('/apiadm/visitation/addnewseparation', {
             credentials: 'same-origin',
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -255,7 +255,7 @@ export const actionCreators = {
         dispatch({ type: 'ADD_NEW_SEPARATION_REQUEST' });
     },
     AddNewDoctor: (separation: Separation, doctor: Doctor): AppThunkAction<AddNewDoctorAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/visitation/addnewdoctor?sep=${separation.Id}`, {
+        const fetchTask = fetch(`/apiadm/visitation/addnewdoctor?sep=${separation.Id}`, {
             credentials: 'same-origin',
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -286,7 +286,7 @@ export const actionCreators = {
         dispatch({ type: 'ADD_NEW_DOCTOR_REQUEST' });
     },
     AddNewVisitor: (doctor: Doctor, visitor: Visitor): AppThunkAction<AddNewVisitorAction> => (dispatch, getState) => {
-        const fetchTask = fetch(`/api/visitation/addnewvisitor?doc=${doctor.Id}`, {
+        const fetchTask = fetch(`/apiadm/visitation/addnewvisitor?doc=${doctor.Id}`, {
             credentials: 'same-origin',
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },

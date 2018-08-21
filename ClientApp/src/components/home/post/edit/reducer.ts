@@ -20,20 +20,19 @@ interface CreateEditPostErrorAction {
     type: 'CREATE_EDIT_POST_ERROR';
     ErrorInner: string;
 }
-
+type CreateEditPostAction = CreateEditPostRequestAction | CreateEditPostSuccessAction | CreateEditPostErrorAction;
 interface CleanErrorInnerAction {
     type: 'CLEAN_ERROR_INNER';
 }
 
-type KnownAction = CreateEditPostRequestAction | CreateEditPostSuccessAction | CreateEditPostErrorAction
-    | CleanErrorInnerAction;
+type KnownAction = CreateEditPostAction | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
 // interface ResponseType { Error: string; UserName: string; UserRole: string; }
 
 export const actionCreators = {
-    CreateEditPost: (PostId: number, header: string, context: string, imgUrl?: string): AppThunkAction<CreateEditPostRequestAction | CreateEditPostSuccessAction | CreateEditPostErrorAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/api/post/createoredit?postid=${PostId}`, {
+    CreateEditPost: (PostId: number, header: string, context: string, imgUrl?: string): AppThunkAction<CreateEditPostAction> => (dispatch, _getState) => {
+        const fetchTask = fetch(`/apiadm/post/createoredit?postid=${PostId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             credentials: 'same-origin',

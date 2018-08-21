@@ -81,7 +81,7 @@ interface ResponseType { Error: string; Symptoms: Symptom[]; }
 
 export const actionCreators = {
   GetSymptoms: (): AppThunkAction<GetSymptomsAction> => (dispatch, getState) => {
-    const fetchTask = fetch('/api/symptoms/getsymptoms', {
+    const fetchTask = fetch('/apiadm/symptoms/getsymptoms', {
       credentials: 'same-origin',
       method: 'GET',
       headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -114,7 +114,7 @@ export const actionCreators = {
     const { Symptoms } = getState().symptoms;
     const symptoms = Symptoms.filter(x => editList.includes(x.SymptomId));
 
-    const fetchTask = fetch('/api/symptoms/changesymptoms', {
+    const fetchTask = fetch('/apiadm/symptoms/changesymptoms', {
       credentials: 'same-origin',
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -158,7 +158,7 @@ export const actionCreators = {
     } else {
       const requestElemets = deleteList.filter(x => x > 0);
 
-      const fetchTask = fetch('/api/symptoms/deletesymptoms', {
+      const fetchTask = fetch('/apiadm/symptoms/deletesymptoms', {
         credentials: 'same-origin',
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },

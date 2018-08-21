@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MyMedicine.Context.Identity;
-using MyMedicine.Context.Medicine;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MyMedicine.Middleware;
 using System.Collections.Generic;
+using MyMedicine.Context.Identity;
+using MyMedicine.Context.Medicine;
+using MyMedicine.Middleware;
+using System.Threading.Tasks;
 
 namespace MyMedicine
 {
@@ -42,8 +43,10 @@ namespace MyMedicine
                 .AddEntityFrameworkStores<IdentityContext>();
 
             var serviceProvider = services.BuildServiceProvider();
-            MyServices.InitIdentityDataBase(serviceProvider, Configuration).GetAwaiter().GetResult();
-            MyServices.InitIMedicineDataBase(serviceProvider, Configuration).GetAwaiter().GetResult();
+            Task.WhenAll(
+                MyServices.InitIdentityDataBase(serviceProvider, Configuration),
+                MyServices.InitIMedicineDataBase(serviceProvider, Configuration)
+            ).GetAwaiter().GetResult();
 
             services.AddMvc();
         }
@@ -68,6 +71,7 @@ namespace MyMedicine
             app.UseWebSockets();
 
             app.UseMiddleware<ChatMiddleware>();
+            app.UseMiddleware<PermissionMiddleware>();
 
             app.UseMvc(routes =>
             {
