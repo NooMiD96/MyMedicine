@@ -36,10 +36,11 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("List is empty");
             }
 
-            await _context.ImportSymptomsListAsync(editList, 1);
+            await _context.AddOrEditSymptomsRange(editList);
 
             return "true";
         }
+
         [HttpDelete("[action]")]
         public async Task<string> DeleteSymptoms([FromBody] List<int> deleteList)
         {
@@ -48,7 +49,7 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("List is empty");
             }
 
-            var Symptoms = await _context.DeletesymptomsAsync(deleteList);
+            await _context.DeleteSymptomsAsync(deleteList);
 
             return "true";
         }

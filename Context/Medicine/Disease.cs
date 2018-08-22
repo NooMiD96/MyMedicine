@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -136,7 +137,7 @@ namespace MyMedicine.Context.Medicine
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SymptomId { get; set; }
 
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string Name { get; set; }
     }
 }

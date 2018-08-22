@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,15 +9,16 @@ namespace MyMedicine.Context.Medicine
     public class Post : IEquatable<Post>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonIgnore]
         public int PostId { get; set; }
 
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string Author { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string Header { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string Context { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public DateTime Date { get; set; }
         public string ImgUrl { get; set; }
         [Required]
@@ -41,11 +43,11 @@ namespace MyMedicine.Context.Medicine
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CommentId { get; set; }
 
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string CommentInner { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public DateTime Date { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string UserName { get; set; }
 
         [Required, ForeignKey(nameof(Post))]

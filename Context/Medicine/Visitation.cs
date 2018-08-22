@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,13 +11,13 @@ namespace MyMedicine.Context.Medicine
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int VisitationId { get; set; }
 
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string FirstName { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string SecondName { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public DateTime Date { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public bool Male { get; set; }
 
         [Required, ForeignKey(nameof(Doctor))]
@@ -33,9 +34,9 @@ namespace MyMedicine.Context.Medicine
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DoctorId { get; set; }
 
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string FirstName { get; set; }
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string SecondName { get; set; }
 
         [Required, ForeignKey(nameof(Separation))]
@@ -56,7 +57,7 @@ namespace MyMedicine.Context.Medicine
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeparationId { get; set; }
 
-        [Required]
+        [Required, JsonProperty(Required = Required.Always)]
         public string Address { get; set; }
 
         //Childrens

@@ -41,41 +41,44 @@ namespace MyMedicine.Controllers
 
         private async ValueTask<bool> PostDeserialize(string context, int type)
         {
+            List<Post> postList = null;
             try
             {
-                var postList = JsonConvert.DeserializeObject<List<Post>>(context);
-                await _context.ImportPostListAsync(postList, type);
+                postList = JsonConvert.DeserializeObject<List<Post>>(context);
             }
             catch
             {
                 return false;
             }
+            await _context.ImportPostListAsync(postList, type);
             return true;
         }
         private async ValueTask<bool> VisitorsDeserialize(string context, int type)
         {
+            List<Separation> separationList = null;
             try
             {
-                var separationList = JsonConvert.DeserializeObject<List<Separation>>(context);
-                await _context.ImportSeparationListAsync(separationList, type);
+                separationList = JsonConvert.DeserializeObject<List<Separation>>(context);
             }
             catch
             {
                 return false;
             }
+            await _context.ImportSeparationListAsync(separationList, type);
             return true;
         }
         private async ValueTask<bool> SymptomDeserialize(string context, int type)
         {
+            List<Symptom> symptomList = null;
             try
             {
-                var symptomList = JsonConvert.DeserializeObject<List<Symptom>>(context);
-                await _context.ImportSymptomsListAsync(symptomList, type);
+                symptomList = JsonConvert.DeserializeObject<List<Symptom>>(context);
             }
             catch
             {
                 return false;
             }
+            await _context.ImportSymptomsListAsync(symptomList, type);
             return true;
         }
 
