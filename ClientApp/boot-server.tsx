@@ -21,14 +21,21 @@ export default createServerRenderer(params =>
         // dispatch
         store.dispatch(replace(urlAfterBasename));
         store.dispatch({ type: 'SET_IS_MOBILE', IsMobile: params.data.isMobile || false });
+        store.dispatch({ type: 'SET_XPT', xpt: JSON.parse(params.data.xpt) || '' });
         if (params.data.user) {
             const user = JSON.parse(params.data.user);
-            store.dispatch({ type: 'GET_USER_INFO_SUCCESS', UserName: user.UserName, UserRole: user.UserRole });
+            store.dispatch({
+                type: 'GET_USER_INFO_SUCCESS',
+                UserName: user.UserName,
+                UserRole: user.UserRole,
+            });
         }
 
         // Prepare an instance of the application and perform an inital render that will
         // cause any async tasks (e.g., data access) to begin
-        PostsState.actionCreators.GetPosts(1, 5)(store.dispatch, store.getState);
+
+        // PostsState.actionCreators.GetPosts(1, 5)(store.dispatch, store.getState);
+
         const routerContext: any = {};
         const app = (
             <Provider store={store}>

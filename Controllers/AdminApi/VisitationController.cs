@@ -53,10 +53,7 @@ namespace MyMedicine.Controllers
             }
             else
             {
-                return JsonConvert.SerializeObject(
-                    ControllersServices.ErrorMessage("Trouble with adding new Separation"), 
-                    ControllersServices.JsonSettings
-                );
+                return ControllersServices.ErrorMessage("Trouble with adding new Separation");
             }
         }
 

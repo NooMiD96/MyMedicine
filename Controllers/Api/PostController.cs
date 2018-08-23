@@ -16,6 +16,7 @@ namespace MyMedicine.Controllers
             _context = context;
         }
 
+        [ValidateAntiForgeryToken]
         [HttpGet("[action]")]
         public async Task<string> GetPosts([FromQuery] int page, [FromQuery] int pageSize)
         {

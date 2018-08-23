@@ -42,6 +42,14 @@ namespace MyMedicine
             })
                 .AddEntityFrameworkStores<IdentityContext>();
 
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "xpt";
+                //cookie is only for the same-site requests
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                options.Cookie.Name = "xpt";
+            });
+
             var serviceProvider = services.BuildServiceProvider();
             Task.WhenAll(
                 MyServices.InitIdentityDataBase(serviceProvider, Configuration),
@@ -70,8 +78,8 @@ namespace MyMedicine
 
             app.UseWebSockets();
 
-            app.UseMiddleware<ChatMiddleware>();
             app.UseMiddleware<PermissionMiddleware>();
+            app.UseMiddleware<ChatMiddleware>();
 
             app.UseMvc(routes =>
             {

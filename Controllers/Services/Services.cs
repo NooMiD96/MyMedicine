@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Antiforgery;
+using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -23,5 +24,12 @@ namespace MyMedicine.Controllers.Services
         }
 
         static public string ErrorMessage(string Error) => JsonConvert.SerializeObject(new { Error });
+
+        static public string XsrfToXpt(AntiforgeryTokenSet xpt) => JsonConvert.SerializeObject(new
+        {
+            __xpt_cookie = xpt.CookieToken,
+            __xpt_request = xpt.RequestToken,
+            __xpt_header_name = xpt.HeaderName
+        });
     }
 }

@@ -40,8 +40,12 @@ type KnownAction = PostsRequestAction | PostsRequestSuccessAction | PostsRequest
 interface ResponseType { Error: string; Posts: Post[]; TotalCount: number; }
 
 export const actionCreators = {
-    GetPosts: (page: number, pageSize: number): AppThunkAction<PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction> => (dispatch) => {
+    GetPosts: (page: number, pageSize: number): AppThunkAction<PostsRequestAction | PostsRequestSuccessAction | PostsRequestErrorAction> => (dispatch, getState) => {
+        const { __xpt_header_name, __xpt_request } = getState().app.xpt;
         const fetchTask = fetch(`/api/post/getposts?page=${page}&pageSize=${pageSize}`, {
+            headers: {
+                [__xpt_header_name]: __xpt_request,
+            },
             credentials: 'same-origin',
             method: 'GET',
         }).then(response => {

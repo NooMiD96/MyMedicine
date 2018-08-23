@@ -1,6 +1,8 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
 import { AppThunkAction } from 'src/reducer';
+
+import { SetXPTAction, XPT } from 'core/app/reducer';
 // ----------------- STATE -----------------
 export interface UserState {
     UserName: string;
@@ -23,6 +25,7 @@ interface GetUserInfoErrorAction {
     type: 'GET_USER_INFO_ERROR';
     ErrorInner: string;
 }
+type GetUserInfoAction = GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction;
 interface LoginUserRequestAction {
     type: 'LOGIN_USER_REQUEST';
 }
@@ -34,6 +37,7 @@ interface LoginUserErrorAction {
     type: 'LOGIN_USER_ERROR';
     ErrorInner: string;
 }
+type LoginUserAction = LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction;
 interface RegistrationUserRequestAction {
     type: 'REGISTRATION_USER_REQUEST';
 }
@@ -45,6 +49,7 @@ interface RegistrationUserErrorAction {
     type: 'REGISTRATION_USER_ERROR';
     ErrorInner: string;
 }
+type RegistrationUserAction = RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction;
 interface LogOutAction {
     type: 'LOG_OUT';
 }
@@ -52,16 +57,14 @@ interface CleanErrorInnerAction {
     type: 'CLEAN_ERROR_INNER';
 }
 
-type KnownAction = GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction
-    | LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction
-    | RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction
+type KnownAction = GetUserInfoAction | LoginUserAction | RegistrationUserAction
     | LogOutAction | CleanErrorInnerAction;
 
 // ---------------- ACTION CREATORS ----------------
 interface ResponseType { Error: string; UserName: string; UserRole: string; }
 
 export const actionCreators = {
-    GetUserInfo: (): AppThunkAction<GetUserInfoRequestAction | GetUserInfoSuccessAction | GetUserInfoErrorAction> => (dispatch, _getState) => {
+    GetUserInfo: (): AppThunkAction<GetUserInfoAction> => (dispatch, _getState) => {
         let fetchTask = fetch('/api/authorization/getuserinfo', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -73,7 +76,11 @@ export const actionCreators = {
             if (data.Error) {
                 throw new Error('');
             }
-            dispatch({ type: 'GET_USER_INFO_SUCCESS', UserName: data.UserName, UserRole: data.UserRole });
+            dispatch({
+                type: 'GET_USER_INFO_SUCCESS',
+                UserName: data.UserName,
+                UserRole: data.UserRole,
+            });
         }).catch((err: Error) => {
             if (!err.message) {
                 dispatch({ type: 'GET_USER_INFO_SUCCESS', UserName: '', UserRole: '' });
@@ -86,7 +93,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_USER_INFO_REQUEST' });
     },
-    LoginRequest: (un: string, pw: string): AppThunkAction<LoginUserRequestAction | LoginUserSuccessAction | LoginUserErrorAction> => (dispatch, _getState) => {
+    LoginRequest: (un: string, pw: string): AppThunkAction<LoginUserAction | SetXPTAction> => (dispatch, _getState) => {
         let fetchTask = fetch('/api/authorization/signin', {
             method: 'POST',
             credentials: 'same-origin',
@@ -95,11 +102,15 @@ export const actionCreators = {
         }).then((response: Response) => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
-        }).then((data: ResponseType) => {
+        }).then((data: any /*ResponseType | XPT*/) => {
             if (data.Error) {
                 throw new Error(data.Error);
             }
             dispatch({ type: 'LOGIN_USER_SUCCESS', IsNeedGetData: true });
+            dispatch({
+                type: 'SET_XPT',
+                xpt: data,
+            });
         }).catch((err: Error) => {
             if (!err.message) { return; }
             console.log('Error :-S in user\n', err.message);
@@ -109,7 +120,7 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'LOGIN_USER_REQUEST' });
     },
-    RegistrationRequest: (un: string, email: string, pw: string): AppThunkAction<RegistrationUserRequestAction | RegistrationUserSuccessAction | RegistrationUserErrorAction> => (dispatch, _getState) => {
+    RegistrationRequest: (un: string, email: string, pw: string): AppThunkAction<RegistrationUserAction> => (dispatch, _getState) => {
         let fetchTask = fetch('/api/authorization/registration', {
             method: 'POST',
             credentials: 'same-origin',

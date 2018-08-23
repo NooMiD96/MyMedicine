@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyMedicine.Models.Identity;
-using MyMedicine.Controllers.Services;
+using static MyMedicine.Controllers.Services.ControllersServices;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace MyMedicine.Controllers
 {
@@ -12,11 +14,13 @@ namespace MyMedicine.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IAntiforgery _xsrf;
 
-        public AuthorizationController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AuthorizationController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IAntiforgery xsrf)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _xsrf = xsrf;
         }
 
         [HttpPost("[action]")]
@@ -24,11 +28,11 @@ namespace MyMedicine.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
-                return ControllersServices.ErrorMessage("User with this email exist: please try again");
+                return ErrorMessage("User with this email exist: please try again");
 
             user = await _userManager.FindByNameAsync(model.Email);
             if (user != null)
-                return ControllersServices.ErrorMessage("User with this user name exist: please try again");
+                return ErrorMessage("User with this user name exist: please try again");
 
             user = new IdentityUser()
             {
@@ -38,31 +42,34 @@ namespace MyMedicine.Controllers
             var identityResult = await _userManager.CreateAsync(user, model.Password);
 
             if (!identityResult.Succeeded)
-                return ControllersServices.ErrorMessage($"Can't create user: {(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
+                return ErrorMessage($"Can't create user: {(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             identityResult = await _userManager.AddToRoleAsync(user, "User");
             if (!identityResult.Succeeded)
-                return ControllersServices.ErrorMessage($"Can't create user: {(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
+                return ErrorMessage($"Can't create user: {(identityResult.Errors.Count() != 0 ? identityResult.Errors.First().Description : "Please try again")}");
 
             var signResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
-            return signResult.Succeeded ? "true" : ControllersServices.ErrorMessage("Cant't login: please try again");
+            return signResult.Succeeded ? "true" : ErrorMessage("Cant't login: please try again");
         }
 
         [HttpPost("[action]")]
         public async Task<string> SignIn([FromBody] SignInModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
-
-            return result.Succeeded ? "true" : ControllersServices.ErrorMessage("Cant't login: please try login again");
+            // TODO: get the right xsrf
+            // HttpContext refreshing only for new requests
+            return result.Succeeded
+                ? XsrfToXpt(_xsrf.GetTokens(HttpContext))
+                : ErrorMessage("Cant't login: please try login again");
         }
 
         [HttpGet("[action]")]
         public async Task<string> GetUserInfo()
         {
             if (!User.Identity.IsAuthenticated)
-                return ControllersServices.ErrorMessage("User is not authorization");
-
+                return ErrorMessage("User is not authorization");
+            
             return await UserInfo();
         }
 
