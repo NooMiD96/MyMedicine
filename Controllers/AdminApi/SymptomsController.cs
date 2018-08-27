@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 
 namespace MyMedicine.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Route("apiadm/[controller]")]
     public class SymptomsController : Controller
     {

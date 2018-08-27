@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Upload, Icon, message, Modal, Button, Spin, Radio } from 'antd';
-import ImportExportWrapper from './importExport.style';
-import { AlertModule } from 'core/app/components/alertModule';
+
+import { ApplicationState } from 'src/reducer';
 import * as UserState from '../authorization/reducer';
 import * as ImportExportState from './reducer';
-import { ApplicationState } from 'src/reducer';
+import { AlertModule } from 'core/app/components/alertModule';
+import ImportExportWrapper from './importExport.style';
 
 interface IDispatchProps {
     CleanErrorInner: typeof UserState.actionCreators.CleanErrorInner;
@@ -23,19 +24,10 @@ interface LoginState {
 }
 
 export class ImportExport extends React.Component<ImportExportProps, LoginState> {
-    constructor(props: any) {
-        super(props);
-        this.showModal = this.showModal.bind(this);
-        this.handleOk = this.handleOk.bind(this);
-        this.checkFileExtension = this.checkFileExtension.bind(this);
-        this.ImportFile = this.ImportFile.bind(this);
-        this.onChangeImportType = this.onChangeImportType.bind(this);
-
-        this.state = {
-            visible: false,
-            importType: 2,
-        };
-    }
+    state: LoginState = {
+        visible: false,
+        importType: 2,
+    };
 
     ImportFile = (file: any) => this.props.ImportFile(file, this.state.importType);
 
@@ -65,7 +57,7 @@ export class ImportExport extends React.Component<ImportExportProps, LoginState>
         return false;
     }
 
-    public render() {
+    render() {
         const { ErrorInner, CleanErrorInner } = this.props;
         const importButtonStyle = {
             height: '100%',

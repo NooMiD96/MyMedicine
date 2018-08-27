@@ -1,10 +1,13 @@
 import { Reducer } from 'redux';
 import { fetch, addTask } from 'domain-task';
+import { message } from 'antd';
+
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
 import { actionCreators as PostsActions } from 'src/components/home/reducer';
-import { message } from 'antd';
+import * as CRUDConfig from 'core/app/components/fetchCRUDConfigurations';
 // ----------------- STATE -----------------
+//#region
 export interface PostState {
     PostId: number;
     Author: string;
@@ -24,8 +27,9 @@ export interface Comment {
     Date: Date;
     UserName: string;
 }
-
+//#endregion
 // ----------------- ACTIONS -----------------
+//#region
 interface GetPostRequestAction {
     type: 'POST_REQUEST';
     PostId: number;
@@ -101,14 +105,15 @@ interface CleanErrorInnerAction {
 type KnownAction = GetPostAction | SendCommentAction | GetCommentsAction
     | DeletePostAction | DeleteCommentListAction
     | CleanePostDataAction | CleanErrorInnerAction;
-
+//#endregion
 // ---------------- ACTION CREATORS ----------------
+//#region
 export const actionCreators = {
     GetPost: (PostId: number): AppThunkAction<GetPostAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/api/post/getpost?postid=${PostId}`, {
-            method: 'GET',
-            credentials: 'same-origin',
-        }).then(response => {
+        const fetchTask = fetch(
+            `/api/post/getpost?postid=${PostId}`,
+            CRUDConfig.fetchGetConfig()
+        ).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
         }).then((data) => {
@@ -134,18 +139,17 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'POST_REQUEST', PostId });
     },
-    SendComment: (comment: string, PostId: number): AppThunkAction<SendCommentAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/api/post/addcomment?postid=${PostId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            credentials: 'same-origin',
-            body: comment,
-        }).then(response => {
+    SendComment: (comment: string, PostId: number): AppThunkAction<SendCommentAction> => (dispatch, getState) => {
+        const { xpt } = getState().app;
+        const fetchTask = fetch(
+            `/api/post/addcomment?postid=${PostId}`,
+            CRUDConfig.fetchPostConfig(xpt, comment)
+        ).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
         }).then((data) => {
             if (data.Error === 'auth') {
-                AuthActions.LogOut()(dispatch as any, _getState);
+                AuthActions.LogOut()(dispatch as any, getState);
                 message.error('Need auth again');
                 return;
             }
@@ -154,7 +158,7 @@ export const actionCreators = {
             }
             data.Date = 'now';
             dispatch({ type: 'SEND_COMMENT_REQUEST_SUCCESS', comment: data });
-            actionCreators.GetComments()(dispatch as any, _getState);
+            actionCreators.GetComments()(dispatch as any, getState);
         }).catch((err: Error) => {
             console.log('Error :-S in post\n', err.message);
             dispatch({ type: 'SEND_COMMENT_REQUEST_ERROR', ErrorInner: err.message });
@@ -165,10 +169,10 @@ export const actionCreators = {
     },
     GetComments: (): AppThunkAction<GetCommentsAction> => (dispatch, getState) => {
         const { PostId } = getState().post;
-        const fetchTask = fetch(`/api/post/getcomments?postid=${PostId}`, {
-            method: 'GET',
-            credentials: 'same-origin',
-        }).then(response => {
+        const fetchTask = fetch(
+            `/api/post/getcomments?postid=${PostId}`,
+            CRUDConfig.fetchGetConfig()
+        ).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
         }).then((data) => {
@@ -185,16 +189,17 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'GET_COMMENTS_REQUEST' });
     },
-    DeletePost: (PostId: number): AppThunkAction<DeletePostAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/apiadm/post/deletepost?postid=${PostId}`, {
-            method: 'DELETE',
-            credentials: 'same-origin',
-        }).then(response => {
+    DeletePost: (PostId: number): AppThunkAction<DeletePostAction> => (dispatch, getState) => {
+        const { xpt } = getState().app;
+        const fetchTask = fetch(
+            `/apiadm/post/deletepost?postid=${PostId}`,
+            CRUDConfig.fetchDeleteConfig(xpt)
+        ).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
         }).then((data) => {
             if (data.Error === 'auth') {
-                AuthActions.LogOut()(dispatch as any, _getState);
+                AuthActions.LogOut()(dispatch as any, getState);
                 message.error('Need auth again');
                 return;
             }
@@ -202,7 +207,7 @@ export const actionCreators = {
                 throw new Error('Some trouble when post comment.\n' + data.Error);
             }
             dispatch({ type: 'DELETE_POST_REQUEST_SUCCESS' });
-            PostsActions.GetPosts(1, 5)(dispatch as any, _getState);
+            PostsActions.GetPosts(1, 5)(dispatch as any, getState);
         }).catch((err: Error) => {
             console.log('Error :-S in post\n', err.message);
             dispatch({ type: 'DELETE_POST_REQUEST_ERROR', ErrorInner: err.message });
@@ -211,18 +216,17 @@ export const actionCreators = {
         addTask(fetchTask);
         dispatch({ type: 'DELETE_POST_REQUEST' });
     },
-    DeleteCommentsList: (PostId: number, commentList: [any]): AppThunkAction<DeleteCommentListAction> => (dispatch, _getState) => {
-        const fetchTask = fetch(`/apiadm/post/deletecommentslist?postid=${PostId}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            credentials: 'same-origin',
-            body: JSON.stringify(commentList),
-        }).then(response => {
+    DeleteCommentsList: (PostId: number, commentList: [any]): AppThunkAction<DeleteCommentListAction> => (dispatch, getState) => {
+        const { xpt } = getState().app;
+        const fetchTask = fetch(
+            `/apiadm/post/deletecommentslist?postid=${PostId}`,
+            CRUDConfig.fetchDeleteConfig(xpt, JSON.stringify(commentList))
+        ).then(response => {
             if (response.status !== 200) { throw new Error(response.statusText); }
             return response.json();
         }).then((data) => {
             if (data.Error === 'auth') {
-                AuthActions.LogOut()(dispatch as any, _getState);
+                AuthActions.LogOut()(dispatch as any, getState);
                 message.error('Need auth again');
                 return;
             }
@@ -230,7 +234,7 @@ export const actionCreators = {
                 throw new Error('Some trouble when delete comments.\n' + data.Error);
             }
             dispatch({ type: 'DELETE_COMMENT_LIST_REQUEST_SUCCESS' });
-            actionCreators.GetComments()(dispatch as any, _getState);
+            actionCreators.GetComments()(dispatch as any, getState);
         }).catch((err: Error) => {
             console.log('Error :-S in post\n', err.message);
             dispatch({ type: 'DELETE_COMMENT_LIST_REQUEST_ERROR', ErrorInner: err.message });
@@ -242,7 +246,7 @@ export const actionCreators = {
     CleanePostData: () => <CleanePostDataAction>{ type: 'CLEANE_POST_DATA' },
     CleanErrorInner: () => <CleanErrorInnerAction>{ type: 'CLEAN_ERROR_INNER' },
 };
-
+//#endregion
 // ---------------- REDUCER ----------------
 const unloadedState: PostState = {
     PostId: 0,

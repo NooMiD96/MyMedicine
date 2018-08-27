@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Antiforgery;
 
 namespace MyMedicine.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Route("api/[controller]")]
     public partial class AuthorizationController : Controller
     {
@@ -23,6 +24,18 @@ namespace MyMedicine.Controllers
             _xsrf = xsrf;
         }
 
+        [IgnoreAntiforgeryToken]
+        [HttpPost("[action]")]
+        public string ReNewXSRF([FromBody] RegistrationModel model)
+        {
+            if (_signInManager.IsSignedIn(User))
+            {
+                return XsrfToXpt(_xsrf.GetAndStoreTokens(HttpContext));
+            }
+            return ErrorMessage("User is not Signed");
+        }
+
+        [IgnoreAntiforgeryToken]
         [HttpPost("[action]")]
         public async Task<string> Registration([FromBody] RegistrationModel model)
         {
@@ -50,17 +63,18 @@ namespace MyMedicine.Controllers
 
             var signResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
-            return signResult.Succeeded ? "true" : ErrorMessage("Cant't login: please try again");
+            return signResult.Succeeded
+                ? "true"
+                : ErrorMessage("Cant't login: please try again");
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpPost("[action]")]
         public async Task<string> SignIn([FromBody] SignInModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
-            // TODO: get the right xsrf
-            // HttpContext refreshing only for new requests
             return result.Succeeded
-                ? XsrfToXpt(_xsrf.GetTokens(HttpContext))
+                ? "true"
                 : ErrorMessage("Cant't login: please try login again");
         }
 
@@ -73,7 +87,7 @@ namespace MyMedicine.Controllers
             return await UserInfo();
         }
 
-        [HttpPatch("[action]")]
+        [HttpGet("[action]")]
         public async Task SignOut()
         {
             await _signInManager.SignOutAsync();

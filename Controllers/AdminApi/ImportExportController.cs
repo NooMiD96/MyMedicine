@@ -9,6 +9,7 @@ using System.IO;
 
 namespace MyMedicine.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Route("apiadm/[controller]")]
     public partial class ImportExportController: Controller
     {

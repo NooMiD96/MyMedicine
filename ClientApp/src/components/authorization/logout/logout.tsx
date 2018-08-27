@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button } from 'antd';
+
 import StyleWrapper from './logout.style';
 
 type LoginProps = {

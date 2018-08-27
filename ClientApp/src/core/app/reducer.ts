@@ -17,16 +17,20 @@ interface SetIsMobileAction {
   type: 'SET_IS_MOBILE';
   IsMobile: boolean;
 }
+export interface RemoveXPTAction {
+  type: 'REMOVE_XPT';
+}
 export interface SetXPTAction {
   type: 'SET_XPT';
   xpt: XPT;
 }
-type KnownAction = SetIsMobileAction | SetXPTAction;
+type KnownAction = SetIsMobileAction | SetXPTAction | RemoveXPTAction;
 
 // ---------------- ACTION CREATORS ----------------
 export const actionCreators = {
   SetIsMobile: (IsMobile: boolean) => <SetIsMobileAction>{ type: 'SET_IS_MOBILE', IsMobile },
   SetXpt: (xpt: XPT) => <SetXPTAction>{ type: 'SET_XPT', xpt },
+  RemoveXPTAction: () => <RemoveXPTAction>{ type: 'REMOVE_XPT' },
 };
 
 // ---------------- REDUCER ----------------
@@ -51,6 +55,12 @@ export const reducer: any /*Reducer<AppState>*/ = (state: AppState, action: Know
       return {
         ...state,
         xpt: action.xpt,
+      };
+
+    case 'REMOVE_XPT':
+      return {
+        ...state,
+        xpt: unloadedState.xpt,
       };
 
     default:

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { List, Avatar, Input } from 'antd';
+
 import { ApplicationState } from 'src/reducer';
 import * as ChatState from './reducer';
 import Colors from './chat.background';

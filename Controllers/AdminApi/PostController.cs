@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace MyMedicine.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Route("apiadm/post")]
     public class PostAdminController : Controller
     {

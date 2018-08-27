@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
-import { ApplicationState } from 'src/reducer';
+import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { List, Avatar, Icon, Button } from 'antd';
-import HomeWrapped from './home.style';
-import { NavLink } from 'react-router-dom';
+
+import { ApplicationState } from 'src/reducer';
 import * as PostsState from './reducer';
+import HomeWrapped from './home.style';
 
 type PostsProps = PostsState.PostsState
     & { UserRole: string }
@@ -13,12 +13,6 @@ type PostsProps = PostsState.PostsState
     & RouteComponentProps<{}>;
 
 export class Home extends React.Component<PostsProps, {}> {
-    constructor(props: any) {
-        super(props);
-
-        this.PageChangeHandler = this.PageChangeHandler.bind(this);
-    }
-
     componentDidMount() {
         this.props.GetPosts(1, 5);
     }

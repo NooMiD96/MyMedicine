@@ -3,10 +3,12 @@ import { RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Layout, Card, List, Avatar, Input, Row, Col, Icon, Form, Button, Checkbox } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import ViewWrapper from './view.style';
+
 import { ApplicationState } from 'src/reducer';
 import * as PostState from './reducer';
 import hasErrors from 'core/app/components/formErrorHandler';
+import ViewWrapper from './view.style';
+
 const { Header, Content, Footer } = Layout;
 const FormItem = Form.Item;
 
@@ -19,16 +21,9 @@ type ViewProps = PostState.PostState
 type ViewState = { checkedList: any };
 
 export class View extends React.Component<ViewProps, ViewState> {
-    constructor(props: any) {
-        super(props);
-
-        this.SumbitHandler = this.SumbitHandler.bind(this);
-        this.onChangeChecker = this.onChangeChecker.bind(this);
-
-        this.state = {
-            checkedList: {},
-        };
-    }
+    state: ViewState = {
+        checkedList: {},
+    };
 
     componentDidMount() {
         this.props.GetPost(this.props.match.params.id);

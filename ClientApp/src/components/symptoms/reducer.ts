@@ -4,6 +4,7 @@ import { message } from 'antd';
 
 import { AppThunkAction } from 'src/reducer';
 import { actionCreators as AuthActions } from 'src/components/authorization/reducer';
+import * as CRUDConfig from 'core/app/components/fetchCRUDConfigurations';
 // ----------------- STATE -----------------
 //#region STATE
 export interface SymptomsState {
@@ -81,11 +82,11 @@ interface ResponseType { Error: string; Symptoms: Symptom[]; }
 
 export const actionCreators = {
   GetSymptoms: (): AppThunkAction<GetSymptomsAction> => (dispatch, getState) => {
-    const fetchTask = fetch('/apiadm/symptoms/getsymptoms', {
-      credentials: 'same-origin',
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-    }).then(response => {
+    const { xpt } = getState().app;
+    const fetchTask = fetch(
+      '/apiadm/symptoms/getsymptoms',
+      CRUDConfig.fetchGetConfig(xpt)
+    ).then(response => {
       if (response.status !== 200) {
         throw new Error(response.statusText);
       }
@@ -111,15 +112,15 @@ export const actionCreators = {
     dispatch({ type: 'SYMPTOMS_REQUEST' });
   },
   ChangeSymptoms: (editList: number[]): AppThunkAction<ChangeSymptomsAction | DeleteLocalSymptomsAction> => (dispatch, getState) => {
-    const { Symptoms } = getState().symptoms;
+    const state = getState();
+    const { xpt } = state.app;
+    const { Symptoms } = state.symptoms;
     const symptoms = Symptoms.filter(x => editList.includes(x.SymptomId));
 
-    const fetchTask = fetch('/apiadm/symptoms/changesymptoms', {
-      credentials: 'same-origin',
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify(symptoms),
-    }).then(response => {
+    const fetchTask = fetch(
+      '/apiadm/symptoms/changesymptoms',
+      CRUDConfig.fetchPatchConfig(xpt, JSON.stringify(symptoms))
+    ).then(response => {
       if (response.status !== 200) {
         throw new Error(response.statusText);
       }
@@ -156,14 +157,13 @@ export const actionCreators = {
         symptomIds: localElements,
       });
     } else {
+      const { xpt } = getState().app;
       const requestElemets = deleteList.filter(x => x > 0);
 
-      const fetchTask = fetch('/apiadm/symptoms/deletesymptoms', {
-        credentials: 'same-origin',
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(requestElemets),
-      }).then(response => {
+      const fetchTask = fetch(
+        '/apiadm/symptoms/deletesymptoms',
+        CRUDConfig.fetchDeleteConfig(xpt, JSON.stringify(requestElemets))
+      ).then(response => {
         if (response.status !== 200) {
           throw new Error(response.statusText);
         }

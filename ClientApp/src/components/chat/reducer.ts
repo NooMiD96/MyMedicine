@@ -1,7 +1,8 @@
 import { Reducer } from 'redux';
+
 import { AppThunkAction } from 'src/reducer';
-import { message } from 'antd';
 // ----------------- STATE -----------------
+//#region
 export interface ChatState {
     socket?: WebSocket;
     messages: Message[];
@@ -36,15 +37,16 @@ interface SetCountOfConnectionsAction {
 }
 
 type KnownAction = SubscribeToChatAction | UnsubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction;
-
+//#endregion
 // ---------------- ACTION CREATORS ----------------
+//#region
 export const actionCreators = {
     SubscribeToChat: (): AppThunkAction<SubscribeToChatAction | GetMessageAction | SetCountOfConnectionsAction> => (dispatch, _getState) => {
         let hostUri = 'http://localhost:50000/';
         if (document.baseURI) {
             hostUri = document.baseURI;
         }
-        let socketUri = hostUri.replace(/^http(s)?/, 'ws') + 'wschat';
+        let socketUri = hostUri.replace(/^http(s)?/, 'ws$1') + 'wschat';
         let socket = new WebSocket(socketUri);
 
         socket.onmessage = (event) => {
@@ -58,7 +60,7 @@ export const actionCreators = {
                     dispatch({ type: 'SET_COUNT_OF_CONNECTIONS', countOfConnections: data.countOfConnections });
                 }
             } catch (err) {
-                console.log('WebSocket Error Parse :-S in Chat', err);
+                console.warn('WebSocket Error Parse :-S in Chat', err);
             }
         };
         socket.onopen = (_e) => {
@@ -66,13 +68,13 @@ export const actionCreators = {
         };
         socket.onclose = function (event) {
             if (!event.wasClean) {
-                console.log('Обрыв соединения');
-                console.log('Код: ' + event.code + ' причина: ' + event.reason);
+                console.group('Closed web connection');
+                console.warn(`Обрыв соединения\r\nКод: ${event.code || 'unknown'}\r\nПричина: ${event.reason || 'unknown'}`);
+                console.groupEnd();
             }
         };
-        socket.onerror = function (error) {
-            console.log('Ошибка:\n' + error);
-            message.error(error);
+        socket.onerror = function () {
+            console.warn('Unknown exception in the Chat Web Socket');
         };
 
         dispatch({ type: 'SUBSCRIBE_TO_CHAT', socket });
@@ -85,8 +87,9 @@ export const actionCreators = {
         }
     },
 };
-
+//#endregion
 // ---------------- REDUCER ----------------
+//#region
 const unloadedState: ChatState = { messages: [], countOfConnections: 0 };
 
 export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownAction) => {
@@ -128,3 +131,4 @@ export const reducer: Reducer<ChatState> = (state: ChatState, action: KnownActio
 
     return state || unloadedState;
 };
+//#endregion

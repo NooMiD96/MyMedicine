@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace MyMedicine.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Route("api/[controller]")]
     public class PostController : Controller
     {
@@ -16,7 +17,7 @@ namespace MyMedicine.Controllers
             _context = context;
         }
 
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         [HttpGet("[action]")]
         public async Task<string> GetPosts([FromQuery] int page, [FromQuery] int pageSize)
         {
@@ -25,6 +26,7 @@ namespace MyMedicine.Controllers
             return JsonConvert.SerializeObject(new { Posts, TotalCount }, ControllersServices.JsonSettings);
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpGet("[action]")]
         public async Task<string> GetPost([FromQuery] int postid)
         {
@@ -53,6 +55,8 @@ namespace MyMedicine.Controllers
                 return ControllersServices.ErrorMessage("Can't add new comment, sorry.");
             }
         }
+
+        [IgnoreAntiforgeryToken]
         [HttpGet("[action]")]
         public async Task<string> GetComments([FromQuery] int postid)
         {
@@ -71,62 +75,6 @@ namespace MyMedicine.Controllers
             {
                 return ControllersServices.ErrorMessage("Can't add new comment, sorry.");
             }
-        }
-        [HttpPost("[action]")]
-        public async Task<string> CreateOrEdit([FromQuery] int postid, [FromBody] Post post)
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
-            if (postid <= 0)
-            {
-                await _context.AddNewPostAsync(post, User.Identity.Name);
-            }
-            else
-            {
-                await _context.EditPostAsync(post, postid);
-            }
-
-            return "true";
-        }
-        [HttpDelete("[action]")]
-        public async Task<string> DeleteCommentsList([FromQuery] int postid, [FromBody] List<int> commentsListId)
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
-            await _context.DeleteCommentsListAsync(postid, commentsListId);
-
-            return "true";
-        }
-
-        [HttpDelete("[action]")]
-        public async Task<string> DeletePost([FromQuery] int postid)
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return ControllersServices.ErrorMessage("auth");
-            }
-            if (!User.IsInRole("Admin"))
-            {
-                return ControllersServices.ErrorMessage("Not allowed");
-            }
-
-            await _context.DeletePostAsync(postid);
-
-            return "true";
         }
     }
 }

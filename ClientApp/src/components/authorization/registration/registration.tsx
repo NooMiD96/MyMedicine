@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Modal, Button, Icon, Input, Form } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+
 import ReCaptcha from 'core/app/components/reCaptcha';
 import { AlertModule } from 'core/app/components/alertModule';
 import hasErrors from 'core/app/components/formErrorHandler';
@@ -25,22 +26,13 @@ interface LoginState {
 }
 
 class RegistrationComponent extends React.Component<LoginProps, LoginState> {
-    constructor(props: any) {
-        super(props);
-
-        this.showModal = this.showModal.bind(this);
-        this.handleOk = this.handleOk.bind(this);
-        this.handleCancel = this.handleCancel.bind(this);
-        this.onCaptchaChange = this.onCaptchaChange.bind(this);
-
-        this.state = {
-            visible: false,
-            loading: false,
-            confirmDirty: false,
-            enableReCaptcha: false,
-            isCanRegistr: true,
-        };
-    }
+    state: LoginState = {
+        visible: false,
+        loading: false,
+        confirmDirty: false,
+        enableReCaptcha: false,
+        isCanRegistr: true,
+    };
     recaptcha: any;
 
     componentDidUpdate(prevProps: LoginProps) {
